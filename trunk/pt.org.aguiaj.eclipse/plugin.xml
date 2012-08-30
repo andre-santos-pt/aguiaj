@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.viewActions">
+      <viewContribution
+            id="pt.org.aguiaj.eclipse.actionsjava"
+            targetID="org.eclipse.ui.navigator.ProjectExplorer">
+         <action
+               class="pt.org.aguiaj.eclipse.OpenAguiaJ"
+               icon="icons/eagle-icon-16.png"
+               id="pt.org.aguiaj.eclipse.runInAguiaJ"
+               label="Run in AGUIA/J"
+               style="push"
+               toolbarPath="aguia">
+         </action>
+      </viewContribution>
+      <viewContribution
+            id="pt.org.aguiaj.eclipse.actionsaguia"
+            targetID="pt.org.aguiaj.classesView">
+         <action
+               class="pt.org.aguiaj.eclipse.GoToError"
+               icon="icons/exception.gif"
+               id="pt.org.aguiaj.eclipse.GoToError"
+               label="Go to last error"
+               style="push"
+               toolbarPath="additions">
+            <enablement>
+               <pluginState
+                     id="org.eclipse.jdt"
+                     value="installed">
+               </pluginState>
+            </enablement>
+         </action>
+         <action
+               class="pt.org.aguiaj.eclipse.SwitchProject"
+               icon="icons/switch_project.gif"
+               id="pt.org.aguiaj.eclipse.SwitchProject"
+               label="Switch project"
+               menubarPath="additions"
+               style="push">
+            <enablement>
+               <pluginState
+                     id="org.eclipse.jdt"
+                     value="installed">
+               </pluginState>
+            </enablement>
+         </action>
+         <action
+               class="pt.org.aguiaj.eclipse.OpenJavaPerspective"
+               icon="icons/javaproject.gif"
+               id="pt.org.aguiaj.eclipse.OpenJavaPerspective"
+               label="Open Java perspective"
+               style="push"
+               toolbarPath="additions">
+            <enablement>
+               <pluginState
+                     id="org.eclipse.jdt"
+                     value="installed">
+               </pluginState>
+            </enablement>
+         </action>
+      </viewContribution>
+      <viewContribution
+            id="pt.org.aguiaj.eclipse.actionsjava"
+            targetID="org.eclipse.jdt.ui.PackageExplorer">
+         <action
+               class="pt.org.aguiaj.eclipse.OpenAguiaJ"
+               icon="icons/eagle-icon-16.png"
+               id="pt.org.aguiaj.eclipse.runInAguiaJ"
+               label="Run in AGUIA/J"
+               style="push"
+               toolbarPath="aguia">
+         </action>
+         <menu
+               id="AguiaJEclipse.menu1"
+               label="AGUIAJ">
+         </menu>
+      </viewContribution>
+      <viewContribution
+            id="AguiaJEclipse.viewContribution1"
+            targetID="org.eclipse.jdt.ui.PackageExplorer">
+         <menu
+               id="AguiaJEclipse.menu2"
+               label="AGUIA/J"
+               path="menu:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?after=additions">
+         </menu>
+      </viewContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:AguiaJ.menu">
+         <command
+               commandId="AguiaJEclipse.openAguiaJPerspective"
+               icon="icons/eagle-icon-16.png"
+               label="Open AGUIA/J Perspective"
+               style="push">
+         </command>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            class="pt.org.aguiaj.eclipse.ImportPluginsContribution"
+            locationURI="popup:org.eclipse.jdt.ui.PackageExplorer?after=additions">
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="pt.org.aguiaj.eclipse.OpenAguiaJ"
+            id="AguiaJEclipse.openAguiaJPerspective"
+            name="Open AGUIA/J perspective">
+      </command>
+   </extension>
+
+
+</plugin>
