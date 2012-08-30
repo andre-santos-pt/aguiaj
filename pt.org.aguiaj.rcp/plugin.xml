@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="application"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run
+               class="pt.org.aguiaj.rcp.AguiaJApplication">
+         </run>
+      </application>
+   </extension>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="pt.org.aguiaj.rcp.application"
+            name="AGUIA/J">
+         <property
+               name="appName"
+               value="AGUIA/J">
+         </property>
+         <property
+               name="aboutImage"
+               value="platform:/plugin/pt.org.aguiaj.branding/icons/eagle-icon-96.png">
+         </property>
+         <property
+               name="aboutText"
+               value="AGUIA/J was created and is currently being developed by André L. Santos ( http://www.andre-santos.name ), ISCTE-IUL ( http://www.iul.pt ), Portugal.">
+         </property>
+         <property
+               name="windowImages"
+               value="platform:/plugin/pt.org.aguiaj.branding/icons/eagle-icon-16.png,platform:/plugin/pt.org.aguiaj.branding/icons/eagle-icon-32.png,platform:/plugin/pt.org.aguiaj.branding/icons/eagle-icon-48.png,platform:/plugin/pt.org.aguiaj.branding/icons/eagle-icon-64.png">
+         </property>
+      </product>
+   </extension>
+   <extension
+         point="org.eclipse.ui.intro">
+      <intro
+            class="pt.org.aguiaj.rcp.AguiaJWelcomePage"
+            id="pt.org.aguiaj.rcp.welcome">
+      </intro>
+      <introProductBinding
+            introId="pt.org.aguiaj.rcp.welcome"
+            productId="pt.org.aguiaj.product">
+      </introProductBinding>
+   </extension>
+
+</plugin>
