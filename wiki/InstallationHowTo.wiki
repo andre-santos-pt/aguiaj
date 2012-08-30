@@ -2,8 +2,7 @@
 
 = Introduction =
 
-Add your content here.
-
+<wiki:video url="http://www.youtube.com/watch?v=3E2GAxCA4h8"/>
 
 = Details =
 
