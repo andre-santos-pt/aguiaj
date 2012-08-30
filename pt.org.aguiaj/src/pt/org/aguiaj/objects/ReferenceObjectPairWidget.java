@@ -1,0 +1,98 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Andre L. Santos.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Andre L. Santos - concept inventor, architect, developer
+ ******************************************************************************/
+package pt.org.aguiaj.objects;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Composite;
+
+import pt.org.aguiaj.common.AguiaJColor;
+
+public class ReferenceObjectPairWidget extends Composite {
+
+	public final ObjectWidget widget;
+	private Composite referenceStack;
+	private List<ReferenceWidget> referenceWidgets;
+
+	public ReferenceObjectPairWidget(Composite parent, final String reference, final Object object) {
+		super(parent, SWT.NONE);
+		assert parent != null;
+		assert reference != null;		
+		assert object != null;
+		
+		referenceWidgets = new ArrayList<ReferenceWidget>();
+
+		setLayout(new RowLayout(SWT.HORIZONTAL));
+		setBackground(AguiaJColor.OBJECT_AREA.getColor());
+		referenceStack = new Composite(this, SWT.NONE);
+		GridLayout layout = new GridLayout(1, true);
+		layout.verticalSpacing = 10;
+		referenceStack.setLayout(layout);
+		referenceStack.setBackground(AguiaJColor.OBJECT_AREA.getColor());
+		widget = new ObjectWidget(this, object); 
+	}
+
+	public void addReference(String id, Class<?> type, Object object) {
+		ReferenceWidget widget = new ReferenceWidget(referenceStack, id, type, object);
+		widget.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+		referenceWidgets.add(widget);
+//		widget.highlight();
+		layout();
+		getParent().layout();
+	}
+
+	public void removeReference(String id) {
+		ReferenceWidget toRemove = null;
+		for(ReferenceWidget widget : referenceWidgets)
+			if(widget.id.equals(id)) {
+				toRemove = widget;
+				widget.dispose();
+				layout();
+				getParent().layout();
+			}
+
+		if(toRemove != null)
+			referenceWidgets.remove(toRemove);
+		
+		if(!hasReferences())
+			widget.die();
+	}
+
+	private boolean hasReferences() {
+		return referenceWidgets.size() > 0;
+	}
+
+	public boolean hasReference(String id) {
+		for(ReferenceWidget widget : referenceWidgets)
+			if(widget.id.equals(id))
+				return true;
+		return false;
+	}
+	
+	public ReferenceWidget getReferenceWidget(String id) {
+		for(ReferenceWidget widget : referenceWidgets)
+			if(widget.id.equals(id))
+				return widget;
+		return null;
+	}
+	
+	public String getFirstReference() {
+		if(!referenceWidgets.isEmpty())
+			return referenceWidgets.get(0).id;
+		else
+			return null;
+	}
+}

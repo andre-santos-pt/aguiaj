@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: AGUIA/J
+Bundle-SymbolicName: pt.org.aguiaj;singleton:=true
+Bundle-Version: 0.9.5
+Bundle-Activator: pt.org.aguiaj.core.AguiaJActivator
+Require-Bundle: org.eclipse.core.runtime;bundle-version="3.6.0",
+ org.aspectj.runtime;bundle-version="1.6.0",
+ org.eclipse.core.resources;bundle-version="3.6.0",
+ org.eclipse.jdt.core;bundle-version="3.6.0",
+ com.google.guava;bundle-version="8.0.0",
+ org.junit;bundle-version="3.8.2",
+ org.eclipse.swt;bundle-version="3.6.2",
+ org.eclipse.ui;bundle-version="0.0.0"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: pt.org.aguiaj.core.commands,
+ pt.org.aguiaj.extensibility
+Bundle-Vendor: André L. Santos
+
