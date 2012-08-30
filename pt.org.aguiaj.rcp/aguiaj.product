@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="AGUIA/J" uid="pt.org.aguiaj.standalone" id="pt.org.aguiaj.rcp.product" application="pt.org.aguiaj.rcp.application" version="1.0.0.0" useFeatures="false" includeLaunchers="true">
+<product name="AGUIA/J" uid="pt.org.aguiaj.product" id="pt.org.aguiaj.rcp.product" application="pt.org.aguiaj.rcp.application" version="1.0.0.0" useFeatures="false" includeLaunchers="true">
 
    <aboutInfo>
-      <image path="/AguiaJBranding/icons/eagle-icon-96.png"/>
+      <image path="/pt.org.aguiaj.branding/icons/eagle-icon-96.png"/>
       <text>
          AGUIA/J was created and is currently being developed by André L. Santos ( http://www.andre-santos.name ), ISCTE-IUL ( http://www.iul.pt ), Portugal.
       </text>
@@ -17,12 +17,12 @@
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="/AguiaJBranding/icons/eagle-icon-16.png" i32="/AguiaJBranding/icons/eagle-icon-32.png" i48="/AguiaJBranding/icons/eagle-icon-48.png" i64="/AguiaJBranding/icons/eagle-icon-64.png"/>
+   <windowImages i16="/pt.org.aguiaj.branding/icons/eagle-icon-16.png" i32="/pt.org.aguiaj.branding/icons/eagle-icon-32.png" i48="/pt.org.aguiaj.branding/icons/eagle-icon-48.png" i64="/pt.org.aguiaj.branding/icons/eagle-icon-64.png"/>
 
    <splash
       location="pt.org.aguiaj.branding" />
    <launcher name="AguiaJ">
-      <macosx icon="/AguiaJBranding/icons/eagleicon.icns"/>
+      <macosx icon="/pt.org.aguiaj.branding/icons/eagleicon.icns"/>
       <solaris/>
       <win useIco="true">
          <ico path="/AguiaJBranding/icons/eagleicon.ico"/>
@@ -45,10 +45,9 @@
       <plugin id="org.eclipse.core.databinding.property"/>
       <plugin id="org.eclipse.core.expressions"/>
       <plugin id="org.eclipse.core.filesystem"/>
-      <plugin id="org.eclipse.core.filesystem.win32.x86" fragment="true"/>
+      <plugin id="org.eclipse.core.filesystem.macosx" fragment="true"/>
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.core.resources"/>
-      <plugin id="org.eclipse.core.resources.win32.x86" fragment="true"/>
       <plugin id="org.eclipse.core.runtime"/>
       <plugin id="org.eclipse.core.runtime.compatibility.registry" fragment="true"/>
       <plugin id="org.eclipse.equinox.app"/>
@@ -64,9 +63,10 @@
       <plugin id="org.eclipse.jface.databinding"/>
       <plugin id="org.eclipse.osgi"/>
       <plugin id="org.eclipse.swt"/>
-      <plugin id="org.eclipse.swt.win32.win32.x86" fragment="true"/>
+      <plugin id="org.eclipse.swt.cocoa.macosx.x86_64" fragment="true"/>
       <plugin id="org.eclipse.text"/>
       <plugin id="org.eclipse.ui"/>
+      <plugin id="org.eclipse.ui.cocoa" fragment="true"/>
       <plugin id="org.eclipse.ui.workbench"/>
       <plugin id="org.hamcrest.core"/>
       <plugin id="org.junit"/>
