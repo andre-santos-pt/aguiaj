@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PlayingCards
+Bundle-SymbolicName: pt.org.aguiaj.cards;singleton:=true
+Bundle-Version: 0.9.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.eclipse.swt;bundle-version="3.6.0",
+ pt.org.aguiaj;bundle-version="0.9.5",
+ org.aspectj.runtime;bundle-version="1.6.12"
+Export-Package: aguiaj.cards
