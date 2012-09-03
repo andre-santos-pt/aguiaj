@@ -62,7 +62,10 @@ public class SWTUtils {
 			control.setBackground(color);
 			if(control instanceof Composite) {
 				Composite comp = (Composite) control;
-				if(!(comp instanceof ExtensionTypeWidget)) {
+				if(comp instanceof ExtensionTypeWidget) {
+					((ExtensionTypeWidget) comp).paintWidget(color);					
+				}
+				else {
 					for(Control c : ((Composite) control).getChildren())
 						setColorRecursively(c, color);
 				}

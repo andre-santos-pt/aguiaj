@@ -37,7 +37,7 @@
             allowMultiple="false"
             category="pt.aguiaj.viewCategory"
             class="pt.org.aguiaj.core.commands.JavaBarView"
-            icon="images/java.png"
+            icon="images/java.gif"
             id="pt.org.aguiaj.javabarView"
             name="Java Bar"
             restorable="true">
@@ -70,11 +70,6 @@
             defaultHandler="pt.org.aguiaj.core.commands.ReloadClassesCommand"
             id="AguiaJ.reloadcommand"
             name="Reload classes">
-      </command>
-      <command
-            defaultHandler="pt.org.aguiaj.core.TranslationEditor$Open"
-            id="AguiaJ.openTranslationTable"
-            name="Define Translation">
       </command>d>
       <command
             defaultHandler="pt.org.aguiaj.core.commands.HistoryView$Open"
@@ -153,10 +148,6 @@
                   commandId="AguiaJ.openHistory"
                   icon="images/history_view.gif"
                   label="Show History view"
-                  style="push">
-            </command>
-            <command
-                  commandId="AguiaJ.openTranslationTable"
                   style="push">
             </command>
          </menu>

@@ -13,6 +13,7 @@ package pt.org.aguiaj.core.typewidgets;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -42,6 +43,11 @@ public class ExtensionTypeWidget extends AbstractTypeWidget {
 		extension.createSection(extensionWidget);
 	}
 
+	public void paintWidget(Color color) {
+		nullWidget.setBackground(color);
+		extensionWidget.setBackground(color);
+	}
+	
 	private void updateNullWidget() {
 		Point size = extensionWidget.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		nullWidget.update(Math.min(size.x, size.y));
