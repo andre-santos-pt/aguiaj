@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         name="Colors"
+         point="pt.org.aguiaj.objectWidgets">
+      <group
+            id="Color">
+         <class
+               allowImport="true"
+               icon="images/palette-icon16.png"
+               id="aguiaj.colors.Color"
+               viewClass="aguiaj.colors.view.ColorWidget">
+            <includeFilter>
+               <method
+                     id="getR">
+               </method>
+               <method
+                     id="getG">
+               </method>
+               <method
+                     id="getB">
+               </method>
+               <method
+                     id="equals">
+               </method>
+               <method
+                     id="toGraytone">
+               </method>
+            </includeFilter>
+         </class>
+      </group>
+   </extension>
+
+</plugin>
