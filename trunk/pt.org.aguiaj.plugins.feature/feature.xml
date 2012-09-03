@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="pt.org.aguiaj.plugins.feature"
+      label="AGUIA/J Standard Plugins"
+      version="0.8.9"
+      provider-name="aguiaj.org.pt"
+      plugin="pt.org.aguiaj.branding">
+
+   <description url="http://www.aguiaj.org.pt">
+      This feature includes standard AGUIA/J plugins.
+   </description>
+
+   <copyright url="http://www.andre-santos.name">
+      Copyright (c) 2011 Andre L. Santos &lt;andre.santos.lx@gmail.com&gt;. All rights reserved.
+   </copyright>
+
+   <license url="http://www.eclipse.org/legal/epl-v10.html">
+      This program and the accompanying materials
+are made available under the terms of the Eclipse Public License
+v1.0 which accompanies this distribution, and is available at
+http://www.eclipse.org/legal/epl-v10.html
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer
+in the documentation and/or other materials provided with the
+distribution.
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS
+&quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+   </license>
+
+   <url>
+      <update label="AGUIA/J Update Site" url="http://update.aguiaj.org.pt"/>
+      <discovery label="AspectJ Development Tools" url="http://download.eclipse.org/tools/ajdt/36/dev/update"/>
+      <discovery label="Guava: Google code libraries for Java" url="http://guava-osgi.googlecode.com/svn/trunk/repository/"/>
+   </url>
+
+   <requires>
+      <import plugin="org.eclipse.swt" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="pt.org.aguiaj" version="0.8.0" match="greaterOrEqual"/>
+      <import plugin="com.google.guava" version="8.0.0" match="greaterOrEqual"/>
+   </requires>
+
+   <plugin
+         id="pt.org.aguiaj.cards"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="pt.org.aguiaj.images"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="pt.org.aguiaj.colors"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="pt.org.aguiaj.grid"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
