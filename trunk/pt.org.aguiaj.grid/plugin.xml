@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         name="Grid"
+         point="pt.org.aguiaj.objectWidgets">         
+      <group
+            id="Grid">
+         <class
+               allowImport="true"
+               icon="images/grid.png"
+               id="aguiaj.grid.Grid"
+               viewClass="aguiaj.grid.view.GridWidget">
+         </class>
+         <class
+               allowImport="true"
+               icon="images/grid_position.png"
+               id="aguiaj.grid.Position"
+               viewClass="aguiaj.grid.view.PositionWidget">
+         </class>
+      </group>
+   </extension>
+
+</plugin>
