@@ -9,7 +9,7 @@
    <feature url="features/pt.iscte.dcti.editor.feature_1.0.0.jar" id="pt.iscte.dcti.editor.feature" version="1.0.0">
       <category name="pt.iscte.dcti.aguiaj"/>
    </feature>
-   <feature url="features/pt.org.aguiaj.plugins.feature_0.8.9.jar" id="pt.org.aguiaj.plugins.feature" version="0.8.9">
+   <feature url="features/pt.org.aguiaj.plugins.feature_0.9.0.jar" id="pt.org.aguiaj.plugins.feature" version="0.9">
       <category name="pt.org.aguiaj.plugins"/>
    </feature>
    <category-def name="pt.org.aguiaj.environment" label="AGUIA/J">
