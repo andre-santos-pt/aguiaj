@@ -27,6 +27,7 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -39,6 +40,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import pt.org.aguiaj.common.AguiaJColor;
 import pt.org.aguiaj.common.AguiaJImage;
 import pt.org.aguiaj.common.DragNDrop;
+import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.common.widgets.IconWidget;
 import pt.org.aguiaj.common.widgets.LabelWidget;
 import pt.org.aguiaj.core.AguiaJActivator;
@@ -58,14 +60,17 @@ public class ClassAreaWidget extends ScrolledComposite {
 	private String packageName;
 	
 	public ClassAreaWidget(Composite parent, final String packageName, Collection<Class<?>> classes) {
-		super(parent, SWT.NONE | SWT.V_SCROLL);
+		super(parent, SWT.NONE | SWT.V_SCROLL | SWT.H_SCROLL);
 		this.packageName = packageName;
 		
 		classWidgets = Sets.newHashSet();
 
 		area = new Composite(this, SWT.NONE);
+		area.setBackground(AguiaJColor.OBJECT_AREA.getColor());
+		
 		RowLayout compositeLayout = new RowLayout(SWT.VERTICAL);
 		compositeLayout.spacing = SPACING;
+		compositeLayout.marginLeft = 10;
 		area.setLayout(compositeLayout);
 
 		for(final Class<?> clazz : classes) {
@@ -109,17 +114,17 @@ public class ClassAreaWidget extends ScrolledComposite {
 		
 		addControlListener(listener);
 
-		Menu menu = new Menu(area);
-		MenuItem item = new MenuItem(menu, SWT.PUSH);
-		item.setText(UIText.REMOVE.get());
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				removeControlListener(listener);
-				ClassesView.getInstance().removeTab(packageName);
-			}
-		});
-		area.setMenu(menu);
+//		Menu menu = new Menu(area);
+//		MenuItem item = new MenuItem(menu, SWT.PUSH);
+//		item.setText(UIText.REMOVE.get());
+//		item.addSelectionListener(new SelectionAdapter() {
+//			@Override
+//			public void widgetSelected(SelectionEvent e) {
+//				removeControlListener(listener);
+//				ClassesView.getInstance().removeTab(packageName);
+//			}
+//		});
+//		area.setMenu(menu);
 		
 		DragNDrop.addFileDragNDropSupport(area);
 	}
@@ -145,7 +150,7 @@ public class ClassAreaWidget extends ScrolledComposite {
 	private void addPluginHeader() {
 		Composite comp = new Composite(area, SWT.NONE);
 		comp.setLayout(new RowLayout(SWT.VERTICAL));
-
+		
 		final String jarLocation = AguiaJActivator.getDefault().getPluginJarLocation(pluginId);
 
 		new LabelWidget.Builder()
@@ -165,6 +170,7 @@ public class ClassAreaWidget extends ScrolledComposite {
 		});
 
 		handleDocumentationLink(comp);
+		SWTUtils.setColorRecursively(comp, AguiaJColor.WHITE.getColor());
 	}
 
 	private void handleDocumentationLink(Composite parent) {

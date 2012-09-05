@@ -17,12 +17,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Listener;
@@ -48,12 +50,14 @@ public class ClassWidget extends FieldContainer {
 
 	public ClassWidget(Composite parent, final Class<?> clazz) {
 		super(parent, SWT.BORDER);
-
+		
 		InspectionPolicy policy = Inspector.getInspectionPolicy();
 		
 		constructors = Inspector.getVisibleConstructors(clazz);
 
-		setLayout(new FormLayout());
+		FormLayout layout = new FormLayout();
+		layout.marginBottom = 5;
+		setLayout(layout);
 		
 		Composite classHeader = new Composite(this, SWT.NONE);
 		classHeader.setLayout(new RowLayout(SWT.HORIZONTAL));
@@ -120,6 +124,8 @@ public class ClassWidget extends FieldContainer {
 			data.right = new FormAttachment(100, -5);
 			staticMethodsGroup.setLayoutData(data);
 		}
+		
+		
 		updateFields();	
 		
 		ClassModel.getInstance().addClass(clazz);
