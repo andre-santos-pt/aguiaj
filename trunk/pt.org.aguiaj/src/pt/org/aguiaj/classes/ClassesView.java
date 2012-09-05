@@ -25,6 +25,10 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabFolder2Adapter;
+import org.eclipse.swt.custom.CTabFolderEvent;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -49,9 +53,9 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 
 	private static ClassesView instance;
 
-	private BiMap<String, TabItem> classAreas;
+	private BiMap<String, CTabItem> classAreas;
 
-	private TabFolder packageTabs;
+	private CTabFolder packageTabs;
 	private Composite parent;
 
 	private boolean firstTime;
@@ -145,7 +149,14 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 
 	public void createPartControl(Composite parent) {	
 		this.parent = parent;
-		packageTabs = new TabFolder(parent, SWT.BORDER);
+		packageTabs = new CTabFolder(parent, SWT.BORDER);
+		packageTabs.setSimple(false);
+		packageTabs.addCTabFolder2Listener(new CTabFolder2Adapter() {
+			public void close(CTabFolderEvent event) {
+				String packageName = classAreas.inverse().get(event.item);
+				removeTab(packageName);					
+			}
+		});
 		DragNDrop.addFileDragNDropSupport(packageTabs);		
 		createTabs();
 	}
@@ -181,7 +192,7 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 		createTabs();
 
 		if(tabIndex != -1)
-			((TabFolder) packageTabs).setSelection(tabIndex);
+			((CTabFolder) packageTabs).setSelection(tabIndex);
 
 		packageTabs.layout();
 		parent.layout();	
@@ -212,7 +223,7 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 		}
 		
 		for(String packageName : packageNames) {
-			TabItem tab = null;
+			CTabItem tab = null;
 			
 			if(classAreas.containsKey(packageName)) {
 				tab = classAreas.get(packageName);
@@ -224,8 +235,9 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 
 			ClassAreaWidget packageArea = new ClassAreaWidget(packageTabs, packageName, classList);
 			
-			if(tab == null)
-				tab = new TabItem(packageTabs, SWT.NONE);
+			if(tab == null) {
+				tab = new CTabItem(packageTabs, SWT.CLOSE);				
+			}
 
 			if(AguiaJActivator.getDefault().isPluginPackage(packageName))
 				tab.setImage(AguiaJImage.IMPORTED_PACKAGE.getImage());
@@ -243,7 +255,7 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 	public void addTab(final String packageName, List<Class<?>> classes) {
 		if(!classAreas.containsKey(packageName)) {
 			ClassAreaWidget packageArea = new ClassAreaWidget(packageTabs, packageName, classes);
-			final TabItem tab = new TabItem(packageTabs, SWT.NONE);
+			final CTabItem tab = new CTabItem(packageTabs, SWT.NONE);
 			tab.setImage(AguiaJImage.PACKAGE.getImage());			
 			tab.setText(packageName.equals("") ? "default" : packageName);
 			tab.setControl(packageArea);			
@@ -262,7 +274,7 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 	}
 	
 	public void selectPackage(String packageName) {
-		TabItem tab = classAreas.get(packageName);
+		CTabItem tab = classAreas.get(packageName);
 		if(tab != null)
 			packageTabs.setSelection(tab);
 	}
@@ -272,7 +284,7 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 		if(selection == -1)
 			return null;
 
-		TabItem tab = packageTabs.getItem(selection);
+		CTabItem tab = packageTabs.getItem(selection);
 		ClassAreaWidget packageArea = (ClassAreaWidget) tab.getControl();
 
 		return packageArea.getPackageName();
@@ -292,7 +304,7 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 		if(selection == -1)
 			return null;
 
-		TabItem tab = packageTabs.getItem(selection);
+		CTabItem tab = packageTabs.getItem(selection);
 		ClassAreaWidget packageArea = (ClassAreaWidget) tab.getControl();
 
 		if(packageArea.isPluginPackage())
