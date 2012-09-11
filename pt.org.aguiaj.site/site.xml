@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description name="AGUIA/J Update Site">
+      Update Site for the AGUIA/J and some of its plugins.
+   </description>
+   <feature url="features/pt.org.aguiaj.feature_0.9.9.4.jar" id="pt.org.aguiaj.feature" version="0.9.9.4">
+      <category name="pt.org.aguiaj.environment"/>
+   </feature>
+   <feature url="features/pt.iscte.dcti.editor.feature_1.0.0.jar" id="pt.iscte.dcti.editor.feature" version="1.0.0">
+      <category name="pt.iscte.dcti.aguiaj"/>
+   </feature>
+   <feature url="features/pt.org.aguiaj.plugins.feature_0.9.0.jar" id="pt.org.aguiaj.plugins.feature" version="0.9">
+      <category name="pt.org.aguiaj.plugins"/>
+   </feature>
+   <category-def name="pt.org.aguiaj.environment" label="AGUIA/J">
+      <description>
+         AGUIA/J is an interactive environment for experimenting object-oriented programming in Java.
+      </description>
+   </category-def>
+   <category-def name="pt.org.aguiaj.plugins" label="AGUIA/J Plugins"/>
+   <category-def name="pt.iscte.dcti.aguiaj" label="ISCTE"/>
+</site>
