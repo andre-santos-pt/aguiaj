@@ -27,6 +27,8 @@ import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
 
@@ -82,6 +84,13 @@ public class OpenAguiaJ extends AbstractHandler implements IViewActionDelegate {
 				command.setDirectory(path);
 				command.execute(null);
 				Activator.setProject(project);
+			}
+			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			try {			
+				page.showView(AguiaJContribution.CLASSES_VIEW);			
+			} 
+			catch (PartInitException e) {
+				e.printStackTrace();
 			}
 		}
 		catch (Exception e) {
