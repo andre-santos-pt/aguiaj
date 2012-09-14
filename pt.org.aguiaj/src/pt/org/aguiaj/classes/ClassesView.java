@@ -30,9 +30,9 @@ import org.eclipse.swt.custom.CTabFolder2Adapter;
 import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.ui.ISizeProvider;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.part.ViewPart;
 
 import pt.org.aguiaj.common.AguiaJImage;
@@ -171,6 +171,10 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 			createActions();
 			firstTime = false;
 		}
+		packageTabs.pack();
+		packageTabs.layout();
+		parent.pack();
+		parent.layout();
 	}
 
 
@@ -236,7 +240,7 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 			ClassAreaWidget packageArea = new ClassAreaWidget(packageTabs, packageName, classList);
 			
 			if(tab == null) {
-				tab = new CTabItem(packageTabs, SWT.CLOSE);				
+				tab = new CTabItem(packageTabs, packageName.equals("") ? SWT.NONE : SWT.CLOSE);				
 			}
 
 			if(AguiaJActivator.getDefault().isPluginPackage(packageName))
@@ -247,9 +251,10 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 			tab.setText(packageName.equals("") ? "default" : packageName);
 
 			tab.setControl(packageArea);
+			
 			classAreas.put(packageName, tab);
 			classAreaWidgets.add(packageArea);
-		}
+		}	
 	}
 
 	public void addTab(final String packageName, List<Class<?>> classes) {
@@ -267,7 +272,8 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 	public void removeTab(final String packageName) {
 		if(classAreas.containsKey(packageName)) {
 			classAreas.remove(packageName).dispose();
-			importActionMap.get(packageName).setEnabled(true);	
+			if(AguiaJActivator.getDefault().isPluginPackage(packageName))
+				importActionMap.get(packageName).setEnabled(true);	
 			ClassModel.getInstance().deactivatePackage(packageName);
 			reload(null);
 		}

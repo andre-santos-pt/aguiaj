@@ -27,7 +27,7 @@ import pt.org.aguiaj.core.AguiaJParam;
 class CharacterWidget extends PrimitiveTypeWidget {
 
 	private Text text;
-	private static Character defaultValue = new Character((char) 0);
+	private static Character defaultValue = new Character(' ');
 	
 	public CharacterWidget(Composite parent, final WidgetProperty type, boolean modifiable) {
 		super(parent, type, modifiable);
