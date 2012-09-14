@@ -13,12 +13,16 @@ package pt.org.aguiaj.core.typewidgets;
 import java.math.BigDecimal;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
 import pt.org.aguiaj.common.PluggableWidget;
+import pt.org.aguiaj.core.AguiaJParam;
 
 @PluggableWidget(double.class)
 class DoubleWidget extends PrimitiveTypeWidget {
@@ -66,12 +70,33 @@ class DoubleWidget extends PrimitiveTypeWidget {
 	
 	@Override
 	protected void createContents(Composite parent) {
+//		text = new Text(parent, SWT.BORDER |
+//				(getUsageType() == WidgetProperty.PROPERTY || !isModifiable() ? SWT.READ_ONLY : SWT.NONE)); 
+//		
+//		if(getUsageType() == WidgetProperty.PARAMETER)
+//			text.setLayoutData(new RowData(35, 15));
+//		
+//		listener = new InputListener(text);
+//		text.addListener(SWT.Verify, listener);
+//		setVerifyListener(listener);
+//		
+//		if(getUsageType() != WidgetProperty.PARAMETER)
+//			addFocusListener(text);
+//		
+//		update(defaultValue);
+		
 		text = new Text(parent, SWT.BORDER |
-				(getUsageType() == WidgetProperty.PROPERTY || !isModifiable() ? SWT.READ_ONLY : SWT.NONE)); 
+				(getUsageType() == WidgetProperty.PROPERTY || !isModifiable() ? SWT.READ_ONLY : SWT.NONE));
 		
-		if(getUsageType() == WidgetProperty.PARAMETER)
-			text.setLayoutData(new RowData(35, 15));
+		FontData data = new FontData("Courier", AguiaJParam.MEDIUM_FONT.getInt(), SWT.NONE);
+		Font font = new Font(Display.getDefault(), data);
+		text.setFont(font);
 		
+		if(getUsageType() == WidgetProperty.PARAMETER) {
+			text.setLayoutData(new RowData());
+			((RowData) text.getLayoutData()).width = 60;
+		}
+			
 		listener = new InputListener(text);
 		text.addListener(SWT.Verify, listener);
 		setVerifyListener(listener);
@@ -80,36 +105,6 @@ class DoubleWidget extends PrimitiveTypeWidget {
 			addFocusListener(text);
 		
 		update(defaultValue);
-		
-//		if(isModifiable())
-//			addEnterKeyListener(text);
-//		
-//		text.addListener(SWT.Verify, new Listener() {			
-//			
-//			public void handleEvent(Event e) {
-//				switch(e.keyCode) {
-//				case SWT.BS:
-//				case SWT.DEL:
-//				case SWT.HOME:
-//				case SWT.END:
-//				case SWT.ARROW_LEFT:
-//				case SWT.ARROW_RIGHT:
-//					return;
-//				default:
-//					if(!(
-//						e.character == 0 ||
-//						Character.isDigit(e.character) && text.getText().isEmpty() || 
-//						Character.isDigit(e.character) && text.getCaretPosition() == 0 && text.getText().charAt(0) != '-' ||
-//						Character.isDigit(e.character) && text.getCaretPosition() > 0 ||
-//						e.character == '-' && text.getCaretPosition() == 0 && text.getText().indexOf('-') == -1 ||
-//						e.character == '.' && text.getText().isEmpty() ||
-//						e.character == '.' && text.getText().indexOf('.') == -1 && text.getCaretPosition() == 0 && text.getText().charAt(0) != '-' ||
-//						e.character == '.' && text.getText().indexOf('.') == -1 && text.getCaretPosition() > 0
-//					))
-//							e.doit = false;
-//				}
-//			}
-//		});
 	}
 	
 	public Double getObject() {	

@@ -112,7 +112,7 @@ class ArrayRowWidget extends Composite {
 
 			LabelWidget label = new LabelWidget.Builder()
 			.text(new Integer(i).toString())
-			.small()
+			.tiny()
 			.color(AguiaJColor.GRAY)
 			.linkIf(!arrayType.isPrimitive())
 			.create(this);

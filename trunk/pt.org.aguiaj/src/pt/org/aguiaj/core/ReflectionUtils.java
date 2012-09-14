@@ -302,47 +302,6 @@ public class ReflectionUtils {
 		}
 		return true;
 	}
-	
-//	public static Object getFieldValue(String value) throws ParseException {
-//		assert value.matches(ref);
-//
-//		Object ret = null;
-//
-//		String[] parts = value.split(ntg + "\\." + ntg);
-//		String object = parts[0];
-//		String member = parts[1];
-//		Class<?> type = ClassModel.getClassInUse(object);
-//
-//		Object obj = null;
-//		if(type == null) {
-//			obj = ObjectModel.getObject(object);
-//			if(obj != null)
-//				type = obj.getClass();
-//		}
-//
-//		if(type == null)
-//			throw new ParseException("Class or reference not found", object);
-//
-//		List<Field> fields = Inspector.getVisibleAttributes(type);
-//
-//		boolean found = false;
-//		for(Field f : fields) {
-//			if(f.getName().equals(member)) {
-//				found = true;
-//				f.setAccessible(true);
-//				try {
-//					ret = f.get(obj);
-//				} 
-//				catch (IllegalAccessException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		}
-//		if(!found)
-//			throw new ParseException("Field not found", member);
-//
-//		return ret;
-//	}
 
 
 }
