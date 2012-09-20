@@ -2,7 +2,7 @@
 <feature
       id="pt.org.aguiaj.plugins.feature"
       label="AGUIA/J Standard Plugins"
-      version="0.9.6"
+      version="0.9.6.1"
       provider-name="aguiaj.org.pt"
       plugin="pt.org.aguiaj.branding">
 
@@ -65,21 +65,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
          id="pt.org.aguiaj.images"
          download-size="0"
          install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="pt.org.aguiaj.colors"
          download-size="0"
          install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="pt.org.aguiaj.grid"
          download-size="0"
          install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
 </feature>

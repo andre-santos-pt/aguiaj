@@ -85,8 +85,10 @@ public class AguiaClassLoader extends ClassLoader{
 							clazz = defineClass(name, classData, 0, classData.length);
 							if(name.indexOf('.') != -1) {
 								String pck = name.substring(0, name.lastIndexOf('.'));
-								if(!packages.contains(pck))
+								if(!packages.contains(pck)) {
 									definePackage(pck, "", "", "", "", "", "", null);
+									packages.add(pck);
+								}
 							}
 							loaded.put(name, clazz);							
 						}
