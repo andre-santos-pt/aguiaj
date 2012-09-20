@@ -7,3 +7,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: pt.org.aguiaj;bundle-version="0.9.5",
  org.eclipse.swt;bundle-version="3.7.2"
 Export-Package: aguiaj.colors
+Bundle-Vendor: aguiaj.org.pt
