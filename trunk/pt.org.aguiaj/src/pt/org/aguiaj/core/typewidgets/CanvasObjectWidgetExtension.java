@@ -64,7 +64,7 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements CanvasVi
 		extensionWidget.setLayout(layout);
 		canvas = new Canvas(extensionWidget, SWT.NONE);		
 		canvas.addPaintListener(this);
-		nullWidget = new NullReferenceWidget(parent);
+		nullWidget = new NullReferenceWidget(parent, SWT.NONE);
 		stack.topControl = nullWidget;
 		addMenu();
 	}

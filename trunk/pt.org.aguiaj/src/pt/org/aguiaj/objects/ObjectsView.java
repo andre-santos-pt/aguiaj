@@ -40,6 +40,7 @@ import pt.org.aguiaj.common.AguiaJImage;
 import pt.org.aguiaj.common.DragNDrop;
 import pt.org.aguiaj.common.Reference;
 import pt.org.aguiaj.common.SWTUtils;
+import pt.org.aguiaj.common.widgets.NullReferenceWidget;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.commands.ReloadClassesCommand;
 import pt.org.aguiaj.core.commands.RemoveObjectsCommand;
@@ -63,7 +64,8 @@ public class ObjectsView extends ViewPart {
 	private Composite nullReferencesStack;
 
 	private Composite nulls;
-	private NullWidget nullWidget;
+	private NullReferenceWidget nullRefWidget;
+	
 	private Map<String, ReferenceWidget> nullReferenceMap;
 
 
@@ -109,9 +111,11 @@ public class ObjectsView extends ViewPart {
 		nullReferencesStack = new Composite(nulls, SWT.NONE);
 		nullReferencesStack.setBackground(AguiaJColor.OBJECT_AREA.getColor());
 		nullReferencesStack.setLayout(new RowLayout(SWT.VERTICAL));
-		nullWidget = new NullWidget(nulls);
-		nullWidget.hide();		
-
+		
+		nullRefWidget = new NullReferenceWidget(nulls, SWT.BORDER);
+		nullRefWidget.update(100);
+		nullRefWidget.setVisible(false);
+		
 		addActions();
 
 		DragNDrop.addFileDragNDropSupportObjectArea(area);
@@ -128,7 +132,6 @@ public class ObjectsView extends ViewPart {
 
 		if(reference != null) {
 			ReferenceObjectPairWidget widget = getRefAndObjectPairWidget(reference);
-			//			ReferenceWidget refWidget = getReferenceWidget(reference);
 			if(widget != null) {
 				Point loc = widget.getLocation();		
 				if(isDistant(loc, scrl.getOrigin()))
@@ -271,7 +274,7 @@ public class ObjectsView extends ViewPart {
 		ReferenceWidget widget = new ReferenceWidget(nullReferencesStack, reference, type, null);
 //		widget.highlight();
 		nullReferenceMap.put(reference, widget);
-		nullWidget.show();
+		nullRefWidget.setVisible(true);
 		nulls.layout();
 	}
 
@@ -287,7 +290,7 @@ public class ObjectsView extends ViewPart {
 			nullReferenceMap.get(id).dispose();
 			nullReferenceMap.remove(id);
 			if(nullReferenceMap.keySet().size() == 0)
-				nullWidget.hide();
+				nullRefWidget.setVisible(false);
 			nulls.layout();
 			area.layout();
 		}
