@@ -26,8 +26,8 @@ public class NullReferenceWidget extends Composite {
 	private Canvas canvas;
 	private int side;
 	
-	public NullReferenceWidget(final Composite parent) {
-		super(parent, SWT.NONE);
+	public NullReferenceWidget(final Composite parent, int style) {
+		super(parent, style);
 		this.side = MIN_SIDE;
 		
 		setLayout(new RowLayout());

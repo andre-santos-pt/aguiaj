@@ -61,7 +61,7 @@ public class ExtensionTypeWidget extends AbstractTypeWidget {
 
 		extensionWidget = new Composite(parent, SWT.NONE);
 
-		nullWidget = new NullReferenceWidget(parent);
+		nullWidget = new NullReferenceWidget(parent, SWT.NONE);
 		updateNullWidget();
 
 		stack.topControl = nullWidget;

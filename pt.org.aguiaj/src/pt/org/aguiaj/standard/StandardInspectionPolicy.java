@@ -116,7 +116,7 @@ public class StandardInspectionPolicy implements InspectionPolicy {
 		!isHashCode(method) &&
 		!isToString(method)
 		||
-		isEqualsMethod(method);
+		isEqualsMethod(method) && !method.getDeclaringClass().equals(Object.class);
 	}
 
 
