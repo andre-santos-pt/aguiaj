@@ -16,9 +16,14 @@ public class LastException {
 	public final String[] args;
 
 	public LastException(StackTraceElement element, String message, String[] args) {
-		fileName = element.getFileName();
+		fileName = element.getClassName().replaceAll("\\.", System.getProperty("file.separator")).concat(".java");
 		line = element.getLineNumber();
 		this.message = message;
 		this.args = args;
-	}	
+	}
+	
+	@Override
+	public String toString() {
+		return fileName + ":" + line;
+	}
 }

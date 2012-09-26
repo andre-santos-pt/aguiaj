@@ -318,19 +318,7 @@ public class ObjectsView extends ViewPart {
 
 		return refs;
 	}
-	
-	//	private ReferenceWidget getReferenceWidget(String refId) {
-	//		if(nullReferenceMap.containsKey(refId))
-	//			return nullReferenceMap.get(refId);
-	//		
-	//		for(ReferenceObjectPairWidget widget : refAndObjectPairsTable.values()) {
-	//			ReferenceWidget refWidget = widget.getReferenceWidget(refId);
-	//			if(refWidget != null)
-	//				return refWidget;
-	//		}
-	//		
-	//		return null;
-	//	}
+
 
 	private ReferenceObjectPairWidget getRefAndObjectPairWidget(String refId) {
 		for(ReferenceObjectPairWidget widget : refAndObjectPairsTable.values())
@@ -338,9 +326,6 @@ public class ObjectsView extends ViewPart {
 				return widget;
 		return null;
 	}
-
-
-
 
 
 	public void removeAll() {

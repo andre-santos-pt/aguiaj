@@ -56,12 +56,6 @@ public enum ExceptionHandler {
 	}
 
 	public synchronized void handleException(Method method, String[] args, Throwable exception) {
-//		if(method != null) {
-//			if(previousMethodErrors.contains(method)) {
-//				return;
-//			}			
-//		}
-			
 		String message = exception.getMessage();
 		if(message == null)
 			message = "";

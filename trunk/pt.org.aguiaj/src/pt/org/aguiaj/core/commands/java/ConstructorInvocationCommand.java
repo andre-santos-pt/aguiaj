@@ -100,7 +100,8 @@ public class ConstructorInvocationCommand extends JavaCommandWithReturn implemen
 			SWTUtils.showMessage(UIText.TOO_LONG_TIME.get(), message, SWT.ICON_WARNING);
 		}
 		else if(thread.exception != null) {
-			ExceptionHandler.INSTANCE.handleException(null, null, thread.exception.getCause());
+			Throwable t = thread.getException().getCause();
+			ExceptionHandler.INSTANCE.handleException(null, null, t != null ? t : thread.getException());
 		}				
 	}
 
@@ -130,11 +131,15 @@ public class ConstructorInvocationCommand extends JavaCommandWithReturn implemen
 		private Object[] args;
 		private boolean failed;
 
-		Exception exception;
+		private Exception exception;
 
 		ConstructorInvocationThread(Constructor<?> constructor, Object[] args) {
 			this.constructor = constructor;			
 			this.args = args;
+		}
+
+		public Exception getException() {
+			return exception;
 		}
 
 		public boolean hasFailed() {
