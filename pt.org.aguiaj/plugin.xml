@@ -222,6 +222,9 @@
                <method
                      id="toCharArray">
                </method>
+               <method
+                     id="equals">
+               </method>
             </includeFilter>
          </class>
          <class
