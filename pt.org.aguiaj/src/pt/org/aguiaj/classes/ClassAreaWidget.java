@@ -53,32 +53,32 @@ public class ClassAreaWidget extends Composite {
 	private Set<ClassWidget> classWidgets;
 	private String pluginId;
 	private String packageName;
-	
+
 	public ClassAreaWidget(Composite parent, final String packageName, Collection<Class<?>> classes) {
 		super(parent, SWT.NONE);
 		this.packageName = packageName;
-		
+
 		setLayout(new FillLayout());
-		
+
 		classWidgets = Sets.newHashSet();
 
 		scrl = new ScrolledComposite(this, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);	
-	
+
 		area = new Composite(scrl, SWT.NONE);
 		area.setBackground(AguiaJColor.OBJECT_AREA.getColor());
-		
+
 		RowLayout areaLayout = new RowLayout(SWT.VERTICAL);
 		areaLayout.spacing = SPACING;
 		areaLayout.marginTop = MARGIN;
 		areaLayout.marginLeft = MARGIN;
 		area.setLayout(areaLayout);
 		area.setToolTipText("Class Area (create objects and invoke static operations by pressing the buttons)");
-		
+
 		scrl.setContent(area);
 		scrl.setExpandHorizontal(true);
 		scrl.setExpandVertical(true);
 		scrl.setAlwaysShowScrollBars(true);
-		
+
 		for(final Class<?> clazz : classes) {
 			if(ClassModel.getInstance().isPluginClass(clazz)) {
 				pluginId = ClassModel.getInstance().getPluginId(clazz);
@@ -90,12 +90,12 @@ public class ClassAreaWidget extends Composite {
 
 		for(final Class<?> clazz : classes)
 			if(clazz.isInterface() || 
-			Modifier.isAbstract(clazz.getModifiers()) && !clazz.isEnum())
+					Modifier.isAbstract(clazz.getModifiers()) && !clazz.isEnum())
 				new AbstractClassWidget(area, clazz);
 
 		for(final Class<?> clazz : classes) {
 			if(!clazz.isInterface() && 
-				(!Modifier.isAbstract(clazz.getModifiers()) || clazz.isEnum())) {
+					(!Modifier.isAbstract(clazz.getModifiers()) || clazz.isEnum())) {
 				if(ReflectionUtils.tryClass(clazz)) {
 					classWidgets.add(new ClassWidget(area, clazz));
 				}
@@ -104,21 +104,23 @@ public class ClassAreaWidget extends Composite {
 				}
 			}		
 		}
-	
+
 		addControlListener(new ControlAdapter() {
 			public void controlResized(ControlEvent e) {
 				scrl.setMinSize(area.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 			}
 		});
-		
+
 		DragNDrop.addFileDragNDropSupport(area);
 	}
-	
+
 	public void refreshSize() {
-		scrl.setMinSize(area.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		scrl.layout();
+		if(!scrl.isDisposed() && !area.isDisposed()) {
+			scrl.setMinSize(area.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+			scrl.layout();
+		}
 	}
-	
+
 	public void updateClassWidgets() {
 		for(ClassWidget widget : classWidgets)
 			widget.updateFields();
@@ -131,7 +133,7 @@ public class ClassAreaWidget extends Composite {
 	public String getPluginId() {
 		return pluginId;
 	}
-	
+
 	public String getPackageName() {
 		return packageName;
 	}
@@ -140,7 +142,7 @@ public class ClassAreaWidget extends Composite {
 	private void addPluginHeader() {
 		Composite comp = new Composite(area, SWT.NONE);
 		comp.setLayout(new RowLayout(SWT.VERTICAL));
-		
+
 		final String jarLocation = AguiaJActivator.getDefault().getPluginJarLocation(pluginId);
 
 		new LabelWidget.Builder()
@@ -165,12 +167,12 @@ public class ClassAreaWidget extends Composite {
 
 	private void handleDocumentationLink(Composite parent) {
 		IPath path = new Path(AguiaJParam.DOC_ROOT.getString());
-		
+
 		for(String frag : packageName.split("\\."))
 			path = path.append(frag);
-		
+
 		path = path.append(AguiaJParam.DOC_PACKAGESUMMARY.getString());
-		
+
 		final URL url = Platform.getBundle(pluginId).getEntry(path.toString());
 
 		if(url != null) 

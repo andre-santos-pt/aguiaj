@@ -65,7 +65,7 @@ public class ObjectsView extends ViewPart {
 
 	private Composite nulls;
 	private NullReferenceWidget nullRefWidget;
-	
+
 	private Map<String, ReferenceWidget> nullReferenceMap;
 
 
@@ -76,7 +76,7 @@ public class ObjectsView extends ViewPart {
 	public static ObjectsView getInstance() {
 		if(instance == null)			
 			SWTUtils.showView(AguiaJContribution.OBJECTS_VIEW);			
-			
+
 		return instance;
 	}
 
@@ -85,7 +85,7 @@ public class ObjectsView extends ViewPart {
 		widgetsTable = new IdentityHashMap<Object, ObjectWidget>();
 		refAndObjectPairsTable = new IdentityHashMap<Object, ReferenceObjectPairWidget>();
 		nullReferenceMap = new HashMap<String, ReferenceWidget>();
-		
+
 		scrl = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);		
 		area = new Composite(scrl, SWT.NONE);
 
@@ -104,24 +104,24 @@ public class ObjectsView extends ViewPart {
 		scrl.setExpandVertical(true);
 		scrl.setExpandHorizontal(true);
 		scrl.setAlwaysShowScrollBars(true);
-		
+
 		nulls = new Composite(area, SWT.NONE);
 		nulls.setLayout(new RowLayout(SWT.HORIZONTAL));
 		nulls.setBackground(AguiaJColor.OBJECT_AREA.getColor());
 		nullReferencesStack = new Composite(nulls, SWT.NONE);
 		nullReferencesStack.setBackground(AguiaJColor.OBJECT_AREA.getColor());
 		nullReferencesStack.setLayout(new RowLayout(SWT.VERTICAL));
-		
+
 		nullRefWidget = new NullReferenceWidget(nulls, SWT.BORDER);
 		nullRefWidget.update(100);
 		nullRefWidget.setVisible(false);
-		
+
 		addActions();
 
 		DragNDrop.addFileDragNDropSupportObjectArea(area);
 	}
 
-	
+
 	// update to last created widget ...
 	public void updateLayout(String reference) {
 		area.layout();	
@@ -224,13 +224,17 @@ public class ObjectsView extends ViewPart {
 		return null;
 	}
 
+
+
+
 	public void addObjectWidget(Object object, String reference, Class<?> referenceType) {
 		assert object != null;
-
+		assert reference != null;
+		assert referenceType != null;
+		
 		ObjectWidget widget = getObjectWidget(object);
-
 		if(widget == null) {
-			ReferenceObjectPairWidget pair =  new ReferenceObjectPairWidget(area, reference, object);
+			ReferenceObjectPairWidget pair =  new ReferenceObjectPairWidget(area, object);
 			widget = pair.widget;
 			widgetsTable.put(object, widget);
 			refAndObjectPairsTable.put(object, pair);	
@@ -240,7 +244,17 @@ public class ObjectsView extends ViewPart {
 		updateLayout(reference);
 	}
 
-
+	public void addDeadObjectWidget(Object object) {
+		ObjectWidget widget = getObjectWidget(object);
+		if(widget == null) {
+			ReferenceObjectPairWidget pair =  new ReferenceObjectPairWidget(area, object);
+			widget = pair.widget;
+			widgetsTable.put(object, widget);
+			refAndObjectPairsTable.put(object, pair);
+			widget.die();
+		}
+		updateLayout(null);
+	}
 
 
 	public void addReference(Class<?> type, String reference, Object object) {
@@ -272,7 +286,7 @@ public class ObjectsView extends ViewPart {
 
 	private void addNullReference(Class<?> type, String reference) {
 		ReferenceWidget widget = new ReferenceWidget(nullReferencesStack, reference, type, null);
-//		widget.highlight();
+		//		widget.highlight();
 		nullReferenceMap.put(reference, widget);
 		nullRefWidget.setVisible(true);
 		nulls.layout();

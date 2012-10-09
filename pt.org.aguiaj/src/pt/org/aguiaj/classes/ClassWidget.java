@@ -46,12 +46,13 @@ public class ClassWidget extends FieldContainer {
 	private List<Field> staticFields;
 	private List<Constructor<?>> constructors;
 
+	private Inspector inspector;
+	
 	public ClassWidget(Composite parent, final Class<?> clazz) {
 		super(parent, SWT.BORDER);
 		
-		InspectionPolicy policy = Inspector.getInspectionPolicy();
-		
-		constructors = Inspector.getVisibleConstructors(clazz);
+		inspector = ClassModel.getInstance().getInspector();
+		constructors = inspector.getVisibleConstructors(clazz);
 
 		FormLayout layout = new FormLayout();
 		layout.marginBottom = 5;
@@ -70,7 +71,7 @@ public class ClassWidget extends FieldContainer {
 		
 		DocumentationView.getInstance().addDocumentationSupport(classNameLabel.getControl(), clazz);
 		
-		if(!Inspector.isStaticClass(clazz))
+		if(inspector.isStaticClass(clazz))
 			new LabelWidget.Builder()
 				.text("(static)")
 				.small()
@@ -86,7 +87,7 @@ public class ClassWidget extends FieldContainer {
 		staticFields = new ArrayList<Field>();
 
 		for(Field field : fields)
-			if(policy.isStaticFieldVisible(field) && !field.isEnumConstant()) {
+			if(inspector.getPolicy().isStaticFieldVisible(field) && !field.isEnumConstant()) {
 				field.setAccessible(true);
 				staticFields.add(field);
 			}
@@ -126,7 +127,7 @@ public class ClassWidget extends FieldContainer {
 		
 		updateFields();	
 		
-		ClassModel.getInstance().addClass(clazz);
+//		ClassModel.getInstance().addClass(clazz);
 	}
 
 	private Group createConstantsGroup(Composite parent, final Class<?> clazz) {
@@ -206,7 +207,7 @@ public class ClassWidget extends FieldContainer {
 	}
 
 	private Group createStaticMethodsGroup(Composite parent, final Class<?> clazz) {
-		List<Method> methods = Inspector.getVisibleStaticMethods(clazz);
+		List<Method> methods = inspector.getVisibleStaticMethods(clazz);
 
 		if(methods.size() > 0) {
 			Group staticOperationsGroup = new Group(parent, SWT.NONE);

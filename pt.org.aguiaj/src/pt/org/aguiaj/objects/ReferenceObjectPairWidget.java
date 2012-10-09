@@ -27,10 +27,9 @@ public class ReferenceObjectPairWidget extends Composite {
 	private Composite referenceStack;
 	private List<ReferenceWidget> referenceWidgets;
 
-	public ReferenceObjectPairWidget(Composite parent, final String reference, final Object object) {
+	public ReferenceObjectPairWidget(Composite parent, final Object object) {
 		super(parent, SWT.NONE);
 		assert parent != null;
-		assert reference != null;		
 		assert object != null;
 		
 		referenceWidgets = new ArrayList<ReferenceWidget>();

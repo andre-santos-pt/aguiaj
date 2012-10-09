@@ -54,6 +54,12 @@ public aspect ObjectModel {
 		objectSet.add(object); 
 	}	
 
+	before(Object object) : 
+		execution(void ObjectsView.addDeadObjectWidget(Object)) && args(object) {	
+		assert object != null;			
+		objectSet.add(object); 
+	}	
+	
 	after(Class<?> type, String reference, Object object) :
 		execution(void ObjectsView.addNonNullReference(Class<?>, String, Object)) && args(type, reference, object){
 		addReference(type, object, reference);

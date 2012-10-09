@@ -45,10 +45,12 @@ public class Array2DObjectWidget implements VisualizationWidget<Object> {
 	private List<TypeWidget> rows;
 	private int numberOfRows;
 
-	public void createSection(Composite parent) {
-		parent.setLayout(new RowLayout(SWT.VERTICAL));
-		section = new Composite(parent, SWT.NONE);
+	public void createSection(Composite section) {
 		section.setLayout(new RowLayout(SWT.VERTICAL));
+		this.section = section;
+//		section = new Composite(parent, SWT.NONE);
+//		section.setBackground(parent.getBackground());
+//		section.setLayout(new RowLayout(SWT.VERTICAL));
 		rows = new ArrayList<TypeWidget>();
 		numberOfRows = -1;
 	}
@@ -90,9 +92,8 @@ public class Array2DObjectWidget implements VisualizationWidget<Object> {
 					row, 
 					object.getClass().getComponentType(),
 					EnumSet.of(WidgetProperty.ARRAYPOSITION, WidgetProperty.NO_EXTENSION)));
-			
-			SWTUtils.setColorRecursively(section, section.getBackground());
 		}
+		SWTUtils.setColorRecursively(section, section.getBackground());
 	}
 
 	private Object getIndex(int i) {

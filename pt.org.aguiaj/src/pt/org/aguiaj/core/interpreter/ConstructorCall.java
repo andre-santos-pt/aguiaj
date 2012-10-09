@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.core.commands.java.ConstructorInvocationCommand;
 
 public class ConstructorCall extends Expression implements Instruction {
@@ -67,7 +68,7 @@ public class ConstructorCall extends Expression implements Instruction {
 	}
 	
 	private Constructor<?> findConstructor(Class<?>[] argTypes) {	
-		for(Constructor<?> c : clazz.getDeclaredConstructors()) {
+		for(Constructor<?> c : ClassModel.getInstance().getVisibleConstructors(clazz)) {
 			if(c.getParameterTypes().length == argTypes.length) {
 				boolean ok = true;
 				for(int i = 0; i < argTypes.length && ok; i++) {

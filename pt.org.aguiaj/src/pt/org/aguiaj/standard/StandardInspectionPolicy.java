@@ -62,6 +62,9 @@ public class StandardInspectionPolicy implements InspectionPolicy {
 	}
 	
 	public boolean isClassInstantiable(Class<?> clazz) {
+		if(clazz.isInterface())
+			throw new RuntimeException("Cannot be used with interface");
+		
 		return
 			clazz.equals(Object.class) ||
 			!clazz.getSuperclass().equals(Object.class) || // inherits

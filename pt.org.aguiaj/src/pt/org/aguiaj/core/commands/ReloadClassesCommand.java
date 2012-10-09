@@ -12,6 +12,7 @@ package pt.org.aguiaj.core.commands;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -23,6 +24,7 @@ import pt.org.aguiaj.aspects.CommandMonitor;
 import pt.org.aguiaj.aspects.ObjectModel;
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.classes.ClassesView;
+import pt.org.aguiaj.core.AguiaJActivator;
 import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.commands.java.ConstructorInvocationCommand;
 import pt.org.aguiaj.core.commands.java.JavaCommand;
@@ -68,8 +70,17 @@ public class ReloadClassesCommand extends AbstractHandler {
 		ClassModel.getInstance().clearClasses();
 		ExceptionHandler.INSTANCE.clearErrors();
 		HistoryView.getInstance().clear();	
-
-		Inspector.loadInspectionPolicy();
+		
+		if(workingDir == null)
+			AguiaJActivator.getDefault().reloadClasses();
+		else
+			AguiaJActivator.getDefault().loadClasses(workingDir);
+		
+		Collection<Class<?>> allClasses = AguiaJActivator.getDefault().getPackagesClasses().values();
+		
+		for(Class<?> c : allClasses)
+			ClassModel.getInstance().addClass(c);
+		
 		ClassesView.getInstance().reload(workingDir);				
 
 		List<Class<?>> blackList = new ArrayList<Class<?>>();

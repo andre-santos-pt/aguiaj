@@ -32,31 +32,20 @@ import pt.org.aguiaj.standard.StandardInspectionPolicy;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 public class Inspector {
-	
-	private static InspectionPolicy inspectionPolicy;
-	
-	static {
-		loadInspectionPolicy();
+
+	private InspectionPolicy inspectionPolicy;
+
+	public Inspector(InspectionPolicy inspectionPolicy) {
+		this.inspectionPolicy = inspectionPolicy;
 	}
 
-	public static void loadInspectionPolicy() {
-		try {
-			Class<?> inspectionPolicyClass = Class.forName(AguiaJParam.INSPECTION_POLICY.getString());
-			inspectionPolicy = (InspectionPolicy) inspectionPolicyClass.newInstance();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			inspectionPolicy = new StandardInspectionPolicy();
-		}		
-	}
-
-	public static InspectionPolicy getInspectionPolicy() {
+	public InspectionPolicy getPolicy() {
 		return inspectionPolicy;
 	}
 
-	public static List<Constructor<?>> getVisibleConstructors(Class<?> clazz) {
+	public List<Constructor<?>> getVisibleConstructors(Class<?> clazz) {
 		List<Constructor<?>> constructors = new ArrayList<Constructor<?>>();
-		if(inspectionPolicy.isClassInstantiable(clazz)) {
+		if(!clazz.isInterface() && inspectionPolicy.isClassInstantiable(clazz)) {
 			for(Constructor<?> c : clazz.getDeclaredConstructors())
 				if(inspectionPolicy.isConstructorVisible(c))
 					constructors.add(c);
@@ -64,7 +53,7 @@ public class Inspector {
 		return constructors;
 	}
 
-	public static List<Method> getVisibleStaticMethods(Class<?> clazz) {
+	public List<Method> getVisibleStaticMethods(Class<?> clazz) {
 		List<Method> methods = new ArrayList<Method>();
 		for(Method m : clazz.getDeclaredMethods())
 			if(inspectionPolicy.isStaticMethodVisible(m))
@@ -74,14 +63,14 @@ public class Inspector {
 	}
 
 
-	public static List<Field> getVisibleAttributes(Class<?> clazz) {
+	public List<Field> getVisibleAttributes(Class<?> clazz) {
 		List<Field> fields = new ArrayList<Field>();
 		fields.addAll(getVisibleAttributes(clazz, true));
 		fields.addAll(getVisibleAttributes(clazz, false));
 		return fields;
 	}
 
-	public static List<Field> getInvisibleInstanceAttributes(Class<?> clazz) {
+	public List<Field> getInvisibleInstanceAttributes(Class<?> clazz) {
 		List<Field> privateFields = new ArrayList<Field>();
 		for(Field f : getFieldsIncludingSuper(clazz)) {
 			if(!inspectionPolicy.isInstanceFieldVisible(f) && !Modifier.isStatic(f.getModifiers()))
@@ -91,7 +80,7 @@ public class Inspector {
 		return privateFields;
 	}
 
-	private static List<Field> getFieldsIncludingSuper(Class<?> clazz) {
+	private List<Field> getFieldsIncludingSuper(Class<?> clazz) {
 		List<Field> fields = new ArrayList<Field>();
 		if(clazz == null) {
 
@@ -113,7 +102,7 @@ public class Inspector {
 		return fields;
 	}
 
-	public static List<Field> getVisibleAttributes(Class<?> clazz, boolean staticFields) {
+	public List<Field> getVisibleAttributes(Class<?> clazz, boolean staticFields) {
 		List<Field> allFields = new ArrayList<Field>();
 		List<Field> publicFields = Arrays.asList(clazz.getFields());
 		allFields.addAll(publicFields);
@@ -141,14 +130,14 @@ public class Inspector {
 	}
 
 	public static List<Method> getAccessorMethods(Class<?> clazz) {
-//		List<Method> allMethods = new ArrayList<Method>();
-//		addAllNonPrivateMethods(clazz, allMethods, false);
+		//		List<Method> allMethods = new ArrayList<Method>();
+		//		addAllNonPrivateMethods(clazz, allMethods, false);
 
 		Collection<Method> allMethods = ReflectionUtils.getAllMethods(clazz);
-		
+
 		List<Method> queryMethods = new ArrayList<Method>();
 		AccessorMethodDetectionPolicy accessorPolicy = AguiaJActivator.getDefault().getAccessorPolicy();
-		
+
 		for(Method method : allMethods) {
 			if(method.getParameterTypes().length == 0 && accessorPolicy.isAccessorMethod(method))
 				queryMethods.add(method);
@@ -166,17 +155,11 @@ public class Inspector {
 		return queryMethods;
 	}
 
-	public static List<Method> getCommandMethods(Class<?> clazz) {
-//		List<Method> allMethods = new ArrayList<Method>();
-//		addAllNonPrivateMethods(clazz, allMethods, false);
-
+	public  List<Method> getCommandMethods(Class<?> clazz) {
 		Collection<Method> allMethods = ReflectionUtils.getAllMethods(clazz);
-		
-		
 		List<Method> commandMethods = new ArrayList<Method>();
-		
 		List<Method> queryMethods = getAccessorMethods(clazz);
-				
+
 		for(Method method : allMethods)
 			if(inspectionPolicy.isCommandMethod(method) && !queryMethods.contains(method))
 				commandMethods.add(method);
@@ -192,7 +175,7 @@ public class Inspector {
 	}
 
 
-	public static Map<Class<?>,List<Method>> getCommandMethodsByType(Class<?> clazz) {
+	public Map<Class<?>,List<Method>> getCommandMethodsByType(Class<?> clazz) {
 		Map<Class<?>, List<Method>> table = new LinkedHashMap<Class<?>, List<Method>>();
 
 		List<Method> noInterfaceMethods = getCommandMethods(clazz);
@@ -255,47 +238,32 @@ public class Inspector {
 		return list;
 	}
 
-//		public static List<Method> getAllMethods(Class<?> clazz) {
-//			List<Method> allMethods = new ArrayList<Method>();
-//	
-//			for(Method m : clazz.getMethods()) {
-//				m.setAccessible(true);
-//				allMethods.add(m);
-//			}
-//	
-//			for(Method m : clazz.getDeclaredMethods())
-//				if(!allMethods.contains(m)) {
-//					m.setAccessible(true);
-//					allMethods.add(m);
-//				}
-//	
-//			return allMethods;
-//		}
+	
 
-//	public static void addAllNonPrivateMethods(Class<?> clazz, List<Method> allMethods, boolean staticMethods) {
-//
-//		if(clazz == null || clazz.equals(Object.class)) {
-//			return;
-//		}
-//		else {
-//			for(Method m : clazz.getDeclaredMethods()) {
-//				int mod = m.getModifiers();
-//				if(((staticMethods && Modifier.isStatic(mod)) || (!staticMethods && !Modifier.isStatic(mod))) &&
-//						!m.isSynthetic() &&
-//						!Modifier.isPrivate(mod) && 
-//						!containsSameMethod(allMethods, m)) {
-//					allMethods.add(m);					
-//				}
-//			}
-//			if(clazz.isInterface()) {
-//				for(Class<?> superInterface : clazz.getInterfaces())	
-//					addAllNonPrivateMethods(superInterface, allMethods, staticMethods);	
-//			}
-//			else {
-//				addAllNonPrivateMethods(clazz.getSuperclass(), allMethods, staticMethods);
-//			}
-//		}		
-//	}
+	//	public static void addAllNonPrivateMethods(Class<?> clazz, List<Method> allMethods, boolean staticMethods) {
+	//
+	//		if(clazz == null || clazz.equals(Object.class)) {
+	//			return;
+	//		}
+	//		else {
+	//			for(Method m : clazz.getDeclaredMethods()) {
+	//				int mod = m.getModifiers();
+	//				if(((staticMethods && Modifier.isStatic(mod)) || (!staticMethods && !Modifier.isStatic(mod))) &&
+	//						!m.isSynthetic() &&
+	//						!Modifier.isPrivate(mod) && 
+	//						!containsSameMethod(allMethods, m)) {
+	//					allMethods.add(m);					
+	//				}
+	//			}
+	//			if(clazz.isInterface()) {
+	//				for(Class<?> superInterface : clazz.getInterfaces())	
+	//					addAllNonPrivateMethods(superInterface, allMethods, staticMethods);	
+	//			}
+	//			else {
+	//				addAllNonPrivateMethods(clazz.getSuperclass(), allMethods, staticMethods);
+	//			}
+	//		}		
+	//	}
 
 	private static boolean containsSameMethod(List<Method> list, Method m) {
 		for(Method method : list) {
@@ -309,19 +277,19 @@ public class Inspector {
 	public static boolean isInherited(Class<?> clazz, Field field) {
 		return !field.getDeclaringClass().equals(clazz);
 	}
-	
+
 	public static boolean isInherited(Class<?> clazz, Method method) {
 		return !method.getDeclaringClass().equals(clazz);
 	}
 
 	public static boolean isOverriding(Class<?> clazz, Method method) {
 		return
-		!Modifier.isStatic(method.getModifiers()) && 
-		method.getDeclaringClass().equals(clazz) &&
-		superTypeHasMethod(clazz.getSuperclass(), method);
+				!Modifier.isStatic(method.getModifiers()) && 
+				method.getDeclaringClass().equals(clazz) &&
+				superTypeHasMethod(clazz.getSuperclass(), method);
 	}
-	
-	
+
+
 
 	private static boolean superTypeHasMethod(Class<?> clazz, Method method) {
 		if(clazz == null) {
@@ -335,13 +303,13 @@ public class Inspector {
 			return superTypeHasMethod(clazz.getSuperclass(), method);
 		}			
 	}
-	
+
 	// to lib
 	public static Class<?> getOverridenMethodOwner(Class<?> clazz, Method method) {
 		assert isOverriding(clazz, method);
-		
+
 		Class<?> superClass = clazz.getSuperclass();
-			
+
 		while(superClass != null) {
 			for(Method m : superClass.getDeclaredMethods()) {
 				if(isSame(m, method))
@@ -349,22 +317,22 @@ public class Inspector {
 			}
 			superClass = superClass.getSuperclass();
 		}
-		
+
 		return null;
 	}
-	
+
 	// to lib
 	public static boolean isSame(Method m1, Method m2) {
 		return 
-		m1.getName().equals(m2.getName()) &&
-		Arrays.deepEquals(m1.getParameterTypes(), m2.getParameterTypes());
+				m1.getName().equals(m2.getName()) &&
+				Arrays.deepEquals(m1.getParameterTypes(), m2.getParameterTypes());
 	}
 
-	public static boolean isStaticClass(Class<?> clazz) {
-		return inspectionPolicy.isClassInstantiable(clazz);
+	public boolean isStaticClass(Class<?> clazz) {
+		return !inspectionPolicy.isClassInstantiable(clazz);
 	}
 
-	public static boolean isClassVisible(Class<?> clazz) {
+	public boolean isClassVisible(Class<?> clazz) {
 		return inspectionPolicy.isClassVisible(clazz);
 	}
 
@@ -391,8 +359,8 @@ public class Inspector {
 		return types;
 	}
 
-	
-	
+
+
 	public static class ClassSorter implements Comparator<Class<?>> {
 		public int compare(Class<?> a, Class<?> b) {
 			if(a.equals(b))

@@ -22,14 +22,17 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import pt.org.aguiaj.aspects.ObjectModel;
+import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.widgets.LabelWidget.ObjectToHighlightProvider;
 import pt.org.aguiaj.core.DocumentationView;
 import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.TypeWidget;
+import pt.org.aguiaj.core.commands.java.NewDeadObjectCommand;
 import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
 import pt.org.aguiaj.core.typewidgets.AbstractTypeWidget;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
+import pt.org.aguiaj.objects.ObjectsView;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 public class AttributeWidget extends Composite {
@@ -108,8 +111,8 @@ public class AttributeWidget extends Composite {
 		}
 	}
 
-	private void addLinking(final Field field, final Object object,
-			LabelWidget label) {
+	private void addLinking(final Field field, final Object object, LabelWidget label) {
+		
 		label.addHyperlinkAction(new Listener () {
 			public void handleEvent(Event event) {
 				Object value = null;
@@ -119,15 +122,22 @@ public class AttributeWidget extends Composite {
 					e.printStackTrace();
 				} 
 
-				String source = "." + field.getName();					
-				if(object == null)
-					source = field.getDeclaringClass().getSimpleName() + source;
-				else
-					source = ObjectModel.getFirstReference(object).name + source;
+				if(ClassModel.getInspector().getPolicy().isInstanceFieldVisible(field)) {
+					String source = "." + field.getName();					
+					if(object == null)
+						source = field.getDeclaringClass().getSimpleName() + source;
+					else
+						source = ObjectModel.getFirstReference(object).name + source;
 
-				String refName = ObjectModel.aspectOf().nextReference(field.getType());
+					String refName = ObjectModel.aspectOf().nextReference(field.getType());
 
-				new NewReferenceCommand(field.getType(), value, source, refName).execute();
+					
+					new NewReferenceCommand(field.getType(), value, source, refName).execute();
+				}
+				else {
+					new NewDeadObjectCommand(value).execute();
+				}
+				
 			}
 		});
 		
