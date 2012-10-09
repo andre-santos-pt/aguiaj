@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.Reference;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
 
@@ -62,8 +63,9 @@ public class MethodCall extends Expression implements Instruction {
 		}
 		String methodName = right.substring(0, right.indexOf('(')).trim();
 
+		List<Method> allMethods = ClassModel.getInstance().getAllAvailableMethods(targetClass);
 		boolean nameOk = false;
-		for(Method m : targetClass.getMethods()) {
+		for(Method m : allMethods) {
 			boolean staticMethod = Modifier.isStatic(m.getModifiers());
 			if(m.getName().equals(methodName) && (staticInvocation && staticMethod || !staticInvocation && !staticMethod))
 				nameOk = true;
@@ -88,7 +90,7 @@ public class MethodCall extends Expression implements Instruction {
 	}
 
 	private Method findMethod(String methodName, Class<?>[] argTypes) {
-		for(Method m : targetClass.getMethods()) {
+		for(Method m : ClassModel.getInstance().getAllAvailableMethods(targetClass)) {
 			if(m.getName().equals(methodName) && m.getParameterTypes().length == argTypes.length) {
 				boolean ok = true;
 				for(int i = 0; i < argTypes.length && ok; i++) {

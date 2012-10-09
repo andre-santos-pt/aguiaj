@@ -31,6 +31,6 @@ public class AbstractClassWidget extends Composite {
 			.create(this);
 		
 		DocumentationView.getInstance().addDocumentationSupport(classNameLabel.getControl(), clazz);
-		ClassModel.getInstance().addClass(clazz);
+//		ClassModel.getInstance().addClass(clazz);
 	}
 }

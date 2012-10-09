@@ -157,7 +157,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 
 	public void die() {
 		setEnabled(false);
-		SWTUtils.setColorRecursively(this, AguiaJColor.DEAD_OBJECT.getColor());
+//		SWTUtils.setColorRecursively(this, AguiaJColor.DEAD_OBJECT.getColor());
 	}
 
 	public void highlight() {

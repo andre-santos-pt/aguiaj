@@ -197,12 +197,7 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 
 	public void reload(IPath newPath) {
 		int tabIndex = packageTabs.getSelectionIndex();
-
-		if(newPath == null)
-			AguiaJActivator.getDefault().reloadClasses();
-		else
-			AguiaJActivator.getDefault().loadClasses(newPath);
-
+		
 		createTabs();
 
 		if(tabIndex != -1)

@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.Display;
 public enum AguiaJColor {
 	OBJECT_AREA(255, 255, 255),
 	OBJECT(237, 237, 237),
-	DEAD_OBJECT(116, 105, 105),
+//	DEAD_OBJECT(140, 140, 140),
 	HIGHLIGHT(200, 200, 200),
 	VALUECHANGE(0, 160, 240),
 	ALERT(208, 44, 44),

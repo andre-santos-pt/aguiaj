@@ -14,6 +14,7 @@ package pt.org.aguiaj.classes;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -31,11 +32,15 @@ import org.eclipse.swt.graphics.Image;
 
 import pt.org.aguiaj.common.AguiaJImage;
 import pt.org.aguiaj.core.AguiaJActivator;
+import pt.org.aguiaj.core.AguiaJParam;
+import pt.org.aguiaj.core.InspectionPolicy;
 import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.extensibility.VisualizationWidget;
+import pt.org.aguiaj.standard.StandardInspectionPolicy;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -50,14 +55,18 @@ public class ClassModel {
 	private final Set<Class<?>> activePluginClasses;
 	private final Set<Class<?>> pluginClassesForImport;
 
+	private final Map<Class<?>, ImmutableList<Constructor<?>>> visibleConstructors;
 	private final Map<Class<?>, List<Field>> invisibleAttributes;
 	private final Map<Class<?>, List<Field>> visibleAttributes;
 	private final Map<Class<?>, List<Method>> queryMethods;	
 	private final Map<Class<?>, Map<Class<?>, List<Method>>> commandMethodsByType;
-
+	private final Map<Class<?>, List<Method>> allAvailableMethods;	
+	
 	private final Multimap<Class<?>, ClassMemberFilter> filterMap;
 
 	private final Multimap<Class<?>, Method> promotions;
+	
+	private Inspector inspector;
 	
 	private static ClassModel _instance;
 
@@ -70,20 +79,39 @@ public class ClassModel {
 		activePluginClasses = Sets.newLinkedHashSet();
 		pluginClassesForImport = newHashSet();
 
+		visibleConstructors = newHashMap();
 		invisibleAttributes = newHashMap();
 		visibleAttributes = newHashMap();
 		queryMethods = newHashMap();
 		commandMethodsByType = newHashMap();
-
+		allAvailableMethods = newHashMap();
+		
 		filterMap = ArrayListMultimap.create();
 		promotions = ArrayListMultimap.create();
+		
+		inspector = new Inspector(loadInspectionPolicy()); 
 	}
 	
 
+	private InspectionPolicy loadInspectionPolicy() {
+		try {
+			Class<?> inspectionPolicyClass = Class.forName(AguiaJParam.INSPECTION_POLICY.getString());
+			return (InspectionPolicy) inspectionPolicyClass.newInstance();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new StandardInspectionPolicy();
+		}		
+	}
+	
+	public static Inspector getInspector() {
+		return getInstance().inspector;
+	}
 
 
 
-
+	
+	
 	void handleIconMapping() {
 		userClasses.clear();
 
@@ -220,9 +248,10 @@ public class ClassModel {
 	}
 
 
-	void addClass(Class<?> clazz) {
+	public void addClass(Class<?> clazz) {
 		classSet.add(clazz);
 
+		visibleConstructors.put(clazz, ImmutableList.copyOf(inspector.getVisibleConstructors(clazz)));
 		invisibleAttributes.put(clazz, filteredInvisibleAttributes(clazz));		
 		visibleAttributes.put(clazz, filteredAttributes(clazz));	
 
@@ -231,10 +260,16 @@ public class ClassModel {
 
 		Map<Class<?>,List<Method>> filteredCommandMethodsByType = filteredCommandMethods(clazz, filteredQueryMethods);
 		commandMethodsByType.put(clazz, filteredCommandMethodsByType);
+		
+		List<Method> all = new ArrayList<Method>();
+		all.addAll(filteredQueryMethods);
+		all.addAll(inspector.getCommandMethods(clazz));
+		all.addAll(inspector.getVisibleStaticMethods(clazz));
+		allAvailableMethods.put(clazz, all);
 	}
 
 	private List<Field> filteredInvisibleAttributes(Class<?> clazz) {
-		List<Field> invAttributes = Inspector.getInvisibleInstanceAttributes(clazz);
+		List<Field> invAttributes = inspector.getInvisibleInstanceAttributes(clazz);
 		for(Iterator<Field> it = invAttributes.iterator(); it.hasNext(); ) {
 			Field field = it.next();	
 			for(ClassMemberFilter filter : findFilters(clazz))
@@ -247,7 +282,7 @@ public class ClassModel {
 	}
 
 	private List<Field> filteredAttributes(Class<?> clazz) {
-		List<Field> attributes = Inspector.getVisibleAttributes(clazz, false);
+		List<Field> attributes = inspector.getVisibleAttributes(clazz, false);
 		List<ClassMemberFilter> filters = findFilters(clazz);
 		for(Iterator<Field> it = attributes.iterator(); it.hasNext(); ) {
 			Field field = it.next();		
@@ -300,7 +335,7 @@ public class ClassModel {
 
 
 	private Map<Class<?>,List<Method>> filteredCommandMethods(Class<?> clazz, List<Method> queryMethods) {					
-		Map<Class<?>,List<Method>> commandMethodsByType = Inspector.getCommandMethodsByType(clazz);
+		Map<Class<?>,List<Method>> commandMethodsByType = inspector.getCommandMethodsByType(clazz);
 		List<ClassMemberFilter> filters = findFilters(clazz);
 		
 		for(List<Method> commandMethods : commandMethodsByType.values()) {
@@ -343,12 +378,14 @@ public class ClassModel {
 
 	public void clearClasses() {
 		classSet.clear();
+		visibleConstructors.clear();
 		invisibleAttributes.clear();
 		visibleAttributes.clear();
 		queryMethods.clear();
 		commandMethodsByType.clear();
 
 		addDefaultClasses();
+		inspector = new Inspector(loadInspectionPolicy());
 	}
 
 
@@ -428,6 +465,14 @@ public class ClassModel {
 					return true;
 		return false;
 	}
+	
+	
+	public List<Constructor<?>> getVisibleConstructors(Class<?> clazz) {
+		if(!visibleConstructors.containsKey(clazz))
+			return Collections.emptyList();
+		else
+			return visibleConstructors.get(clazz);
+	}
 
 	// Invisible attributes
 	public List<Field> getInvisibleAttributes(Class<?> clazz) {
@@ -450,6 +495,8 @@ public class ClassModel {
 
 
 
+	
+	
 	// query methods
 	public List<Method> getAccessorMethods(Class<?> clazz) {
 		if(queryMethods.containsKey(clazz)) {
@@ -462,6 +509,15 @@ public class ClassModel {
 	}
 
 
+	public List<Method> getAllAvailableMethods(Class<?> clazz) {
+		if(allAvailableMethods.containsKey(clazz)) {
+			return allAvailableMethods.get(clazz);
+		}
+		else {
+			Class<?> type = getBottomMostCompatibleType(allAvailableMethods.keySet(), clazz);
+			return allAvailableMethods.get(type);
+		}	
+	}
 
 
 
@@ -475,7 +531,8 @@ public class ClassModel {
 			return commandMethodsByType.get(type);
 		}		
 	}
-
+	
+	
 
 
 	private static Class<?> getBottomMostCompatibleType(Collection<Class<?>> list, Class<?> clazz) {

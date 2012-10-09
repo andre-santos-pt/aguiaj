@@ -81,8 +81,10 @@ public class AguiaJActivator extends AbstractUIPlugin {
 	// The shared instance
 	private static AguiaJActivator plugin;
 
+	private static final AccessorMethodDetectionPolicy defaultPolicy = 
+			new GetIsAccessorPolicy();
+
 	private Multimap<String, Class<?>> packagesClasses;
-	private List<Class<?>> builtinsInUse;
 	private IPath workingDir;
 
 	private Multimap<String, Class<?>> plugins; // id -> class[]
@@ -95,7 +97,6 @@ public class AguiaJActivator extends AbstractUIPlugin {
 	public AguiaJActivator() {
 		plugin = this;
 
-		builtinsInUse = new ArrayList<Class<?>>();
 		workingDir = Platform.getLocation();
 		packagesClasses = ArrayListMultimap.create();
 
@@ -137,9 +138,6 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		KeyShortcuts.addKeyShortcuts();
 		
 		ClassModel.getInstance().addDefaultClasses();
-		// for video recording
-		//		final Shell shell = getWorkbench().getActiveWorkbenchWindow().getShell();
-		//		shell.setSize((int) (1.77*600), 600); // 16:9
 	}
 
 
@@ -318,8 +316,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		return accessorPolicies.keySet();
 	}
 
-	private static AccessorMethodDetectionPolicy defaultPolicy = new GetIsAccessorPolicy();
-
+	
 	public AccessorMethodDetectionPolicy getAccessorPolicy() {
 		String name = AguiaJParam.ACCESSOR_POLICY.getString();
 		Class<? extends AccessorMethodDetectionPolicy> policyClass = accessorPolicies.get(name);
@@ -526,20 +523,18 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		// filter non-visible classes
 		for(Iterator<Class<?>> it = packagesClasses.values().iterator(); it.hasNext(); ) {
 			Class<?> c = it.next();
-			if(!Inspector.isClassVisible(c))
+			if(!ClassModel.getInstance().getInspector().isClassVisible(c))
 				it.remove();
 		}
-
-		//		AguiaJWorkbenchWindowAdvisor adv = AguiaJWorkbenchWindowAdvisor.getInstance();
-		//		if(adv != null)
-		//			adv.updateTitle();
 	}
 
+	// TODO: to ClassModel
 	private static Multimap<String, Class<?>> readClasses(IPath workingDir) {
 		Map<String,List<Class<?>>> classes = ReflectionUtils.readClassFiles(workingDir);
 		Multimap<String, Class<?>> ret = ArrayListMultimap.create();
-		for(String key : classes.keySet())
+		for(String key : classes.keySet()) {
 			ret.putAll(key, classes.get(key));
+		}
 
 		return ret;
 	}
@@ -555,7 +550,4 @@ public class AguiaJActivator extends AbstractUIPlugin {
 	//		return ret;
 	//	}
 
-	public void addBuiltinClass(Class<?> clazz) {
-		builtinsInUse.add(clazz);
-	}
 }
