@@ -20,7 +20,7 @@ import aguiaj.colors.Color;
  */
 public interface Image {
 	/**
-	 * THe image width in pixels.
+	 * The image width in pixels.
 	 */
 	int getWidth();
 	
