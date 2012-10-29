@@ -33,7 +33,7 @@ public class ImportImageAction implements IViewActionDelegate {
 		}, 
 		BLACKWHITE("loadBlackWhiteImage") {
 			public String toString() {				
-				return "Black & White";
+				return "Grayscale";
 			}
 		}, 
 		COLOR("loadColorImage") {
