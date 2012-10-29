@@ -265,9 +265,9 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		if(jarLocation.startsWith("file:"))
 			jarLocation = jarLocation.substring("file:".length());
 		
-		if(!jarLocation.endsWith(".jar"))
-			jarLocation += "bin";
-		
+//		if(!jarLocation.endsWith(".jar"))
+//			jarLocation += "bin";
+
 		return jarLocation;
 	}
 

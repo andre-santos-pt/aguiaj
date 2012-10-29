@@ -16,19 +16,37 @@ import static pt.org.aguiaj.core.AguiaJParam.METHOD_TIMEOUT;
 
 import java.util.Set;
 
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.IntegerFieldEditor;
+import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.jface.preference.ScaleFieldEditor;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.dialogs.PreferencesUtil;
 
 import pt.org.aguiaj.core.AguiaJParam.PreferencesParam;
 
 public class AguiaJPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
+	public static final String ID = "pt.org.aguiaj.preferences";
+	
+	public static class Open extends AbstractHandler {
+		@Override
+		public Object execute(ExecutionEvent event) throws ExecutionException {
+			PreferenceDialog pref = PreferencesUtil.createPreferenceDialogOn(
+					Display.getDefault().getActiveShell(), ID, null, null);
+			pref.open();
+			return null;
+		}
+	}
+	
 	@Override
 	public void init(IWorkbench workbench) {
 		IPreferenceStore store = AguiaJActivator.getDefault().getPreferenceStore();

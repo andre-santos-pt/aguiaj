@@ -86,6 +86,11 @@
             id="AguiaJ.feedbackForm"
             name="Open feedback form">
       </command>
+      <command
+            defaultHandler="pt.org.aguiaj.core.AguiaJPreferencePage$Open"
+            id="AguiaJ.openPreferences"
+            name="Open preferences">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
@@ -103,7 +108,7 @@
          point="org.eclipse.ui.preferencePages">
       <page
             class="pt.org.aguiaj.core.AguiaJPreferencePage"
-            id="AguiaJ.preferences"
+            id="pt.org.aguiaj.preferences"
             name="AGUIA/J">
       </page>
    </extension>
@@ -148,6 +153,12 @@
                   commandId="AguiaJ.openHistory"
                   icon="images/history_view.gif"
                   label="Show History view"
+                  style="push">
+            </command>
+            <command
+                  commandId="AguiaJ.openPreferences"
+                  icon="images/props.gif"
+                  label="Open preferences"
                   style="push">
             </command>
          </menu>
