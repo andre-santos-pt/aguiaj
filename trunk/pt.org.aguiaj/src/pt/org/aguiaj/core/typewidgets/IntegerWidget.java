@@ -93,7 +93,8 @@ class IntegerWidget extends PrimitiveTypeWidget {
 			return defaultValue;
 		
 		try {
-			return new Integer(text.getText());
+			Integer i = new Integer(text.getText());
+			return i;
 		}
 		catch(NumberFormatException e) {
 			return defaultValue;

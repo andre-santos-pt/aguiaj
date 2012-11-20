@@ -12,9 +12,11 @@ package pt.org.aguiaj.core;
 
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,22 +64,81 @@ public class ReflectionUtils {
 	}
 
 
+	public static boolean isOneDimensionArray(Object array) {
+		return array.getClass().isArray() && !array.getClass().getComponentType().isArray();	
+	}
+	
+	public static boolean isMultiDimensionArray(Object array) {
+		return array.getClass().isArray() && array.getClass().getComponentType().isArray();
+		
+	}
+	
+	public static boolean arrayEquals(Object a, Object b) {
+		if(a == null && b == null)
+			return true;
+		
+		if(a != null && b == null || a == null && b != null)
+			return false;
+		
+		if(isOneDimensionArray(a) && isOneDimensionArray(b)) {
+			int len = Array.getLength(a); 
+			if(len != Array.getLength(b))
+				return false;
+			
+			for(int i = 0; i < len; i++) {
+				Object vA = Array.get(a, i);
+				Object vB = Array.get(b, i);
+				
+				if(vA == null && vB != null)
+					return false;
+				
+				if(!vA.equals(vB))
+					return false;
+			}
+			return true;
+		}
+		else if(isMultiDimensionArray(a) && isMultiDimensionArray(b)) {
+			return Arrays.deepEquals((Object[]) a, (Object[]) b);
+		}
+		
+		return false;
+	}
+	
+	
+	public static List<Field> getAllInstanceFields(Class<?> clazz) {
+		List<Field> all = new ArrayList<Field>();
+		getAllInstanceFields_rec(clazz, all);
+		return all;
+	}
+
+	private static void getAllInstanceFields_rec(Class<?> clazz, List<Field> all) {
+		for(Field f : clazz.getDeclaredFields())
+			if(!Modifier.isStatic(f.getModifiers()))
+				all.add(f);
+		
+		Class<?> superClass = clazz.getSuperclass();
+		if(superClass != null)
+			getAllInstanceFields_rec(superClass, all);
+	}
+	
 	public static Collection<Method> getAllMethods(Class<?> clazz) {
 		Set<Method> all = new HashSet<Method>();
-		addAll(clazz, all);
+		getAllMethods_rec(clazz, all);
 		return all;
 	}
 	
 	
-	private static void addAll(Class<?> clazz, Collection<Method> all) {
+	
+	private static void getAllMethods_rec(Class<?> clazz, Collection<Method> all) {
 		for(Method m : clazz.getDeclaredMethods()) {
 			if(!exists(m, all))
 				all.add(m);
 		}
 		Class<?> superClass = clazz.getSuperclass();
 		if(superClass != null)
-			addAll(superClass, all);
+			getAllMethods_rec(superClass, all);
 	}
+	
 	
 	private static boolean exists(Method m, Collection<Method> all) {
 		for(Method existing : all)

@@ -27,7 +27,7 @@ import pt.org.aguiaj.standard.StandardNamePolicy;
 public aspect ObjectModel {
 
 	private static class NullObject {  }
-	private static NullObject NULL_OBJECT = new NullObject();
+	private static final NullObject NULL_OBJECT = new NullObject();
 
 	private final Map<String, Object> referenceTable;
 	private final Map<String, Class<?>> referenceTypeTable;
@@ -39,7 +39,6 @@ public aspect ObjectModel {
 		referenceTable = new LinkedHashMap<String, Object>();
 		referenceTypeTable = newHashMap();
 		objectSet = new IdentityObjectSet();
-
 		enumReferenceTable = new LinkedHashMap<String, Object>();
 	}	
 
@@ -59,7 +58,7 @@ public aspect ObjectModel {
 		assert object != null;			
 		objectSet.add(object); 
 	}	
-	
+
 	after(Class<?> type, String reference, Object object) :
 		execution(void ObjectsView.addNonNullReference(Class<?>, String, Object)) && args(type, reference, object){
 		addReference(type, object, reference);
@@ -72,6 +71,26 @@ public aspect ObjectModel {
 
 	after(Class<?> type) :
 		execution(void ClassModel.addClass(Class<?>)) && args(type) {
+
+		if(!ClassModel.getInstance().isPluginClass(type)) {
+			List<Field> fields = ClassModel.getInspector().getVisibleStaticAttributes(type);
+			fields.addAll(ClassModel.getInspector().getEnumFields(type));
+			
+			for(Field f : fields)  {
+				Object obj = null;
+				try {
+					obj = f.get(null);
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+				}
+				addReference(f.getType(), obj, refName(type, f));
+			}
+		}
+	}
+	
+	private static String refName(Class<?> clazz, Field field) {
+		return clazz.getSimpleName() + "." + field.getName();
 	}
 
 
@@ -222,9 +241,9 @@ public aspect ObjectModel {
 
 		for(String r : enumReferenceTable.keySet()) {
 			Object obj = enumReferenceTable.get(r);
-			
+
 			if(ClassModel.getInstance().isPluginTypeActive(obj.getClass()) &&
-			   type.isAssignableFrom(obj.getClass())) {
+					type.isAssignableFrom(obj.getClass())) {
 				Class<?> refType = referenceTypeTable.get(r);
 				refs.add(new Reference(r, refType, obj));
 			}
@@ -232,21 +251,21 @@ public aspect ObjectModel {
 
 
 		for(Class<?> c : ClassModel.getInstance().getActivePluginTypes()) {	
-//			if(!c.isEnum()) {
-				for(Field f : c.getFields()) {
-					if(Modifier.isStatic(f.getModifiers()) && 
-					   type.isAssignableFrom(f.getType())) {
-						Object obj = null;
-						try {
-							obj = f.get(null);
-						} 
-						catch (Exception e) {
-							e.printStackTrace();
-						}
-						refs.add(new Reference(c.getSimpleName() + "." + f.getName(), f.getType(), obj));
+			//			if(!c.isEnum()) {
+			for(Field f : c.getFields()) {
+				if(Modifier.isStatic(f.getModifiers()) && 
+						type.isAssignableFrom(f.getType())) {
+					Object obj = null;
+					try {
+						obj = f.get(null);
+					} 
+					catch (Exception e) {
+						e.printStackTrace();
 					}
+					refs.add(new Reference(c.getSimpleName() + "." + f.getName(), f.getType(), obj));
 				}
-//			}
+			}
+			//			}
 		}
 
 		return refs;
@@ -276,8 +295,8 @@ public aspect ObjectModel {
 
 	public boolean isNullReference(String reference) {		
 		return 
-		referenceTable.containsKey(reference) && 
-		referenceTable.get(reference) == NULL_OBJECT;
+				referenceTable.containsKey(reference) && 
+				referenceTable.get(reference) == NULL_OBJECT;
 	}
 
 

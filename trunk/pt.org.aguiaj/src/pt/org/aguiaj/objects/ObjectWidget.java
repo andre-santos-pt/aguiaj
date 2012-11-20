@@ -24,6 +24,8 @@ import java.util.Stack;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -64,7 +66,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 	private final Class<?> objectClass;
 
 	private TypeWidget extension;
-	
+
 	private Stack<Composite> sections;
 	private Composite visualSection;
 	private Composite privateAttributesGroup;
@@ -79,7 +81,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 	public ObjectWidget(
 			final Composite parent,
 			final Object object) {		
-		
+
 		super(parent, SWT.BORDER);
 
 		assert parent != null;
@@ -87,7 +89,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 
 		this.object = object;
 		this.objectClass = object.getClass();
-		
+
 		setLayout(new FormLayout());
 
 		menu = createMenu(object);
@@ -98,7 +100,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		createHeader(menu);
 
 		boolean hasExtension = WidgetFactory.INSTANCE.hasExtension(objectClass);
-		
+
 		if(hasExtension) {
 			visualSection = createSection();
 			this.extension = WidgetFactory.INSTANCE.createWidget(
@@ -128,7 +130,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 			showAttributes(false);
 			showProperties(false);
 		}
-			
+
 		updateFields();
 
 		addControlListener(new ControlAdapter() {
@@ -150,14 +152,14 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 	public boolean isPropertiesVisible() {
 		return propertiesGroup != null && propertiesGroup.isVisible();
 	}
-	
+
 	public String toString() {
 		return object.toString();
 	}
 
 	public void die() {
 		setEnabled(false);
-//		SWTUtils.setColorRecursively(this, AguiaJColor.DEAD_OBJECT.getColor());
+		//		SWTUtils.setColorRecursively(this, AguiaJColor.DEAD_OBJECT.getColor());
 	}
 
 	public void highlight() {
@@ -211,7 +213,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 
 			for(Field field : visibleAttributes)	
 				new AttributeWidget(attributesGroup, field, object, this, true, false);	
-			
+
 			createShowHide(UIText.SHOW_ATTRIBUTES, UIText.HIDE_ATTRIBUTES, attributesGroup);
 		}
 	}
@@ -225,14 +227,14 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 			for(final Method propertyMethod : queryMethods) {				
 				new PropertyWidget(propertiesGroup, object, propertyMethod, this);
 			}
-			
+
 			createShowHide(UIText.SHOW_PROPERTIES, UIText.HIDE_PROPERTIES, propertiesGroup);
 		}
 	}
 
 	private void createCommandMethodsGroup() {
 		Map<Class<?>,List<Method>> commandMethodsByType = 
-			ClassModel.getInstance().getCommandMethodsByType(objectClass);
+				ClassModel.getInstance().getCommandMethodsByType(objectClass);
 
 		if(commandMethodsByType.size() > 0) {
 			operationsGroup = createSection();
@@ -262,13 +264,13 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 
 	private String headerText() {
 		String className = objectClass.isAnonymousClass() && objectClass.getSuperclass().isEnum() ?
-			StandardNamePolicy.prettyClassName(objectClass.getSuperclass()) :
-			StandardNamePolicy.prettyClassName(objectClass);
-		
-		if(ClassModel.getInstance().ambiguousClassName(objectClass)) 
-			className = objectClass.getName();
+				StandardNamePolicy.prettyClassName(objectClass.getSuperclass()) :
+					StandardNamePolicy.prettyClassName(objectClass);
 
-		return ": " + className;
+				if(ClassModel.getInstance().ambiguousClassName(objectClass)) 
+					className = objectClass.getName();
+
+				return ": " + className;
 	}
 
 	private Composite createHeader(Menu menu) {
@@ -283,6 +285,20 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		.toolTip(UIText.OBJECT_OF_TYPE.get(objectClass.getSimpleName()))
 		.create(classHeader);
 
+		nameLabel.getControl().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				if(isPropertiesVisible() && isOperationsVisible()) {
+					showProperties(false);
+					showOperations(false);
+				}
+				else {
+					showProperties(true);
+					showOperations(true);
+				}
+			}
+		});
+		
 		nameLabel.getControl().setMenu(menu);
 
 		List<Class<?>> types = Inspector.getAllCompatibleTypes(objectClass);
@@ -292,17 +308,17 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 				IconWidget icon = new IconWidget(classHeader, type);
 				String toolTip = type.isInterface() ?
 						type.getSimpleName() + " (interface)" :
-						UIText.IS_A.get(objectClass.getSimpleName(), type.getSimpleName());
-						
-					
+							UIText.IS_A.get(objectClass.getSimpleName(), type.getSimpleName());
+
+
 				if(!type.isInterface()) {
 					toolTip += " (";
 					if(Modifier.isAbstract(type.getModifiers()))
 						toolTip += "abstract ";
-					
+
 					toolTip += "class)";
 				}
-				
+
 				icon.setToolTipText(toolTip);
 			}
 		}
@@ -336,10 +352,6 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		new MenuItem(menu, SWT.SEPARATOR);
 	}
 
-	public enum ObjectSection {
-		PRIVATE_ATTRIBUTES, ATTRIBUTES, PROPERTIES, OPERATIONS;
-	}
-	
 	public void showPrivateAttributes(boolean state) {
 		show(privateAttributesGroup, state);
 	}
@@ -347,7 +359,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 	public void showAttributes(boolean state) {
 		show(attributesGroup, state);
 	}
-	
+
 	public void showProperties(boolean state) {
 		show(propertiesGroup, state);
 	}

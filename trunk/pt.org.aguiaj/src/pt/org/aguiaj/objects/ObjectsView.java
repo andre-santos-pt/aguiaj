@@ -190,7 +190,7 @@ public class ObjectsView extends ViewPart {
 		removeAllAction.setImageDescriptor(AguiaJImage.DELETE.getImageDescriptor());
 		toolbarManager.add(removeAllAction);
 
-		Action removeDeadAction = new Action("Remove dead objects") {
+		Action removeDeadAction = new Action("Garbage collection") {
 			public void run() { 
 				List<Object> objs = Arrays.asList(ObjectModel.aspectOf().getDeadObjects());
 				new RemoveObjectsCommand(objs).execute();

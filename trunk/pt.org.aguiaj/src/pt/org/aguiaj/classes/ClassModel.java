@@ -92,7 +92,13 @@ public class ClassModel {
 		inspector = new Inspector(loadInspectionPolicy()); 
 	}
 	
-
+	public static ClassModel getInstance() {
+		if(_instance == null)
+			_instance = new ClassModel();
+		
+		return _instance;
+	}
+	
 	private InspectionPolicy loadInspectionPolicy() {
 		try {
 			Class<?> inspectionPolicyClass = Class.forName(AguiaJParam.INSPECTION_POLICY.getString());
@@ -144,19 +150,8 @@ public class ClassModel {
 		}
 	}
 	
-	
-	
-	
 	public boolean isClassInUse(Class<?> clazz) {
 		return classSet.contains(clazz);
-	}
-	
-	
-	public static ClassModel getInstance() {
-		if(_instance == null)
-			_instance = new ClassModel();
-		
-		return _instance;
 	}
 	
 	public boolean isUserClass(String name) {
@@ -282,7 +277,7 @@ public class ClassModel {
 	}
 
 	private List<Field> filteredAttributes(Class<?> clazz) {
-		List<Field> attributes = inspector.getVisibleAttributes(clazz, false);
+		List<Field> attributes = inspector.getVisibleInstanceAttributes(clazz);
 		List<ClassMemberFilter> filters = findFilters(clazz);
 		for(Iterator<Field> it = attributes.iterator(); it.hasNext(); ) {
 			Field field = it.next();		
@@ -294,6 +289,16 @@ public class ClassModel {
 		}
 		return attributes;
 	}
+	
+//	private List<Field> filteredStaticAttributes(Class<?> clazz) {
+//		for(Field field : clazz.getFields())
+//			if(inspector.getVisibleAttributes(clazz, true) 
+//					
+//					.getPolicy().isStaticFieldVisible(field) && !field.isEnumConstant()) {
+//				field.setAccessible(true);
+//				staticFields.add(field);
+//			}
+//	}
 
 	private List<Method> filteredAccessorMethods(Class<?> clazz) {
 		List<Method> queryMethods = Inspector.getAccessorMethods(clazz);
@@ -544,7 +549,7 @@ public class ClassModel {
 
 		assert !compatible.isEmpty() : "There should be at least one compatible type - Object!";
 		
-		Collections.sort(compatible, new Inspector.ClassSorter());		
+		Collections.sort(compatible, new ClassHierarchyComparator());		
 		return compatible.get(compatible.size() - 1);
 	}
 

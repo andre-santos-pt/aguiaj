@@ -22,7 +22,7 @@ import com.google.common.collect.Multimap;
 
 public aspect ReferenceWidgetUpdates {
 	private final Multimap<Class<?>, SelectReferenceWidget> selectWidgetsTable;
-	
+
 	public ReferenceWidgetUpdates() {
 		selectWidgetsTable = LinkedListMultimap.create();
 	}
@@ -35,28 +35,28 @@ public aspect ReferenceWidgetUpdates {
 	after(Class<?> refType, Object object, String reference) : 
 		execution(void ObjectModel.addReference(Class<?>, Object, String)) && 
 		args(refType, object, reference) {
-			updateWidgets(refType);
+		updateWidgets(refType);
 	}
 
 	void around (Object object) : 
 		execution(void ObjectModel.removeObject(Object)) && args(object) {
-			List<Reference> refs = ObjectModel.aspectOf().getReferences(object);
-			proceed(object);
-			for(Reference r : refs)
-				updateWidgets(r.type);
-		}
+		List<Reference> refs = ObjectModel.aspectOf().getReferences(object);
+		proceed(object);
+		for(Reference r : refs)
+			updateWidgets(r.type);
+	}
 
 	void around(String reference) :
 		execution(void ObjectModel.removeReference(String)) && args(reference) {
-			Class<?> refType = ObjectModel.getReferenceType(reference);
-			proceed(reference);
-			updateWidgets(refType);			
-		}
-	
+		Class<?> refType = ObjectModel.getReferenceType(reference);
+		proceed(reference);
+		updateWidgets(refType);			
+	}
+
 
 	private void registerSelectWidget(SelectReferenceWidget widget) {
 		Class<?> refType = widget.getReferenceType();
-		
+
 		selectWidgetsTable.put(refType, widget);		
 		List<Reference> refs = ObjectModel.aspectOf().getCompatibleReferences(refType);
 		widget.setObjects(refs);
@@ -64,9 +64,9 @@ public aspect ReferenceWidgetUpdates {
 
 	private void updateWidgets(Class<?> refType) {	
 		for(Class<?> clazz : selectWidgetsTable.keySet()) {
-			if(clazz.isAssignableFrom(refType)) {			
-				for(Iterator<SelectReferenceWidget> it = selectWidgetsTable.get(clazz).iterator(); 
-				it.hasNext(); ) {
+			if(clazz.isAssignableFrom(refType)) {		
+				Iterator<SelectReferenceWidget> it = selectWidgetsTable.get(clazz).iterator();
+				while(it.hasNext()) {
 					SelectReferenceWidget widget = it.next();
 					if(widget.isDisposed()) {
 						it.remove();
@@ -82,5 +82,5 @@ public aspect ReferenceWidgetUpdates {
 			}
 		}
 	}
-	
+
 }

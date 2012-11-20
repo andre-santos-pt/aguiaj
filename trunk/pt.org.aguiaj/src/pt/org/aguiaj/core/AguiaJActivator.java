@@ -135,7 +135,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		});
 		loadObjectWidgetPlugins();
 		loadAccessorPolicyPlugins();
-		KeyShortcuts.addKeyShortcuts();
+		//KeyShortcuts.addKeyShortcuts();
 		
 		ClassModel.getInstance().addDefaultClasses();
 	}
@@ -523,7 +523,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		// filter non-visible classes
 		for(Iterator<Class<?>> it = packagesClasses.values().iterator(); it.hasNext(); ) {
 			Class<?> c = it.next();
-			if(!ClassModel.getInstance().getInspector().isClassVisible(c))
+			if(!ClassModel.getInspector().isClassVisible(c))
 				it.remove();
 		}
 	}

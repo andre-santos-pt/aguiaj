@@ -86,8 +86,7 @@ public class FieldContainer extends Composite {
 		else {
 			for(AccessibleObject ao : fieldTable.keySet()) {				
 				if(ao instanceof Field) {
-					if(!Modifier.isFinal(((Field) ao).getModifiers()))
-						updateField((Field) ao, object);
+					updateField((Field) ao, object);
 				}
 				else if(ao instanceof Method) {
 					updateProperty((Method) ao, object);
@@ -99,7 +98,6 @@ public class FieldContainer extends Composite {
 			pack();
 		}
 	}		
-
 
 
 	private void updateField(Field field, Object object) {
@@ -165,17 +163,27 @@ public class FieldContainer extends Composite {
 		if(previous == null && newVal == null) {
 			update = false;
 		}
-		else if(type.isArray()) { // && type.getComponentType().isArray()) {			
-			if(widget != null) {
-				String prevValText = widget.getTextualRepresentation();
-				String newValText = ReflectionUtils.getTextualRepresentation(newVal, true);
-				if(prevValText != null && prevValText.equals(newValText)) {
-					update = false;
-				}
-			}
-		}		
-		else if(type.isArray() && !type.getComponentType().isPrimitive()) {
-			update = !Arrays.deepEquals((Object[]) previous, (Object[]) newVal);
+//		else if(type.isArray()) { // && type.getComponentType().isArray()) {			
+//			if(widget != null) {
+//				String prevValText = widget.getTextualRepresentation();
+//				String newValText = ReflectionUtils.getTextualRepresentation(newVal, true);
+//				if(prevValText != null && prevValText.equals(newValText)) {
+//					update = false;
+//				}
+//			}	
+//		}
+		// TODO: review
+//		else if(type.isArray() && !type.getComponentType().isArray()) {
+//			if(type.getComponentType().equals(int.class))
+//				update = !Arrays.equals((int[]) previous, (int[]) newVal);
+//			else if(type.getComponentType().equals(double.class))
+//				update = !Arrays.equals((double[]) previous, (double[]) newVal);
+//		}
+//		else if(type.isArray() && !type.getComponentType().isPrimitive()) {
+//			update = !Arrays.deepEquals((Object[]) previous, (Object[]) newVal);
+//		}
+		else if(type.isArray()) {
+			update = !ReflectionUtils.arrayEquals(previous, newVal);
 		}
 		else if(type.isEnum() && previous != null && previous.equals(newVal)) {
 			update = false;	
@@ -188,5 +196,18 @@ public class FieldContainer extends Composite {
 		}
 
 		return update;
+	}
+	
+	
+	public static void main(String[] args) {
+		int[] v1 = {1,2,3};
+		int[] v2 = {1,4,3};
+		
+		int[][] m1 = {{1,2,3},{4}};
+		int[][] m2 = {{1,2,3},{6}};
+		Object o1 = m1;
+		Object o2 = m2;
+		
+		System.out.println(Arrays.deepEquals((Object[]) o1, (Object[])o2));
 	}
 }
