@@ -15,6 +15,8 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.RowData;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -38,6 +40,7 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 	public SelectReferenceWidget(final Composite parent, Class<?> clazz, final WidgetProperty type) {
 		super(parent, SWT.NONE, clazz, type, true);
 		this.type = type;
+		setLayout(new RowLayout());
 		NA_INDEX = type == WidgetProperty.PARAMETER ? 0 : 1;
 		createContents2(border);
 	}
@@ -50,10 +53,10 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 	private void createContents2(Composite parent) {
 		if(ClassModel.getInstance().isPolymorphic(getType()) &&
 				ClassModel.getInstance().isPluginTypeActive(getType()))
-			new IconWidget(parent, getType());
+			new IconWidget(this, getType());
 		
-		combo = new Combo(parent, SWT.READ_ONLY);
-//		combo.setLayoutData(new RowData(75, 22));
+		combo = new Combo(this, SWT.READ_ONLY);
+		combo.setLayoutData(new RowData(75, 22));
 
 		if(type == WidgetProperty.ATTRIBUTE || type == WidgetProperty.ARRAYPOSITION) {
 			combo.addSelectionListener(new SelectionAdapter() {

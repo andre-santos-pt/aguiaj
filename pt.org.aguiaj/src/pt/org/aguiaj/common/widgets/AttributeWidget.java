@@ -25,6 +25,7 @@ import pt.org.aguiaj.aspects.ObjectModel;
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.widgets.LabelWidget.ObjectToHighlightProvider;
 import pt.org.aguiaj.core.DocumentationView;
+import pt.org.aguiaj.core.InspectionPolicy;
 import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.NewDeadObjectCommand;
@@ -122,7 +123,10 @@ public class AttributeWidget extends Composite {
 					e.printStackTrace();
 				} 
 
-				if(ClassModel.getInspector().getPolicy().isInstanceFieldVisible(field)) {
+				InspectionPolicy policy = ClassModel.getInspector().getPolicy();
+				if(policy.isInstanceFieldVisible(field) ||
+				   policy.isStaticFieldVisible(field)) {
+					
 					String source = "." + field.getName();					
 					if(object == null)
 						source = field.getDeclaringClass().getSimpleName() + source;

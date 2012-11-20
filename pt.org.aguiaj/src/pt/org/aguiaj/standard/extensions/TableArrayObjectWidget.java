@@ -38,7 +38,9 @@ public class TableArrayObjectWidget implements VisualizationWidget<Object> {
 	private List<Field> fields;
 	private List<Method> properties;
 	private String[][] data;
-
+	private Color gray;
+	
+	
 	@Override
 	public void createSection(Composite section) {
 		section.setLayout(new FillLayout());
@@ -60,12 +62,17 @@ public class TableArrayObjectWidget implements VisualizationWidget<Object> {
 
 	@Override
 	public void update(Object object) {
+		if(this.object == null || !this.object.getClass().equals(object.getClass())) {
+			fields = ClassModel.getInstance().getVisibleAttributes(object.getClass().getComponentType());
+			properties = ClassModel.getInstance().getAccessorMethods(object.getClass().getComponentType());
+		}
 		this.object = object;
-		fields = ClassModel.getInstance().getVisibleAttributes(object.getClass().getComponentType());
-		properties = ClassModel.getInstance().getAccessorMethods(object.getClass().getComponentType());
-
+		
 		String[][] tmp = tableData((Object[]) object);
 
+		System.err.println("DATA: " + Arrays.deepToString(data));
+		System.err.println(" TMP: " + Arrays.deepToString(tmp));
+		
 		if(!Arrays.deepEquals(data, tmp)) {
 			data = tmp;
 			redrawTable();
@@ -73,6 +80,7 @@ public class TableArrayObjectWidget implements VisualizationWidget<Object> {
 	}
 
 	private void redrawTable() {
+		System.err.println("redwar!");
 		table.removeAll();
 		for(TableColumn col : table.getColumns()) {
 			col.dispose();
@@ -109,6 +117,7 @@ public class TableArrayObjectWidget implements VisualizationWidget<Object> {
 			col.pack();
 		}
 		table.pack();
+		table.layout();
 	}
 
 	private String[][] tableData(Object[] array) {
@@ -142,10 +151,5 @@ public class TableArrayObjectWidget implements VisualizationWidget<Object> {
 		}
 		return data;
 	}
-
-	private Color gray;
-	
-	
-
 
 }

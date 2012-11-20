@@ -13,7 +13,6 @@ package pt.org.aguiaj.classes;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -35,7 +34,6 @@ import pt.org.aguiaj.common.widgets.LabelWidget;
 import pt.org.aguiaj.common.widgets.LabelWidget.ObjectToHighlightProvider;
 import pt.org.aguiaj.common.widgets.MethodWidget;
 import pt.org.aguiaj.core.DocumentationView;
-import pt.org.aguiaj.core.InspectionPolicy;
 import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
 import pt.org.aguiaj.standard.StandardNamePolicy;
@@ -51,7 +49,7 @@ public class ClassWidget extends FieldContainer {
 	public ClassWidget(Composite parent, final Class<?> clazz) {
 		super(parent, SWT.BORDER);
 		
-		inspector = ClassModel.getInstance().getInspector();
+		inspector = ClassModel.getInspector();
 		constructors = inspector.getVisibleConstructors(clazz);
 
 		FormLayout layout = new FormLayout();
@@ -83,14 +81,7 @@ public class ClassWidget extends FieldContainer {
 		labelData.right = new FormAttachment(100, -5);
 		classHeader.setLayoutData(labelData);
 		
-		Field[] fields = clazz.getDeclaredFields();
-		staticFields = new ArrayList<Field>();
-
-		for(Field field : fields)
-			if(inspector.getPolicy().isStaticFieldVisible(field) && !field.isEnumConstant()) {
-				field.setAccessible(true);
-				staticFields.add(field);
-			}
+		staticFields = inspector.getVisibleStaticAttributes(clazz);
 			
 		Composite constructorsOrContantsGroup = null;
 		if(clazz.isEnum())
@@ -124,10 +115,7 @@ public class ClassWidget extends FieldContainer {
 			staticMethodsGroup.setLayoutData(data);
 		}
 		
-		
 		updateFields();	
-		
-//		ClassModel.getInstance().addClass(clazz);
 	}
 
 	private Group createConstantsGroup(Composite parent, final Class<?> clazz) {

@@ -27,7 +27,7 @@ public enum AguiaJImage {
 	
 	REFARROW("arrow.jpg"),
 	DELETE("delete.gif"),
-	DELETEDEAD("deletedead.gif"),
+	DELETEDEAD("trash.gif"),
 	REFRESH("refresh.gif"),
 	IMPORTED_PACKAGE("imported_package.gif"),
 	PACKAGE("package.gif"),

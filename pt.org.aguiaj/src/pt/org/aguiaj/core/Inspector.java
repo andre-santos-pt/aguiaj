@@ -26,9 +26,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import pt.org.aguiaj.classes.ClassHierarchyComparator;
 import pt.org.aguiaj.classes.ClassModel;
+import pt.org.aguiaj.common.MethodNameComparator;
 import pt.org.aguiaj.extensibility.AccessorMethodDetectionPolicy;
-import pt.org.aguiaj.standard.StandardInspectionPolicy;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 public class Inspector {
@@ -59,22 +60,18 @@ public class Inspector {
 			if(inspectionPolicy.isStaticMethodVisible(m))
 				methods.add(m);
 
+		Collections.sort(methods, new MethodNameComparator());
 		return methods;
-	}
-
-
-	public List<Field> getVisibleAttributes(Class<?> clazz) {
-		List<Field> fields = new ArrayList<Field>();
-		fields.addAll(getVisibleAttributes(clazz, true));
-		fields.addAll(getVisibleAttributes(clazz, false));
-		return fields;
 	}
 
 	public List<Field> getInvisibleInstanceAttributes(Class<?> clazz) {
 		List<Field> privateFields = new ArrayList<Field>();
 		for(Field f : getFieldsIncludingSuper(clazz)) {
-			if(!inspectionPolicy.isInstanceFieldVisible(f) && !Modifier.isStatic(f.getModifiers()))
+			if(!Modifier.isStatic(f.getModifiers()) && 
+			   !inspectionPolicy.isInstanceFieldVisible(f)) {
+				f.setAccessible(true);
 				privateFields.add(f);
+			}
 		}
 
 		return privateFields;
@@ -93,8 +90,8 @@ public class Inspector {
 		else {
 			if(!clazz.equals(Object.class)) {
 				for(Field f : clazz.getDeclaredFields()) {
+					fields.add(f);
 					f.setAccessible(true);
-					fields.add(f);	
 				}
 				fields.addAll(getFieldsIncludingSuper(clazz.getSuperclass()));
 			}
@@ -102,37 +99,51 @@ public class Inspector {
 		return fields;
 	}
 
-	public List<Field> getVisibleAttributes(Class<?> clazz, boolean staticFields) {
-		List<Field> allFields = new ArrayList<Field>();
-		List<Field> publicFields = Arrays.asList(clazz.getFields());
-		allFields.addAll(publicFields);
-
-		for(Field f : clazz.getDeclaredFields())
-			if(!publicFields.contains(f))
-				allFields.add(f);
-
-		for(Field field : allFields.toArray(new Field[allFields.size()])) {
-			if(staticFields) {
-				if(!Modifier.isStatic(field.getModifiers()) || !inspectionPolicy.isStaticFieldVisible(field))
-					allFields.remove(field);
-				else
-					field.setAccessible(true);
-			}
-			else {
-				if(Modifier.isStatic(field.getModifiers()) || !inspectionPolicy.isInstanceFieldVisible(field))
-					allFields.remove(field);
-				else
-					field.setAccessible(true);
+	public List<Field> getVisibleInstanceAttributes(Class<?> clazz) {
+		List<Field> fields = ReflectionUtils.getAllInstanceFields(clazz);
+		
+		Iterator<Field> it = fields.iterator();
+		while(it.hasNext()) {
+			Field f = it.next();
+			if(!inspectionPolicy.isInstanceFieldVisible(f))
+				it.remove();
+			else
+				f.setAccessible(true);
+		}
+		
+		return fields;
+	}
+	
+	public List<Field> getVisibleStaticAttributes(Class<?> clazz) {
+		List<Field> fields = new ArrayList<Field>();
+		
+		for(Field f : clazz.getDeclaredFields()) {
+			if(inspectionPolicy.isStaticFieldVisible(f)) {
+				f.setAccessible(true);
+				fields.add(f);
 			}
 		}
-
-		return allFields;
+		
+		return fields;
+	}
+	
+	public List<Field> getEnumFields(Class<?> clazz) {
+		List<Field> fields = new ArrayList<Field>();
+		if(!clazz.isEnum()) {
+			return Collections.emptyList();
+		}
+		else {
+			for(Field f : clazz.getFields())
+				if(f.isEnumConstant()) {
+					f.setAccessible(true);
+					fields.add(f);
+				}
+		}
+		return fields;	
 	}
 
-	public static List<Method> getAccessorMethods(Class<?> clazz) {
-		//		List<Method> allMethods = new ArrayList<Method>();
-		//		addAllNonPrivateMethods(clazz, allMethods, false);
 
+	public static List<Method> getAccessorMethods(Class<?> clazz) {
 		Collection<Method> allMethods = ReflectionUtils.getAllMethods(clazz);
 
 		List<Method> queryMethods = new ArrayList<Method>();
@@ -143,14 +154,7 @@ public class Inspector {
 				queryMethods.add(method);
 		}
 
-		Collections.sort(queryMethods, new Comparator<Method>() {
-			@Override
-			public int compare(Method a, Method b) {
-				String prettyA = StandardNamePolicy.prettyPropertyName(a);
-				String prettyB = StandardNamePolicy.prettyPropertyName(b);
-				return prettyA.compareTo(prettyB);
-			}
-		});
+		Collections.sort(queryMethods, new MethodNameComparator());
 
 		return queryMethods;
 	}
@@ -164,13 +168,7 @@ public class Inspector {
 			if(inspectionPolicy.isCommandMethod(method) && !queryMethods.contains(method))
 				commandMethods.add(method);
 
-		Collections.sort(commandMethods, new Comparator<Method>() {
-			@Override
-			public int compare(Method a, Method b) {
-				return a.getName().compareTo(b.getName());
-			}
-		});
-
+		Collections.sort(commandMethods, new MethodNameComparator());
 		return commandMethods;
 	}
 
@@ -238,41 +236,8 @@ public class Inspector {
 		return list;
 	}
 
+
 	
-
-	//	public static void addAllNonPrivateMethods(Class<?> clazz, List<Method> allMethods, boolean staticMethods) {
-	//
-	//		if(clazz == null || clazz.equals(Object.class)) {
-	//			return;
-	//		}
-	//		else {
-	//			for(Method m : clazz.getDeclaredMethods()) {
-	//				int mod = m.getModifiers();
-	//				if(((staticMethods && Modifier.isStatic(mod)) || (!staticMethods && !Modifier.isStatic(mod))) &&
-	//						!m.isSynthetic() &&
-	//						!Modifier.isPrivate(mod) && 
-	//						!containsSameMethod(allMethods, m)) {
-	//					allMethods.add(m);					
-	//				}
-	//			}
-	//			if(clazz.isInterface()) {
-	//				for(Class<?> superInterface : clazz.getInterfaces())	
-	//					addAllNonPrivateMethods(superInterface, allMethods, staticMethods);	
-	//			}
-	//			else {
-	//				addAllNonPrivateMethods(clazz.getSuperclass(), allMethods, staticMethods);
-	//			}
-	//		}		
-	//	}
-
-	private static boolean containsSameMethod(List<Method> list, Method m) {
-		for(Method method : list) {
-			if(isSame(m, method)) {
-				return true;
-			}
-		}
-		return false;
-	}
 
 	public static boolean isInherited(Class<?> clazz, Field field) {
 		return !field.getDeclaringClass().equals(clazz);
@@ -355,21 +320,7 @@ public class Inspector {
 		}
 
 		List<Class<?>> types = new ArrayList<Class<?>>(typeSet);
-		Collections.sort(types, new ClassSorter());		
+		Collections.sort(types, new ClassHierarchyComparator());		
 		return types;
-	}
-
-
-
-	public static class ClassSorter implements Comparator<Class<?>> {
-		public int compare(Class<?> a, Class<?> b) {
-			if(a.equals(b))
-				return 0;
-			else if(a.isAssignableFrom(b))
-				return -1;
-			else
-				return 1;
-		}
-
 	}
 }
