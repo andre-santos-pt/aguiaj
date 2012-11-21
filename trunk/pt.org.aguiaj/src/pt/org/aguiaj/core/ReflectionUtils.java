@@ -262,9 +262,11 @@ public class ReflectionUtils {
 					else if(clazz.equals(double[].class))
 						ret = Arrays.toString((double[]) object);
 
-					else if(clazz.equals(char[].class))
-						ret = Arrays.toString((char[]) object);
-
+					else if(clazz.equals(char[].class)) {
+//						ret = Arrays.toString((char[]) object);
+						ret = new String((char[]) object);
+					}
+						
 					else if(clazz.equals(boolean[].class))
 						ret = Arrays.toString((boolean[]) object);
 

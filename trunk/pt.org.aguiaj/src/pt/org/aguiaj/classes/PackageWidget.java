@@ -44,7 +44,7 @@ import pt.org.aguiaj.core.ReflectionUtils;
 
 import com.google.common.collect.Sets;
 
-public class ClassAreaWidget extends Composite {
+public class PackageWidget extends Composite {
 	private static final int SPACING = 30;
 	private static final int MARGIN = 10;
 
@@ -54,7 +54,7 @@ public class ClassAreaWidget extends Composite {
 	private String pluginId;
 	private String packageName;
 
-	public ClassAreaWidget(Composite parent, final String packageName, Collection<Class<?>> classes) {
+	public PackageWidget(Composite parent, final String packageName, Collection<Class<?>> classes) {
 		super(parent, SWT.NONE);
 		this.packageName = packageName;
 

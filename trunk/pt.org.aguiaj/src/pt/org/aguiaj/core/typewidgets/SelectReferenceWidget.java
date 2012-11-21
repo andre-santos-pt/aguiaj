@@ -34,9 +34,9 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 	private Combo combo;
 	private WidgetProperty type;
 	private final int NA_INDEX;
-	
+
 	private Composite border;
-	
+
 	public SelectReferenceWidget(final Composite parent, Class<?> clazz, final WidgetProperty type) {
 		super(parent, SWT.NONE, clazz, type, true);
 		this.type = type;
@@ -49,12 +49,12 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 	protected void createContents(Composite parent) {
 		border = parent;
 	}
-	
+
 	private void createContents2(Composite parent) {
 		if(ClassModel.getInstance().isPolymorphic(getType()) &&
 				ClassModel.getInstance().isPluginTypeActive(getType()))
 			new IconWidget(this, getType());
-		
+
 		combo = new Combo(this, SWT.READ_ONLY);
 		combo.setLayoutData(new RowData(75, 22));
 
@@ -80,46 +80,50 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 			});
 		}
 	}
-	
+
 
 	public void setObjects(List<Reference> newReferences) {
 		int selectedIndex = combo.getSelectionIndex();
 		String selected = null;
 		Object object = getObject();
-		
+
 		if(selectedIndex != -1 && selectedIndex != NULL_INDEX) 
 			selected = combo.getItem(selectedIndex);
 
 		combo.removeAll();
-		
 		combo.add(NULL_ITEM, NULL_INDEX);
-
+		lastSelectionIndex = NA_INDEX;
+		
 		if(type != WidgetProperty.PARAMETER)
 			combo.add(NA_KEY, NA_INDEX);
-		
+
+
+		boolean containsSelected = false;
 		for(Reference ref : newReferences) {
 			combo.add(ref.name);			
 			combo.setData(ref.name, ref.object);
-			
-			if(ref.isEnum() && ref.object == object)
-				selected = ref.name;
+			if(ref.name.equals(selected))
+				containsSelected = true;
 		}
 
 		for(int i = 0; i < combo.getItemCount(); i++) {
-			if(combo.getItem(i).equals(selected)) {
+			if(containsSelected && combo.getItem(i).equals(selected) ||
+					!containsSelected && combo.getData(combo.getItem(i)) == object) {
 				combo.select(i);
 				lastSelectionIndex = i;
-			}
+				break;
+			}	
 		}
-		
 	}
+
+
 
 
 	public Object getObject() {
 		int selectionIndex = -1;
 		if(combo != null && !combo.isDisposed())
 			selectionIndex = combo.getSelectionIndex();
-		
+
 		return selectionIndex <= 0 ? null : combo.getData(combo.getItem(selectionIndex));
 	}
 
@@ -128,13 +132,13 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 	public String getTextualRepresentation() {	
 		if(combo.isDisposed())
 			return null;
-		
+
 		if(combo.getSelectionIndex() > NULL_INDEX)
 			return combo.getItem(combo.getSelectionIndex());
 		else
 			return "null";
 	}
-	
+
 
 	public void update(Object object) {
 		if(combo.isDisposed())
@@ -169,9 +173,9 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 
 
 	public void highlight() {
-		
+
 	}
-	
+
 	public Control getControl() {
 		return combo;
 	}

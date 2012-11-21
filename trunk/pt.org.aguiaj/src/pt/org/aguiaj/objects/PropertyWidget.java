@@ -53,6 +53,7 @@ public class PropertyWidget {
 		
 		DocumentationView.getInstance().addDocumentationSupport(label.getControl(), propertyMethod);
 		
+		
 		if(returnsReferenceType) {		
 			label.addHyperlinkAction(new Listener () {
 				public void handleEvent(Event event) {
@@ -66,7 +67,11 @@ public class PropertyWidget {
 			label.addObjectHighlightCapability(new ObjectToHighlightProvider() {
 				@Override
 				public Object getObjectToHighlight() {
-					return holdingObject;
+					String ref = ObjectModel.getFirstReference(object).name;
+					MethodInvocationCommand command = new MethodInvocationCommand(object, ref, propertyMethod, new Object[0], new String[0]);
+					command.setSilent();
+					command.execute();
+					return command.getResultingObject();
 				}
 			});
 		}
@@ -77,5 +82,9 @@ public class PropertyWidget {
 				EnumSet.of(WidgetProperty.PROPERTY));				
 		
 		fieldContainer.mapToWidget(propertyMethod, widget);
-	}	
+	}
+	
+	public void clearLink() {
+		holdingObject = null;
+	}
 }

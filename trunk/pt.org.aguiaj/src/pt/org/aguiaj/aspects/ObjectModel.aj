@@ -33,18 +33,27 @@ public aspect ObjectModel {
 	private final Map<String, Class<?>> referenceTypeTable;
 	private final IdentityObjectSet objectSet;
 
-	private final Map<String, Object> enumReferenceTable;
+	//	private final Map<String, Object> enumReferenceTable;
 
 	public ObjectModel() {
 		referenceTable = new LinkedHashMap<String, Object>();
 		referenceTypeTable = newHashMap();
 		objectSet = new IdentityObjectSet();
-		enumReferenceTable = new LinkedHashMap<String, Object>();
+		//		enumReferenceTable = new LinkedHashMap<String, Object>();
 	}	
 
 	public static ObjectModel getInstance() {
 		return ObjectModel.aspectOf();
 	}
+
+	public void clear() {
+		referenceTable.clear();
+		referenceTypeTable.clear();
+		objectSet.clear();
+		//		enumReferenceTable.clear();
+	}
+
+
 
 	// additions (objects and references)
 	before(Object object, String reference, Class<?> refType) : 
@@ -75,7 +84,7 @@ public aspect ObjectModel {
 		if(!ClassModel.getInstance().isPluginClass(type)) {
 			List<Field> fields = ClassModel.getInspector().getVisibleStaticAttributes(type);
 			fields.addAll(ClassModel.getInspector().getEnumFields(type));
-			
+
 			for(Field f : fields)  {
 				Object obj = null;
 				try {
@@ -84,28 +93,26 @@ public aspect ObjectModel {
 				catch(Exception e) {
 					e.printStackTrace();
 				}
-				addReference(f.getType(), obj, refName(type, f));
+				addReference(f.getType(), obj, Reference.staticReference(type, f));
 			}
 		}
 	}
-	
-	private static String refName(Class<?> clazz, Field field) {
-		return clazz.getSimpleName() + "." + field.getName();
-	}
 
+	
 
 	private void addReference(Class<?> type, Object object, String reference) {
-		if(!referenceTypeTable.containsKey(reference)) {
-			referenceTypeTable.put(reference, type);
-		}
-
-		if(object == null)
-			referenceTable.put(reference, NULL_OBJECT);
-		else
-			referenceTable.put(reference, object);
+//		if(!referenceTypeTable.containsKey(reference))
+			
+		referenceTable.put(reference, object == null? NULL_OBJECT : object);
+		referenceTypeTable.put(reference, type);
 	}
 
 
+	
+	
+	
+	
+	
 
 	// removals (object and references)
 
@@ -118,11 +125,11 @@ public aspect ObjectModel {
 	private void removeObject(Object object) {
 		assert object != null;
 
-		if(!object.getClass().isEnum())		
-			objectSet.remove(object);
-
+		//		if(!object.getClass().isEnum())		
+		//			objectSet.remove(object);
+		
 		for(String ref : referenceTable.keySet().toArray(new String[referenceTable.size()])) {
-			if(referenceTable.get(ref) == object) {
+			if(!Reference.isFieldReference(ref) && referenceTable.get(ref) == object) {
 				removeReference(ref);
 			}
 		}
@@ -141,10 +148,12 @@ public aspect ObjectModel {
 		removeReference(id);
 	}
 
-	private void removeReference(String id) {
-		assert referenceTable.containsKey(id);
-		referenceTable.remove(id);
-		referenceTypeTable.remove(id);		
+	private void removeReference(String ref) {
+		assert referenceTable.containsKey(ref);
+		if(!Reference.isFieldReference(ref)) {
+			referenceTable.remove(ref);
+			referenceTypeTable.remove(ref);
+		}
 	}
 
 
@@ -167,9 +176,9 @@ public aspect ObjectModel {
 				set.add(o);
 
 
-		for(Object o : enumReferenceTable.values())
-			if(type.isInstance(o))
-				set.add(o);
+//		for(Object o : enumReferenceTable.values())
+//			if(type.isInstance(o))
+//				set.add(o);
 
 		return set.objects();
 	}
@@ -224,30 +233,17 @@ public aspect ObjectModel {
 					obj = null;
 				refs.add(new Reference(r, refType, obj));
 			}
-			//			else if(refType.isArray() && type.isAssignableFrom(refType.getComponentType())) {
-			//				Object arrayObj = referenceTable.get(r);
-			//				//TODO: bug : Argument is not an array
-			//				if(!(arrayObj instanceof NullObject)) {
-			//					for(int i = 0; i < Array.getLength(arrayObj); i++) {
-			//						Object obj = Array.get(arrayObj, i);
-			//						String refName = r + "[" + i + "]";
-			//						refs.add(new Reference(refName, refType.getComponentType(), obj));
-			//					}
-			//				}
-			//			}
-
-
 		}
 
-		for(String r : enumReferenceTable.keySet()) {
-			Object obj = enumReferenceTable.get(r);
-
-			if(ClassModel.getInstance().isPluginTypeActive(obj.getClass()) &&
-					type.isAssignableFrom(obj.getClass())) {
-				Class<?> refType = referenceTypeTable.get(r);
-				refs.add(new Reference(r, refType, obj));
-			}
-		}
+//		for(String r : enumReferenceTable.keySet()) {
+//			Object obj = enumReferenceTable.get(r);
+//
+//			if(ClassModel.getInstance().isPluginTypeActive(obj.getClass()) &&
+//					type.isAssignableFrom(obj.getClass())) {
+//				Class<?> refType = referenceTypeTable.get(r);
+//				refs.add(new Reference(r, refType, obj));
+//			}
+//		}
 
 
 		for(Class<?> c : ClassModel.getInstance().getActivePluginTypes()) {	
@@ -273,7 +269,6 @@ public aspect ObjectModel {
 
 	public List<Reference> getReferences(Object object) {
 		List<Reference> refs = new ArrayList<Reference>();
-
 		for(String r : referenceTable.keySet()) {
 			Object obj = referenceTable.get(r);
 
@@ -282,9 +277,6 @@ public aspect ObjectModel {
 				refs.add(new Reference(r, refType, object));
 			}
 		}
-
-
-
 		return refs;
 	}
 

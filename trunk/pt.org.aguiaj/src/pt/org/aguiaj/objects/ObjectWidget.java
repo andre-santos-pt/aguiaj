@@ -65,6 +65,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 	private final Object object;
 	private final Class<?> objectClass;
 
+	private final boolean hasExtension;
 	private TypeWidget extension;
 
 	private Stack<Composite> sections;
@@ -99,7 +100,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 
 		createHeader(menu);
 
-		boolean hasExtension = WidgetFactory.INSTANCE.hasExtension(objectClass);
+		hasExtension = WidgetFactory.INSTANCE.hasExtension(objectClass);
 
 		if(hasExtension) {
 			visualSection = createSection();
@@ -288,8 +289,9 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		nameLabel.getControl().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
-				if(isPropertiesVisible() && isOperationsVisible()) {
-					showProperties(false);
+				if((propertiesGroup == null || isPropertiesVisible()) && isOperationsVisible()) {
+					showAttributes(!hasExtension);
+					showProperties(!hasExtension);
 					showOperations(false);
 				}
 				else {

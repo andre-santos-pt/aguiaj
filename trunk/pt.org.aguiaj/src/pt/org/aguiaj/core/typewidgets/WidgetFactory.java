@@ -34,7 +34,7 @@ public enum WidgetFactory {
 	INSTANCE;
 
 	private Map<Class<?>, Constructor<? extends TypeWidget>> widgetTypeTable;
-	private Multimap<Class<?>, Constructor<? extends VisualizationWidget>> objectWidgetTypeTable;
+	private Multimap<Class<?>, Constructor<? extends VisualizationWidget<?>>> objectWidgetTypeTable;
 
 	private WidgetFactory() {
 		widgetTypeTable = newHashMap();
@@ -58,8 +58,8 @@ public enum WidgetFactory {
 
 
 
-	public void addVisualizationWidgetType(Class<?>[] classes, Class<? extends VisualizationWidget> objectWidgetType) throws Exception {
-		Constructor<? extends VisualizationWidget> constructor = null;
+	public void addVisualizationWidgetType(Class<?>[] classes, Class<? extends VisualizationWidget<?>> objectWidgetType) throws Exception {
+		Constructor<? extends VisualizationWidget<?>> constructor = null;
 
 		try {
 			constructor = objectWidgetType.getConstructor();
@@ -90,7 +90,7 @@ public enum WidgetFactory {
 	//	}
 
 	
-	private static Constructor<? extends VisualizationWidget> stringWidget;
+	private static Constructor<? extends VisualizationWidget<?>> stringWidget;
 	
 	static {
 		try {
@@ -99,8 +99,10 @@ public enum WidgetFactory {
 			e.printStackTrace();
 		}
 	}
-	private Constructor<? extends VisualizationWidget> bestExtension(Class<?> clazz) {
-		Collection<Constructor<? extends VisualizationWidget>> all = 
+	
+	
+	private Constructor<? extends VisualizationWidget<?>> bestExtension(Class<?> clazz) {
+		Collection<Constructor<? extends VisualizationWidget<?>>> all = 
 			objectWidgetTypeTable.get(clazz);
 
 		if(!all.isEmpty()) {
@@ -172,7 +174,7 @@ public enum WidgetFactory {
 			}
 			else if(!properties.contains(WidgetProperty.NO_EXTENSION)) {
 
-				Constructor<? extends VisualizationWidget> constructor = bestExtension(clazz);
+				Constructor<? extends VisualizationWidget<?>> constructor = bestExtension(clazz);
 
 				if(constructor != null) {
 					if(CanvasVisualizationWidget.class.isAssignableFrom(constructor.getDeclaringClass()) && 
@@ -188,7 +190,7 @@ public enum WidgetFactory {
 						((CanvasObjectWidgetExtension) widget).initialize();
 					}
 					else {
-						VisualizationWidget extension = null;
+						VisualizationWidget<?> extension = null;
 						try {
 							extension = constructor.newInstance();
 						} catch (Exception e) {
