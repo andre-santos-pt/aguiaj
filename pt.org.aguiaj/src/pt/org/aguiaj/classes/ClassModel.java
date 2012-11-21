@@ -184,7 +184,7 @@ public class ClassModel {
 		return Collections.unmodifiableSet(classSet);
 	}
 
-	public void addPluginClass(Class<?> clazz, Class<? extends VisualizationWidget> view, boolean allowImport, String pluginId)
+	public void addPluginClass(Class<?> clazz, Class<? extends VisualizationWidget<?>> view, boolean allowImport, String pluginId)
 	throws Exception {
 		if(!pluginClassSet.containsKey(clazz)) {
 			if(view != null)

@@ -49,6 +49,9 @@ public class ArrayObjectWidget implements VisualizationWidget<Object> {
 
 
 	public void update(Object object) {
+//		if(object.getClass().equals(char[].class) && get) {
+//			
+//		}
 		
 		if(row == null && object != null) {
 			new ArrayLengthWidget(section).update(Array.getLength(object));

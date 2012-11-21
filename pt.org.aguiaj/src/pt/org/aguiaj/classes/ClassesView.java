@@ -29,6 +29,8 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabFolder2Adapter;
 import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.ISizeProvider;
@@ -60,7 +62,7 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 	private boolean firstTime;
 
 	private Multimap<String, Class<?>> packagesClasses;
-	private Set<ClassAreaWidget> classAreaWidgets;
+	private Set<PackageWidget> classAreaWidgets;
 
 	private Map<String, Action> importActionMap;
 	
@@ -184,7 +186,7 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 
 	private void refreshLayout() {
 		parent.layout(true, true);
-		for(ClassAreaWidget widget : classAreaWidgets)
+		for(PackageWidget widget : classAreaWidgets)
 			widget.refreshSize();
 	}
 
@@ -207,7 +209,7 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 	}
 
 	public void updateClassWidgets() {
-		for(ClassAreaWidget widget : classAreaWidgets)
+		for(PackageWidget widget : classAreaWidgets)
 			widget.updateClassWidgets();
 	}
 
@@ -218,13 +220,13 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 			
 			if(packageMapping.containsKey(packageName)) {
 				tab = packageMapping.get(packageName);
-				ClassAreaWidget classArea = (ClassAreaWidget) tab.getControl();
+				PackageWidget classArea = (PackageWidget) tab.getControl();
 				classArea.dispose();
 			}
 			
 			Collection<Class<?>> classList = packagesClasses.get(packageName);
 
-			ClassAreaWidget packageArea = new ClassAreaWidget(packageTabs, packageName, classList);
+			PackageWidget packageArea = new PackageWidget(packageTabs, packageName, classList);
 			
 			if(tab == null)
 				tab = createTab(packageName);		
@@ -262,8 +264,9 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 	
 		CTabItem tab = new CTabItem(packageTabs, style);
 		tab.setText(packageName.equals("") ? "default" : packageName);	
-		if(AguiaJActivator.getDefault().isPluginPackage(packageName))
+		if(AguiaJActivator.getDefault().isPluginPackage(packageName)) {
 			tab.setImage(AguiaJImage.IMPORTED_PACKAGE.getImage());
+		}
 		else
 			tab.setImage(AguiaJImage.PACKAGE.getImage());
 		return tab;
@@ -275,6 +278,8 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 	public void removeTab(final String packageName) {
 		if(packageMapping.containsKey(packageName)) {
 			packageMapping.remove(packageName).dispose();
+			packagesClasses.removeAll(packageName);
+			packageTabs.layout();
 			if(AguiaJActivator.getDefault().isPluginPackage(packageName))
 				importActionMap.get(packageName).setEnabled(true);	
 			ClassModel.getInstance().deactivatePackage(packageName);
@@ -294,7 +299,7 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 			return null;
 
 		CTabItem tab = packageTabs.getItem(selection);
-		ClassAreaWidget packageArea = (ClassAreaWidget) tab.getControl();
+		PackageWidget packageArea = (PackageWidget) tab.getControl();
 
 		if(packageArea.isPluginPackage())
 			return packageArea.getPluginId();

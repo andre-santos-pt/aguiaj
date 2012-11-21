@@ -10,6 +10,8 @@
  ******************************************************************************/
 package pt.org.aguiaj.common;
 
+import java.lang.reflect.Field;
+
 public class Reference {
 	public final String name;
 	public final Class<?> type;
@@ -27,5 +29,31 @@ public class Reference {
 	
 	public boolean isEnum() {
 		return type.isEnum();
+	}
+	
+	public boolean isFieldReference() {
+		return isFieldReference(name);
+	}
+	
+	public static String staticReference(Class<?> clazz, Field field) {
+		return clazz.getSimpleName() + "." + field.getName();
+	}
+
+	public static boolean isFieldReference(String ref) {
+		return ref.indexOf('.') != -1;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null || !(obj instanceof Reference))
+			return false;
+		
+		Reference r = (Reference) obj;
+		return name.equals(r.name) && type.equals(r.type);
+	}
+	
+	@Override
+	public int hashCode() {
+		return name.hashCode();
 	}
 }

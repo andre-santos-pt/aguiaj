@@ -25,7 +25,7 @@ import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.extensibility.VisualizationWidget;
 
-
+//@PluggableObjectWidget(char[].class)
 public class StringObjectWidget implements VisualizationWidget<Object> {
 	private Composite section;
 	private Text text;
@@ -48,6 +48,9 @@ public class StringObjectWidget implements VisualizationWidget<Object> {
 
 
 	public void update(Object object) {
+//		if(object != null && object.getClass().equals(char[].class))
+//			object = new String((char[]) object);	
+		
 		if(
 				(object == null && previousContent == null) ||
 				(object != null && previousContent != null && 

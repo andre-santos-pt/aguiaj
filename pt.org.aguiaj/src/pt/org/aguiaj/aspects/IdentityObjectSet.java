@@ -57,4 +57,8 @@ class IdentityObjectSet {
 			}
 			throw new AssertionError("Object does not exist");
 		}
+		
+		public void clear() {
+			next = 0;
+		}
 	}

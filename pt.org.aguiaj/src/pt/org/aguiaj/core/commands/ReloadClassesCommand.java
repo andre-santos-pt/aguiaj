@@ -25,7 +25,6 @@ import pt.org.aguiaj.aspects.ObjectModel;
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.classes.ClassesView;
 import pt.org.aguiaj.core.AguiaJActivator;
-import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.commands.java.ConstructorInvocationCommand;
 import pt.org.aguiaj.core.commands.java.JavaCommand;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
@@ -70,6 +69,7 @@ public class ReloadClassesCommand extends AbstractHandler {
 		ClassModel.getInstance().clearClasses();
 		ExceptionHandler.INSTANCE.clearErrors();
 		HistoryView.getInstance().clear();	
+		ObjectModel.getInstance().clear();
 		
 		if(workingDir == null)
 			AguiaJActivator.getDefault().reloadClasses();

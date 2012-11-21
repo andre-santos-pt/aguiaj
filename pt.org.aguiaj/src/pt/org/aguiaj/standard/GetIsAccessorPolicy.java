@@ -21,11 +21,26 @@ public class GetIsAccessorPolicy implements AccessorMethodDetectionPolicy {
 		return isGetter(method) || isBooleanProperty(method);
 	}
 	
+	private static final String CAPITAL_LETTER =
+		"[A-ZËçÌåƒæêîÍïò]";
+	
+
+	private static final String LETTER = CAPITAL_LETTER.toLowerCase();
+
+	
+	public static void main(String[] args) {
+		System.out.println(WORD_STARTING_CAPITAL);
+	}
+	
+	private static final String WORD_STARTING_CAPITAL = 
+		CAPITAL_LETTER + "(" + CAPITAL_LETTER + "|" + LETTER + ")*";
+	
 	private boolean isGetter(Method method) {
 		return 
 		!method.getDeclaringClass().equals(Object.class) &&
 		!method.getReturnType().equals(void.class) && 		
-		method.getName().matches("(get)[A-Z]([A-Za-z])*");
+		method.getName().matches("(get)" + WORD_STARTING_CAPITAL);
+//		method.getName().matches("(get)[A-Z]([A-Za-z])*");
 	}
 
 	private boolean isBooleanProperty(Method method) {

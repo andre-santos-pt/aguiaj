@@ -15,15 +15,17 @@ import pt.org.aguiaj.extensibility.VisualizationWidget;
 import pt.org.aguiaj.standard.extensions.Array2DObjectWidget;
 import pt.org.aguiaj.standard.extensions.ArrayObjectWidget;
 import pt.org.aguiaj.standard.extensions.PluggableObjectWidget;
+import pt.org.aguiaj.standard.extensions.StringObjectWidget;
 
 public enum ActiveDefaultObjectWidgetExtension {	
 	ARRAYOBJECT(ArrayObjectWidget.class),
 	ARRAY2DOBJECT(Array2DObjectWidget.class);
+//	STRING(StringObjectWidget.class);
 //	ARRAYOBJECTTABLE(TableArrayObjectWidget.class);
 	
-	private Class<? extends VisualizationWidget> clazz;
+	private Class<? extends VisualizationWidget<?>> clazz;
 	
-	private ActiveDefaultObjectWidgetExtension(Class<? extends VisualizationWidget> clazz) {
+	private ActiveDefaultObjectWidgetExtension(Class<? extends VisualizationWidget<?>> clazz) {
 		this.clazz = clazz;
 	}
 	

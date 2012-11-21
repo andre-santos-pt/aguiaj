@@ -24,7 +24,7 @@ public class StandardNamePolicy implements NamePolicy {
 		TO;
 
 		public boolean matches(String text) {
-			return text.matches(name().toLowerCase() + "[A-Z]\\w*");
+			return text.matches("^" + name().toLowerCase() + ".+");
 		}
 
 		public String apply(String text) {
@@ -41,8 +41,7 @@ public class StandardNamePolicy implements NamePolicy {
 			return text;
 		}
 	}
-
-
+	
 	public static String prettyPropertyName(Method method) {
 		return firstToUpper(addSpaces(PropertyNameRule.applyRule(method.getName())));
 	}
