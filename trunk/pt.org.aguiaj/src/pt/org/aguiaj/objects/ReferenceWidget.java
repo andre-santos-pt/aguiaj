@@ -79,7 +79,7 @@ public class ReferenceWidget extends Composite {
 			.linkIf(object != null)
 			.create(iconAndRef);
 		
-		label.setMenu(menu);
+		label.getControl().setMenu(menu);
 		
 		if(object != null) {
 			label.addObjectHighlightCapability(new ObjectToHighlightProvider() {
@@ -98,9 +98,10 @@ public class ReferenceWidget extends Composite {
 		.tiny()
 		.create(refBox);
 		
-		new ArrowWidget(this);
-
-		typeLabel.setMenu(menu);
+		ArrowWidget arrow = new ArrowWidget(this);
+		arrow.setMenu(menu);
+		
+		typeLabel.getControl().setMenu(menu);
 		
 		SWTUtils.setColorRecursively(refBox, AguiaJColor.OBJECT.getColor());
 	}

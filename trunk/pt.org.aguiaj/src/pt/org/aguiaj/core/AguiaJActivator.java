@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,12 +39,17 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -136,12 +142,12 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		loadObjectWidgetPlugins();
 		loadAccessorPolicyPlugins();
 		//KeyShortcuts.addKeyShortcuts();
-		
+
 		ClassModel.getInstance().addDefaultClasses();
 	}
 
 
-	
+
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);		
@@ -179,7 +185,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 
 		for(AguiaJImage image : AguiaJImage.values()) {
 			ImageDescriptor imageDesc = 
-				ImageDescriptor.createFromURL(FileLocator.find(bundle, image.getPath(), null));	
+					ImageDescriptor.createFromURL(FileLocator.find(bundle, image.getPath(), null));	
 			registry.put(image.getId(), imageDesc);
 		}			
 
@@ -218,7 +224,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 	public static void handlePluginError(String message) {
 		SWTUtils.showMessage("Plugin Error", message, SWT.ICON_ERROR);
 	}
-	
+
 	public static String getActivePlugin() {
 		return ClassesView.getInstance().getActivePlugin();
 	}
@@ -251,7 +257,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 	public String getPluginJarLocation(final String pluginId) {
 		URL pluginFolder = getPluginFolder(pluginId);
 		Path path = new Path(pluginFolder.getPath());
-		
+
 		String jarLocation = path.toString();
 		if(jarLocation.endsWith("!\\"))
 			jarLocation = jarLocation.substring(0, jarLocation.length()-2);
@@ -264,9 +270,9 @@ public class AguiaJActivator extends AbstractUIPlugin {
 
 		if(jarLocation.startsWith("file:"))
 			jarLocation = jarLocation.substring("file:".length());
-		
-//		if(!jarLocation.endsWith(".jar"))
-//			jarLocation += "bin";
+
+		//		if(!jarLocation.endsWith(".jar"))
+		//			jarLocation += "bin";
 
 		return jarLocation;
 	}
@@ -292,8 +298,8 @@ public class AguiaJActivator extends AbstractUIPlugin {
 
 		return false;
 	}
-	
-	
+
+
 
 	public Collection<Class<?>> getPackageClasses(String packageName) {
 		Set<Class<?>> classes = Sets.newHashSet();
@@ -316,7 +322,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		return accessorPolicies.keySet();
 	}
 
-	
+
 	public AccessorMethodDetectionPolicy getAccessorPolicy() {
 		String name = AguiaJParam.ACCESSOR_POLICY.getString();
 		Class<? extends AccessorMethodDetectionPolicy> policyClass = accessorPolicies.get(name);
@@ -334,7 +340,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 
 	private void loadObjectWidgetPlugins() {
 		IConfigurationElement[] config = 
-			Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_OBJECT_WIDGET);
+				Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_OBJECT_WIDGET);
 
 		for (final IConfigurationElement e : config) {
 
@@ -378,7 +384,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 					AguiaJActivator.handlePluginError("Check plugin.xml, class not found: " + className);
 					continue;
 				}
-				
+
 				try {
 					handleIcon(pluginID, objWidget, clazz);
 
@@ -442,7 +448,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 	@SuppressWarnings("unchecked")
 	private void loadAccessorPolicyPlugins() {
 		IConfigurationElement[] config = 
-			Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_ACCESSOR_POLICY);
+				Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_ACCESSOR_POLICY);
 
 		for (final IConfigurationElement e : config) {
 			String pluginID = e.getContributor().getName();
@@ -482,20 +488,31 @@ public class AguiaJActivator extends AbstractUIPlugin {
 	}
 
 	public void loadClasses(IPath workingDir) {
+
 		assert workingDir.toFile().exists() && workingDir.toFile().isDirectory();
 
 		this.workingDir = workingDir;
 
+		List<IPath> workingDirs = new ArrayList<IPath>();
+		workingDirs.add(workingDir);
+
+		IPath dir = workingDir;
+		if(dir.lastSegment().equals("bin"))
+			dir = dir.removeLastSegments(1);
+
+		addDependencyPaths(workingDirs, dir);
+
 		AguiaClassLoader.newClassLoader();
 
-		packagesClasses = readClasses(workingDir);
+		packagesClasses = readClasses(workingDirs);
 
 		// try bin directory, if exists		
 		if(packagesClasses.isEmpty()) {
 			IPath binDirPath = workingDir.append("bin");
 			File binDir = binDirPath.toFile();
 			if(binDir.exists() && binDir.isDirectory()) {
-				Multimap<String, Class<?>> tmp = readClasses(binDirPath);
+				workingDirs.add(binDirPath);
+				Multimap<String, Class<?>> tmp = readClasses(workingDirs);
 				if(!tmp.isEmpty()) {					
 					packagesClasses = tmp;
 					this.workingDir = binDirPath;
@@ -508,17 +525,14 @@ public class AguiaJActivator extends AbstractUIPlugin {
 			IPath binTry = workingDir.removeLastSegments(1).append("bin");
 			File binTryDir = binTry.toFile();
 			if(binTryDir.exists() && binTryDir.isDirectory()) {
-				Multimap<String, Class<?>> tmp = readClasses(binTry);
+				workingDirs.add(binTry);
+				Multimap<String, Class<?>> tmp = readClasses(workingDirs);
 				if(!tmp.isEmpty()) {
 					packagesClasses = tmp;
 					this.workingDir = binTry;
 				}
 			}			
 		}
-
-		// TODO : rever
-		//		for(String key : packagesClasses.keySet())
-		//			packagesClasses.putAll(key, reorderGeneralizationsFirst(packagesClasses.get(key)));
 
 		// filter non-visible classes
 		for(Iterator<Class<?>> it = packagesClasses.values().iterator(); it.hasNext(); ) {
@@ -528,26 +542,46 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		}
 	}
 
+	private void addDependencyPaths(List<IPath> workingDirs, IPath dir) {
+		IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();	
+
+		try {
+			for(IProject proj : projects) {
+				if(proj.getLocation().equals(dir) && proj.hasNature(JavaCore.NATURE_ID)) {
+					IJavaProject javaProj = (IJavaProject) proj.getNature(JavaCore.NATURE_ID);
+					IClasspathEntry[] classpath = javaProj.getRawClasspath();
+					for(IClasspathEntry entry : classpath) {
+						if(entry.getEntryKind() == IClasspathEntry.CPE_PROJECT) {
+							for(IProject p : projects) {
+								if(p.isOpen() && p.hasNature(JavaCore.NATURE_ID) && p.getLocation().lastSegment().equals(entry.getPath().lastSegment())) {
+									IJavaProject javaProj2 = (IJavaProject) proj.getNature(JavaCore.NATURE_ID);
+									IPath path = p.getLocation().append(javaProj2.getOutputLocation().lastSegment());
+									workingDirs.add(path);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	// TODO: to ClassModel
-	private static Multimap<String, Class<?>> readClasses(IPath workingDir) {
-		Map<String,List<Class<?>>> classes = ReflectionUtils.readClassFiles(workingDir);
+
+	private static Multimap<String, Class<?>> readClasses(List<IPath> workingDirs) {
 		Multimap<String, Class<?>> ret = ArrayListMultimap.create();
-		for(String key : classes.keySet()) {
-			ret.putAll(key, classes.get(key));
+		for(IPath path : workingDirs) {
+			Map<String,List<Class<?>>> classes = ReflectionUtils.readClassFiles(path);
+
+			for(String key : classes.keySet()) {
+				ret.putAll(key, classes.get(key));
+			}
 		}
 
 		return ret;
 	}
-
-	//	private static List<Class<?>> reorderGeneralizationsFirst(Collection<Class<?>> list) {
-	//		List<Class<?>> ret = new ArrayList<Class<?>>();
-	//		for(Class<?> c: list) {
-	//			if(list.contains(c.getSuperclass()))
-	//				ret.add(ret.size(), c);
-	//			else
-	//				ret.add(0, c);
-	//		}
-	//		return ret;
-	//	}
 
 }

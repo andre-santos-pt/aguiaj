@@ -40,8 +40,6 @@ public class MethodCall extends Expression implements Instruction {
 		String left = text.substring(0, dotIndex).trim();
 		String right = text.substring(dotIndex).trim();
 
-		//		System.out.println(text + " -- > " + left + "    " + right);
-
 		if(right.length() == 1)
 			return false;
 		else
@@ -150,9 +148,6 @@ public class MethodCall extends Expression implements Instruction {
 		return cmd.getResultingObject();
 	}
 
-	//	private void resolveTarget() {
-	//		if(target instanceof MethodCall)
-	//	}
 
 	@Override
 	public MethodInvocationCommand getCommand() {
