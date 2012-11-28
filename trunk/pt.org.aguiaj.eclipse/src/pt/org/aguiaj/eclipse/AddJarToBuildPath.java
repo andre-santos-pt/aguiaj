@@ -67,8 +67,11 @@ public class AddJarToBuildPath implements IViewActionDelegate {
 
 			if(!exists) {
 				IClasspathEntry[] newEntries = new IClasspathEntry[entries.length + 1];
-				System.arraycopy(entries, 0, newEntries, 0, entries.length);						
-				newEntries[entries.length] = JavaCore.newLibraryEntry(new Path(jarLocation), null, null, true);						
+				System.arraycopy(entries, 0, newEntries, 0, entries.length);
+				if(jarLocation.endsWith(".jar"))
+					newEntries[entries.length] = JavaCore.newLibraryEntry(new Path(jarLocation), null, null, true);						
+				else
+					newEntries[entries.length] = JavaCore.newSourceEntry(new Path(jarLocation));
 				project.setRawClasspath(newEntries, null);
 				message.setMessage("Plugin imported into project " + project.getElementName() + ".");
 			}

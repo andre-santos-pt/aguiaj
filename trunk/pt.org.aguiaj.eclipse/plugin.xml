@@ -95,7 +95,7 @@
          <command
                commandId="AguiaJEclipse.openAguiaJPerspective"
                icon="icons/eagle-icon-16.png"
-               label="Open AGUIA/J Perspective"
+               label="Open AGUIA/J perspective"
                style="push">
          </command>
       </menuContribution>
