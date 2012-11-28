@@ -71,7 +71,7 @@ public class SwitchProject implements IViewActionDelegate {
 				try {
 					if(proj.isOpen() && proj.hasNature(JavaCore.NATURE_ID)) {
 						combo.add(proj.getName());
-						combo.setData(proj.getName(), proj.getNature(JavaCore.NATURE_ID));						
+						combo.setData(proj.getName(), proj.getNature(JavaCore.NATURE_ID));
 					}
 				} catch (CoreException e) {
 					e.printStackTrace();
