@@ -18,7 +18,7 @@
          point="org.eclipse.ui.views">
       <view
             allowMultiple="false"
-            category="pt.aguiaj.viewCategory"
+            category="pt.org.aguiaj.viewCategory"
             class="pt.org.aguiaj.objects.ObjectsView"
             icon="images/elements_obj.gif"
             id="pt.org.aguiaj.objectsView"
@@ -26,7 +26,7 @@
       </view>
       <view
             allowMultiple="false"
-            category="pt.aguiaj.viewCategory"
+            category="pt.org.aguiaj.viewCategory"
             class="pt.org.aguiaj.classes.ClassesView"
             icon="images/classes.gif"
             id="pt.org.aguiaj.classesView"
@@ -35,7 +35,7 @@
       </view>
       <view
             allowMultiple="false"
-            category="pt.aguiaj.viewCategory"
+            category="pt.org.aguiaj.viewCategory"
             class="pt.org.aguiaj.core.commands.JavaBarView"
             icon="images/java.gif"
             id="pt.org.aguiaj.javabarView"
@@ -44,7 +44,7 @@
       </view>
       <view
             allowMultiple="false"
-            category="pt.aguiaj.viewCategory"
+            category="pt.org.aguiaj.viewCategory"
             class="pt.org.aguiaj.core.commands.HistoryView"
             icon="images/history_view.gif"
             id="pt.org.aguiaj.historyView"
@@ -52,7 +52,7 @@
             restorable="true">
       </view>
       <view
-            category="pt.aguiaj.viewCategory"
+            category="pt.org.aguiaj.viewCategory"
             class="pt.org.aguiaj.core.DocumentationView"
             icon="images/javadoc.gif"
             id="pt.org.aguiaj.documentationView"
@@ -60,7 +60,7 @@
             restorable="true">
       </view>
       <category
-            id="pt.aguiaj.viewCategory"
+            id="pt.org.aguiaj.viewCategory"
             name="AGUIA/J">
       </category>
    </extension>
@@ -91,18 +91,19 @@
             id="AguiaJ.openPreferences"
             name="Open preferences">
       </command>
+      <command
+            defaultHandler="pt.org.aguiaj.core.commands.CopyObjectImageCommand"
+            id="pt.org.aguiaj.copyimage"
+            name="Copy object image">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
       <key
-            commandId="AguiaJ.reloadcommand"
-            schemeId="AguiaJ.scheme"
-            sequence="CTRL+r">
+            commandId="pt.org.aguiaj.copyimage"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+R">
       </key>
-      <scheme
-            id="AguiaJ.scheme"
-            name="Aguia/J scheme">
-      </scheme>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">

@@ -35,7 +35,7 @@ import pt.org.aguiaj.objects.ObjectWidget;
 import pt.org.aguiaj.objects.ObjectsView;
 
 public class ReloadClassesCommand extends AbstractHandler {
-	private IPath workingDir = null;
+	private IPath workingDir = null;	
 
 	public void setWorkingDir(IPath workingDir) {
 		this.workingDir = workingDir;

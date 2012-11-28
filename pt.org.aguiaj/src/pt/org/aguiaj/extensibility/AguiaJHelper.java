@@ -69,13 +69,16 @@ public class AguiaJHelper {
 		try {
 			Instruction instruction = Parser.accept(javaInstruction);
 			
-			if(instruction != null)
+			if(instruction != null) {
 				instruction.getCommand().execute();
+			}
 		}
 		catch(ParseException e) {
-
+			throw new IllegalArgumentException("Invalid Java instruction");
 		}
 	}
+	
+	
 	
 	public static void addObject(Object object) {
 		if(object == null)

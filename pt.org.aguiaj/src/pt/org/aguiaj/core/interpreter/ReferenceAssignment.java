@@ -13,6 +13,7 @@ package pt.org.aguiaj.core.interpreter;
 import java.util.Map;
 import java.util.Set;
 
+import pt.org.aguiaj.common.Reference;
 import pt.org.aguiaj.core.commands.java.JavaCommand;
 import pt.org.aguiaj.core.commands.java.ReferenceSetCommand;
 
@@ -20,7 +21,7 @@ public class ReferenceAssignment extends Assignment {
 	private ExistingReference reference;
 	
 	@Override
-	public boolean accept(String left, Map<String, pt.org.aguiaj.common.Reference> referenceTable, Set<Class<?>> classSet) {
+	public boolean accept(String left, Map<String, Reference> referenceTable, Set<Class<?>> classSet) {
 		ExistingReference ref = new ExistingReference();
 		if(!ref.acceptText(left, referenceTable, classSet)) 
 			return false;

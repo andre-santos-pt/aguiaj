@@ -179,10 +179,13 @@ public class ObjectsView extends ViewPart {
 				List<Object> objs = Arrays.asList(ObjectModel.aspectOf().getAllObjects());
 				new RemoveObjectsCommand(objs).execute();
 
+				List<Object> dead = Arrays.asList(ObjectModel.aspectOf().getDeadObjects());
+				new RemoveObjectsCommand(dead).execute();
+				
 				List<Reference> nullRefs = ObjectModel.aspectOf().getNullReferences();
 				for(Reference ref : nullRefs)
 					ObjectsView.getInstance().removeNullReference(ref.name);
-
+				
 				ObjectsView.getInstance().unhighlight();
 				CommandMonitor.aspectOf().clearStack();
 			}

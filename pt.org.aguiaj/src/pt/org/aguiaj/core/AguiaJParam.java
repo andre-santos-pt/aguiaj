@@ -80,24 +80,9 @@ public enum AguiaJParam {
 			return className;
 		};		
 	},	
-	PRIVATES_KEY("A"),
-	PROPERTIES_KEY("P"),
-	OPERATIONS_KEY("O"),
 	DOC_ROOT("doc"),
 	DOC_ROOT_INDEX("doc/index.html"),
 	DOC_PACKAGESUMMARY("package-summary.html"),
-//	PROTECTED_VISIBLE(false) {
-//		public boolean getBoolean() {
-//			IPreferenceStore prefStore = AguiaJActivator.getDefault().getPreferenceStore();
-//			return prefStore.getBoolean(name());
-//		}
-//	},
-//	PACKAGEDEF_VISIBLE(false) {
-//		public boolean getBoolean() {
-//			IPreferenceStore prefStore = AguiaJActivator.getDefault().getPreferenceStore();
-//			return prefStore.getBoolean(name());
-//		}
-//	}, 
 	FEEDBACK_FORM_URL("https://spreadsheets.google.com/viewform?formkey=dDFIVW42MDZvUkdLc1BHS0dvVGlyeFE6MQ");
 
 	

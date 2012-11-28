@@ -232,6 +232,9 @@ public class ReflectionUtils {
 		if(classList.size() > 0)
 			packagesClasses.put(namespace, classList);
 
+		if(!currentPath.toFile().exists() || !currentPath.toFile().isDirectory())
+			return;
+		
 		for(File child : currentPath.toFile().listFiles()) {
 			if(child.isDirectory()) {
 				String nextNameSpace = namespace.equals("") ? child.getName() : namespace + "." + child.getName();
