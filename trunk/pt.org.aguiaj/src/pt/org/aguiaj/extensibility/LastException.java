@@ -15,8 +15,12 @@ public class LastException {
 	public final int line;
 	public final String[] args;
 
+	// TODO: review smell
 	public LastException(StackTraceElement element, String message, String[] args) {
-		fileName = element.getClassName().replaceAll("\\.", System.getProperty("file.separator")).concat(".java");
+		String slash = System.getProperty("file.separator");
+		if(slash.equals("\\"))
+			slash = "\\\\";
+		fileName = element.getClassName().replaceAll("\\.", slash).concat(".java");
 		line = element.getLineNumber();
 		this.message = message;
 		this.args = args;
