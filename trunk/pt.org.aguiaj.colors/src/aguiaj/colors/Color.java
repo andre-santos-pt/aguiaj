@@ -155,7 +155,7 @@ public class Color {
 	 * @return an integer within [0, 255]
 	 */
 	public int getLuminance() {
-		return (int) (0.3*r + 0.59*g + 0.11*b);
+		return (int) Math.round(0.3*r + 0.59*g + 0.11*b);
 	}
 	
 	/**

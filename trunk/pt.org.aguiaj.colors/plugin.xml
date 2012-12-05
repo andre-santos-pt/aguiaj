@@ -27,6 +27,9 @@
                <method
                      id="toGraytone">
                </method>
+               <method
+                     id="getLuminance">
+               </method>
             </includeFilter>
          </class>
       </group>
