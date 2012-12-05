@@ -74,5 +74,10 @@ extends CanvasVisualizationWidgetAdapter<Position> {
 		Image icon = position.getIcon();
 		if(icon != null)
 			Common.drawImage(icon, gc, 3, 3, 1);
+		
+		if(bgcolor.getLuminance() < 128)
+			gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
+		
+		gc.drawText("(" + position.getRow() + ", " + position.getColumn() + ")", 1, 1);
 	}	
 }
