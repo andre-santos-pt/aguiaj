@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
 import pt.org.aguiaj.aspects.ObjectModel;
+import pt.org.aguiaj.common.Reference;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.DocumentationView;
 import pt.org.aguiaj.core.Inspector;
@@ -155,7 +156,9 @@ public class MethodWidget {
 			args[i] = paramWidgets.get(i).getObject();
 			argsText[i] = paramWidgets.get(i).getTextualRepresentation();
 		}
-		String objectReference = object != null ? ObjectModel.getFirstReference(object).name : null;
+		
+		Reference ref = ObjectModel.getFirstReference(object);
+		String objectReference = object != null && ref != null ? ref.name : null;
 		MethodInvocationCommand cmd = new MethodInvocationCommand(object, objectReference, method, args, argsText);
 		cmd.execute();		
 	}

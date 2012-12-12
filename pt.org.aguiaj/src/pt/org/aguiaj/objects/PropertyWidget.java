@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import pt.org.aguiaj.aspects.ObjectModel;
+import pt.org.aguiaj.common.Reference;
 import pt.org.aguiaj.common.widgets.FieldContainer;
 import pt.org.aguiaj.common.widgets.LabelWidget;
 import pt.org.aguiaj.common.widgets.LabelWidget.ObjectToHighlightProvider;
@@ -30,7 +31,6 @@ import pt.org.aguiaj.core.typewidgets.WidgetProperty;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 public class PropertyWidget {
-	private Object holdingObject;
 	private TypeWidget widget;
 	
 	public PropertyWidget(Composite parent, final Object object, final Method propertyMethod, FieldContainer fieldContainer) {
@@ -60,18 +60,21 @@ public class PropertyWidget {
 					String ref = ObjectModel.getFirstReference(object).name;
 					MethodInvocationCommand command = new MethodInvocationCommand(object, ref, propertyMethod, new Object[0], new String[0]);
 					command.execute();
-					holdingObject = command.getResultingObject();
 				}
 			});
 			
 			label.addObjectHighlightCapability(new ObjectToHighlightProvider() {
 				@Override
 				public Object getObjectToHighlight() {
-					String ref = ObjectModel.getFirstReference(object).name;
-					MethodInvocationCommand command = new MethodInvocationCommand(object, ref, propertyMethod, new Object[0], new String[0]);
-					command.setSilent();
-					command.execute();
-					return command.getResultingObject();
+					Reference ref = ObjectModel.getFirstReference(object);
+					Object obj = null;
+					if(ref != null) {
+						MethodInvocationCommand command = new MethodInvocationCommand(object, ref.name, propertyMethod, new Object[0], new String[0]);
+						command.setSilent();
+						command.execute();
+						obj = command.getResultingObject();
+					}
+					return obj;
 				}
 			});
 		}
@@ -83,8 +86,5 @@ public class PropertyWidget {
 		
 		fieldContainer.mapToWidget(propertyMethod, widget);
 	}
-	
-	public void clearLink() {
-		holdingObject = null;
-	}
 }
+
