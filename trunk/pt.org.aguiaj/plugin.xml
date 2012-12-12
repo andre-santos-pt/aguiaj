@@ -237,6 +237,9 @@
                <method
                      id="equals">
                </method>
+               <method
+                     id="isEmpty">
+               </method>
             </includeFilter>
          </class>
          <class
