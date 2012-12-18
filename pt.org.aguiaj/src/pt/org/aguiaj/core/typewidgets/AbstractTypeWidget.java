@@ -25,12 +25,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
-import pt.org.aguiaj.aspects.ObjectModel;
 import pt.org.aguiaj.common.AguiaJColor;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.ArrayPositionAssignmentCommand;
 import pt.org.aguiaj.core.commands.java.AttributeAssignmentCommand;
+
+import pt.org.aguiaj.aspects.ObjectModel;
 
 public abstract class AbstractTypeWidget extends Composite implements TypeWidget {
 
@@ -42,9 +43,6 @@ public abstract class AbstractTypeWidget extends Composite implements TypeWidget
 
 	private Object arrayObject;
 	private int lineArray;
-
-//	private Color normalColor;
-	
 	
 	public AbstractTypeWidget(Composite parent, int style, WidgetProperty type, boolean modifiable) {
 		super(parent, style);
@@ -58,9 +56,6 @@ public abstract class AbstractTypeWidget extends Composite implements TypeWidget
 		lineArray = -1;	
 		
 		createContents(this);
-//		normalColor = parent.getBackground();
-//		setBackground(normalColor);
-//		normalColor = getBackground();
 	}
 	
 	protected abstract void createContents(Composite parent);
@@ -137,31 +132,4 @@ public abstract class AbstractTypeWidget extends Composite implements TypeWidget
 		
 		return null;
 	}	
-		
-	
-	public void highlight() {
-		if(!isDisposed()) {
-			setBackground(AguiaJColor.VALUECHANGE.getColor());
-			launchUnhilight();
-		}
-	}
-	
-	private void launchUnhilight() {
-		Job job = new Job("unhighlight") {
-
-			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-				
-				Display.getDefault().syncExec(new Runnable() {
-					@Override
-					public void run() {
-						if(!isDisposed())
-							setBackground(AguiaJColor.OBJECT.getColor());				
-					}
-				});
-				return Status.OK_STATUS;
-			}
-		};
-		job.schedule(AguiaJParam.HIGHLIGHT_TIMEOUT.getInt() * 1000);
-	}
 }

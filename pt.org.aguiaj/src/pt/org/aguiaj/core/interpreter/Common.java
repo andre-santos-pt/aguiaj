@@ -19,7 +19,7 @@ import java.util.Set;
 import pt.org.aguiaj.common.Reference;
 import pt.org.aguiaj.core.commands.java.ArrayObjectCreationCommand;
 import pt.org.aguiaj.core.commands.java.ConstructorInvocationCommand;
-import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
+import pt.org.aguiaj.core.commands.java.MethodInvocationCommand2;
 
 public class Common {
 	public final static String integerRegex = "\\-?\\d+";
@@ -163,17 +163,15 @@ public class Common {
 			Expression argExp = argsExp.get(i);
 
 			if(argExp instanceof MethodCall) {
-				MethodInvocationCommand cmd = ((MethodCall) argExp).getCommand();
+				MethodInvocationCommand2 cmd = ((MethodCall) argExp).getCommand();
 				cmd.setSilent();
 				cmd.execute();
-				cmd.waitToFinish();
 				args[i] = cmd.getResultingObject();
 			}
 			else if(argExp instanceof ConstructorCall) {
 				ConstructorInvocationCommand cmd = ((ConstructorCall) argExp).getCommand();
 				cmd.setSilent();
 				cmd.execute();
-				cmd.waitToFinish();
 				args[i] = cmd.getResultingObject();				
 			}	
 			else {

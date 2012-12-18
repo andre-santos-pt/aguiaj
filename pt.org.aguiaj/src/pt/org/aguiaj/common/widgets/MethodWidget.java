@@ -31,19 +31,18 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
-import pt.org.aguiaj.aspects.ObjectModel;
 import pt.org.aguiaj.common.Reference;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.DocumentationView;
 import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.TypeWidget;
-import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
+import pt.org.aguiaj.core.commands.java.MethodInvocationCommand2;
 import pt.org.aguiaj.core.typewidgets.AbstractTypeWidget;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
-
+import pt.org.aguiaj.aspects.ObjectModel;
 
 public class MethodWidget { 
 
@@ -55,6 +54,8 @@ public class MethodWidget {
 	private boolean inherited;
 	private boolean overriding;
 
+	private Button invokeButton;
+	
 	public MethodWidget(Composite parent, Class<?> clazz, Object object, final Method method, final FieldContainer fieldContainer) {
 		assert parent != null;
 		assert clazz != null;
@@ -84,7 +85,7 @@ public class MethodWidget {
 //		layout.marginWidth = 2;
 //		layout.marginHeight = 2;
 		comp.setLayout(new RowLayout());
-		final Button invokeButton = new Button(comp, SWT.PUSH);
+		invokeButton = new Button(comp, SWT.PUSH);
 		invokeButton.setText(StandardNamePolicy.prettyCommandName(method));
 		//		invokeButton.setBounds(5, 5, 80, 30);
 
@@ -159,7 +160,8 @@ public class MethodWidget {
 		
 		Reference ref = ObjectModel.getFirstReference(object);
 		String objectReference = object != null && ref != null ? ref.name : null;
-		MethodInvocationCommand cmd = new MethodInvocationCommand(object, objectReference, method, args, argsText);
-		cmd.execute();		
+		
+		MethodInvocationCommand2 cmd = new MethodInvocationCommand2(object, objectReference, method, args, argsText);
+		cmd.execute();
 	}
 }

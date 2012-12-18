@@ -28,10 +28,6 @@ public class GetIsAccessorPolicy implements AccessorMethodDetectionPolicy {
 	private static final String LETTER = CAPITAL_LETTER.toLowerCase();
 
 	
-	public static void main(String[] args) {
-		System.out.println(WORD_STARTING_CAPITAL);
-	}
-	
 	private static final String WORD_STARTING_CAPITAL = 
 		CAPITAL_LETTER + "(" + CAPITAL_LETTER + "|" + LETTER + ")*";
 	

@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -30,7 +29,7 @@ import pt.org.aguiaj.classes.ClassHierarchyComparator;
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.MethodNameComparator;
 import pt.org.aguiaj.extensibility.AccessorMethodDetectionPolicy;
-import pt.org.aguiaj.standard.StandardNamePolicy;
+import pt.org.aguiaj.standard.StandardInspectionPolicy;
 
 public class Inspector {
 
@@ -150,7 +149,10 @@ public class Inspector {
 		AccessorMethodDetectionPolicy accessorPolicy = AguiaJActivator.getDefault().getAccessorPolicy();
 
 		for(Method method : allMethods) {
-			if(method.getParameterTypes().length == 0 && accessorPolicy.isAccessorMethod(method))
+			if(StandardInspectionPolicy.isVisible(method) &&
+				method.getParameterTypes().length == 0 && 
+				accessorPolicy.isAccessorMethod(method))
+				
 				queryMethods.add(method);
 		}
 

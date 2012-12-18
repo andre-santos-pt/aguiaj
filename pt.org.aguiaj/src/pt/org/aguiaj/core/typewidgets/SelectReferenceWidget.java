@@ -171,11 +171,6 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 		}
 	}
 
-
-	public void highlight() {
-
-	}
-
 	public Control getControl() {
 		return combo;
 	}

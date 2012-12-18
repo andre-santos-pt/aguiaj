@@ -33,13 +33,11 @@ public aspect ObjectModel {
 	private final Map<String, Class<?>> referenceTypeTable;
 	private final IdentityObjectSet objectSet;
 
-	//	private final Map<String, Object> enumReferenceTable;
 
 	public ObjectModel() {
 		referenceTable = new LinkedHashMap<String, Object>();
 		referenceTypeTable = newHashMap();
 		objectSet = new IdentityObjectSet();
-		//		enumReferenceTable = new LinkedHashMap<String, Object>();
 	}	
 
 	public static ObjectModel getInstance() {
@@ -50,7 +48,6 @@ public aspect ObjectModel {
 		referenceTable.clear();
 		referenceTypeTable.clear();
 		objectSet.clear();
-		//		enumReferenceTable.clear();
 	}
 
 
@@ -64,8 +61,8 @@ public aspect ObjectModel {
 
 	before(Object object) : 
 		execution(void ObjectsView.addDeadObjectWidget(Object)) && args(object) {	
-		assert object != null;			
-		objectSet.add(object); 
+		if(object != null)
+			objectSet.add(object); 
 	}	
 
 	after(Class<?> type, String reference, Object object) :
@@ -175,11 +172,6 @@ public aspect ObjectModel {
 			if(!(o == NULL_OBJECT) && type.isInstance(o) && !isDeadObject(o))
 				set.add(o);
 
-
-//		for(Object o : enumReferenceTable.values())
-//			if(type.isInstance(o))
-//				set.add(o);
-
 		return set.objects();
 	}
 
@@ -234,17 +226,6 @@ public aspect ObjectModel {
 				refs.add(new Reference(r, refType, obj));
 			}
 		}
-
-//		for(String r : enumReferenceTable.keySet()) {
-//			Object obj = enumReferenceTable.get(r);
-//
-//			if(ClassModel.getInstance().isPluginTypeActive(obj.getClass()) &&
-//					type.isAssignableFrom(obj.getClass())) {
-//				Class<?> refType = referenceTypeTable.get(r);
-//				refs.add(new Reference(r, refType, obj));
-//			}
-//		}
-
 
 		for(Class<?> c : ClassModel.getInstance().getActivePluginTypes()) {	
 			//			if(!c.isEnum()) {

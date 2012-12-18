@@ -124,8 +124,4 @@ public class ExtensionTypeWidget extends AbstractTypeWidget {
 			}
 		}
 	}
-
-	public void highlight() {
-
-	}
 }

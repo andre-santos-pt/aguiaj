@@ -30,7 +30,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
-import pt.org.aguiaj.aspects.ObjectModel;
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.common.widgets.FieldContainer;
 import pt.org.aguiaj.core.AguiaJParam;
@@ -41,7 +40,7 @@ import pt.org.aguiaj.core.typewidgets.AbstractTypeWidget;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
 import pt.org.aguiaj.standard.StandardNamePolicy;
-
+import pt.org.aguiaj.aspects.ObjectModel;
 
 public class ConstructorWidget {
 

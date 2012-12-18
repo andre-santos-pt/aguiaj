@@ -24,15 +24,13 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 
 import pt.org.aguiaj.common.AguiaJColor;
-import pt.org.aguiaj.common.Highlightable;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.objects.ObjectsView;
 
 
-public class LabelWidget extends Composite implements Highlightable {
+public class LabelWidget extends Composite {
 	
 	private Control control;
-//	private HighlightableBorder border;
 	
 	private LabelWidget(Composite parent, Font font, String text, boolean link, 
 			boolean hasBorder, String tooltip, AguiaJColor color) {
@@ -66,11 +64,6 @@ public class LabelWidget extends Composite implements Highlightable {
 		((Link) control).addListener(SWT.Selection, listener);
 	}
 	
-
-	@Override
-	public void highlight() {
-
-	}	
 	
 	public void addObjectHighlightCapability(final ObjectToHighlightProvider provider) {
 		control.addMouseTrackListener(new MouseTrackListener() {

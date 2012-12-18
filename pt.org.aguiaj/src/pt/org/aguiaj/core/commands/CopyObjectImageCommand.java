@@ -8,7 +8,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
 import pt.org.aguiaj.common.SWTUtils;
-import pt.org.aguiaj.objects.ObjectWidget;
 import pt.org.aguiaj.objects.ReferenceObjectPairWidget;
 
 

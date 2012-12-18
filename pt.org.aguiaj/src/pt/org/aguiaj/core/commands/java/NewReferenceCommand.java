@@ -14,7 +14,6 @@ package pt.org.aguiaj.core.commands.java;
 
 import pt.org.aguiaj.aspects.ObjectModel;
 
-
 public class NewReferenceCommand extends JavaCommandWithReturn {
 
 	private Class<?> refType;

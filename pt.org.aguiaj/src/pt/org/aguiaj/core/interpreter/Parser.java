@@ -13,9 +13,9 @@ package pt.org.aguiaj.core.interpreter;
 import java.util.Map;
 import java.util.Set;
 
-import pt.org.aguiaj.aspects.ObjectModel;
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.Reference;
+import pt.org.aguiaj.aspects.ObjectModel;
 
 public class Parser {
 	

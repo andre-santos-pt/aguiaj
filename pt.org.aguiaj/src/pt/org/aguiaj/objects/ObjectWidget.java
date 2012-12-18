@@ -40,7 +40,6 @@ import org.eclipse.swt.widgets.MenuItem;
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.AguiaJColor;
 import pt.org.aguiaj.common.AguiaJImage;
-import pt.org.aguiaj.common.Highlightable;
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.common.widgets.AttributeWidget;
 import pt.org.aguiaj.common.widgets.FieldContainer;
@@ -60,7 +59,7 @@ import com.google.common.collect.Sets;
 
 // TODO fail-proof extensions
 
-public final class ObjectWidget extends FieldContainer implements Highlightable {
+public final class ObjectWidget extends FieldContainer {
 
 	private final Object object;
 	private final Class<?> objectClass;
@@ -502,6 +501,6 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		//			messageBox.open();
 		//		}
 		layout();
-		pack();				
+		pack();	
 	}	
 }

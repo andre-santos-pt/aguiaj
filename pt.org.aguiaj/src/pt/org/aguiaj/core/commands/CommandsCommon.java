@@ -10,7 +10,6 @@
  ******************************************************************************/
 package pt.org.aguiaj.core.commands;
 
-
 import pt.org.aguiaj.aspects.ObjectModel;
 
 
