@@ -12,7 +12,6 @@ package pt.org.aguiaj.core.commands.java;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
-
 import pt.org.aguiaj.aspects.ObjectModel;
 
 public class ArrayObjectCreationCommand extends JavaCommandWithReturn {

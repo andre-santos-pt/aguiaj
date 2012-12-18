@@ -30,7 +30,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
-import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
+import pt.org.aguiaj.core.commands.java.MethodInvocationCommand2;
 
 
 public class ReflectionUtils {
@@ -301,10 +301,9 @@ public class ReflectionUtils {
 				Method toStringMethod = getToStringMethod(object.getClass());
 
 				if(!toStringMethod.getDeclaringClass().equals(Object.class)) {
-					MethodInvocationCommand command = new MethodInvocationCommand(object, "na", toStringMethod, new Object[0], new String[0]);
+					MethodInvocationCommand2 command = new MethodInvocationCommand2(object, "na", toStringMethod, new Object[0], new String[0]);
 					command.setSilent();
 					command.execute();
-					command.waitToFinish();
 
 					if(command.failed())
 						return null;

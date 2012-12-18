@@ -14,29 +14,29 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
 
-import pt.org.aguiaj.aspects.ObjectModel;
-import pt.org.aguiaj.common.MethodInvocationThread;
+import pt.org.aguiaj.common.InfiniteCycleException;
+import pt.org.aguiaj.common.MethodInvocationThread2;
 import pt.org.aguiaj.common.SWTUtils;
-import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.UIText;
 import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 
+import pt.org.aguiaj.aspects.ObjectModel;
 
-public class MethodInvocationCommand extends JavaCommandWithReturn implements SeparateThreadCommand {	
+public class MethodInvocationCommand2 extends JavaCommandWithReturn {	
+	private Object object;
 	private String objectReference;
 	private Method method;
 	private String[] argsText;
 	private String reference;
-	private final MethodInvocationThread thread;
+	private final MethodInvocationThread2 thread;
 
-	public MethodInvocationCommand(Object object, String objectReference, Method method, Object[] args, String[] argsText) {
+	public MethodInvocationCommand2(Object object, String objectReference, Method method, Object[] args, String[] argsText) {
 		this(object, objectReference, method, args, argsText, ObjectModel.aspectOf().nextReference(method.getReturnType()));
 	}
 
-	public MethodInvocationCommand(Object object, String objectReference, Method method, Object[] args, String[] argsText, String reference) {
+	public MethodInvocationCommand2(Object object, String objectReference, Method method, Object[] args, String[] argsText, String reference) {
 		assert method != null;
 		assert args != null;
 		assert argsText != null;
@@ -47,14 +47,14 @@ public class MethodInvocationCommand extends JavaCommandWithReturn implements Se
 
 		assert ReflectionUtils.checkParamTypes(method.getParameterTypes(), args);
 
+		this.object = object;
 		this.method = method;
 		this.argsText = argsText;
 		this.reference = reference;
 		this.objectReference = objectReference;
 
-		thread = new MethodInvocationThread(method, object, args);
+		thread = new MethodInvocationThread2(method, object, args, invocationInstruction());
 	}
-
 
 
 	public Method getMethod() {
@@ -79,7 +79,7 @@ public class MethodInvocationCommand extends JavaCommandWithReturn implements Se
 	private String invocationInstruction() {
 		return method.getName() + params();
 	}
-	
+
 	private String params() {
 		String ret = "(";
 		for(int i = 0; i < argsText.length; i++) {
@@ -90,43 +90,12 @@ public class MethodInvocationCommand extends JavaCommandWithReturn implements Se
 		return ret + ")";
 	}
 
-	public synchronized void waitToFinish() {
-		try {
-			thread.join(AguiaJParam.METHOD_TIMEOUT.getInt() * 1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+	public void execute() {
+		thread.executeMethod();
+		if(thread.getException() != null) {
+			Throwable t = thread.getException().getCause();
+			ExceptionHandler.INSTANCE.handleException(method, argsText, t != null ? t : thread.getException());
 		}
-
-	}
-
-	public synchronized boolean failed() {
-		if(thread.isAlive())
-			return true;
-		else
-			return thread.hasFailed();
-	}
-
-	public synchronized void execute() {
-		thread.start();
-
-		Runnable runnable = new Runnable() {
-			@SuppressWarnings("deprecation")
-			@Override
-			public void run() {
-				waitToFinish();
-				if(thread.isAlive()) {					
-					thread.interrupt();					
-					thread.stop();	
-					String message = UIText.INFINITE_CYCLE_AT.get(invocationInstruction());
-					SWTUtils.showMessage(UIText.TOO_LONG_TIME.get(), message, SWT.ICON_WARNING);
-				}		
-				else if(thread.getException() != null) {
-					Throwable t = thread.getException().getCause();
-					ExceptionHandler.INSTANCE.handleException(method, argsText, t != null ? t : thread.getException());
-				}
-			}			
-		};		
-		Display.getDefault().asyncExec(runnable);
 	}
 
 	public String getReference() {
@@ -135,11 +104,6 @@ public class MethodInvocationCommand extends JavaCommandWithReturn implements Se
 
 
 	public Object getResultingObject() {
-		try {
-			thread.join(AguiaJParam.METHOD_TIMEOUT.getInt() * 1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		return thread.getResultingObject();
 	}
 
@@ -147,5 +111,10 @@ public class MethodInvocationCommand extends JavaCommandWithReturn implements Se
 	@Override
 	public Class<?> getReferenceType() { 
 		return method.getReturnType();
+	}
+
+	@Override
+	public boolean failed() {
+		return thread.hasFailed();
 	}
 }

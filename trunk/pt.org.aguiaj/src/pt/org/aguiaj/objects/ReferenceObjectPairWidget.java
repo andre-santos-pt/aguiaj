@@ -48,7 +48,6 @@ public class ReferenceObjectPairWidget extends Composite {
 		ReferenceWidget widget = new ReferenceWidget(referenceStack, id, type, object);
 		widget.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 		referenceWidgets.add(widget);
-//		widget.highlight();
 		layout();
 		getParent().layout();
 	}

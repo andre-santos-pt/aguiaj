@@ -33,6 +33,7 @@ import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.commands.java.JavaCommand;
 import pt.org.aguiaj.extensibility.AguiaJContribution;
+import pt.org.aguiaj.aspects.CommandMonitor;
 
 
 
@@ -69,6 +70,11 @@ public class HistoryView extends ViewPart {
 		list.setFont(new Font(Display.getDefault(), data));		
 		Menu menu = buildMenu(parent);		
 		list.setMenu(menu);
+		CommandMonitor.getInstance().addCommandEventListener(new CommandMonitor.CommandEventListener() {
+			public void commandExecuted(JavaCommand cmd) {
+				add(cmd);
+			}
+		});
 	}
 
 	private Menu buildMenu(Composite parent) {
@@ -101,7 +107,7 @@ public class HistoryView extends ViewPart {
 		return menu;
 	}
 
-	public void add(JavaCommand command) {
+	private void add(JavaCommand command) {
 		list.add(command.toString() + ";");	
 		list.setSelection(list.getItemCount()-1);
 	}

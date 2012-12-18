@@ -54,8 +54,12 @@ public class AguiaJHelper {
 		DocumentationView.getInstance().load(url);
 	}
 	
-	public static LastException getLastException() {
-		return ExceptionHandler.INSTANCE.getLastException();
+	public static TraceLocation getPreviousTraceLocation() {
+		return ExceptionHandler.INSTANCE.getPreviousLocation();
+	}
+	
+	public static TraceLocation getNextTraceLocation() {
+		return ExceptionHandler.INSTANCE.getNextLocation();
 	}
 
 	

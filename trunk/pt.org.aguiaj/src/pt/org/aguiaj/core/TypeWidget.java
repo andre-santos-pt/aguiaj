@@ -12,9 +12,8 @@ package pt.org.aguiaj.core;
 
 import org.eclipse.swt.widgets.Control;
 
-import pt.org.aguiaj.common.Highlightable;
 
-public interface TypeWidget extends Highlightable {
+public interface TypeWidget {
 	Object getObject();	
 	Control getControl();
 	void update(Object object);

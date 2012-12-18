@@ -10,6 +10,7 @@
  ******************************************************************************/
 package pt.org.aguiaj.core.exceptions;
 
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,33 +19,38 @@ import java.util.Set;
 
 import org.eclipse.swt.SWT;
 
-import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.PluggableExceptionHandler;
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.core.UIText;
-import pt.org.aguiaj.extensibility.LastException;
+import pt.org.aguiaj.extensibility.ExceptionTrace;
+import pt.org.aguiaj.extensibility.TraceLocation;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 public enum ExceptionHandler {
 	INSTANCE;
 	
 	private List<SpecificExceptionHandler> handlers;
-	private Set<Method> previousMethodErrors;
+	private Set<Member> previousMethodErrors;
 	
-	private LastException lastException;
+	private ExceptionTrace trace;
+	
 	private String[] lastArgs;
 	
 	private ExceptionHandler() {
 		handlers = new ArrayList<SpecificExceptionHandler>();
-		previousMethodErrors = new HashSet<Method>();
+		previousMethodErrors = new HashSet<Member>();
 	}
 
 	public void addHandler(SpecificExceptionHandler handler) {
 		handlers.add(handler);		
 	}
 
-	public LastException getLastException() {		
-		return lastException;
+	public TraceLocation getNextLocation() {
+		return trace != null && trace.hasNext() ? trace.getNext() : null;
+	}
+	
+	public TraceLocation getPreviousLocation() {
+		return trace != null && trace.hasPrevious() ? trace.getPrevious() : null;
 	}
 	
 	public String[] getLastArgs() {
@@ -55,7 +61,7 @@ public enum ExceptionHandler {
 		previousMethodErrors.clear();
 	}
 
-	public synchronized void handleException(Method method, String[] args, Throwable exception) {
+	public synchronized void handleException(Member member, String[] args, Throwable exception) {
 		String message = exception.getMessage();
 		if(message == null)
 			message = "";
@@ -70,25 +76,25 @@ public enum ExceptionHandler {
 		}
 		else if(exception instanceof StackOverflowError) {
 			title = UIText.STACK_OVERFLOW.get();
-			String methodText = method.getDeclaringClass().getSimpleName() + "." + method.getName() + "(..)";
+			String methodText = member.getDeclaringClass().getSimpleName() + "." + member.getName() + "(..)";
 			message = UIText.CHECK_METHOD_RECURSION.get(methodText);
-			if(method != null)
-				previousMethodErrors.add(method);
+			if(member != null)
+				previousMethodErrors.add(member);
 		}
 		else if(exception instanceof OutOfMemoryError) {
 			title = UIText.OUT_OF_MEMORY.get();
-			String methodText = method.getDeclaringClass().getSimpleName() + "." + method.getName() + "(..)";
+			String methodText = member.getDeclaringClass().getSimpleName() + "." + member.getName() + "(..)";
 			message = "Check method " + methodText + ".";
-			if(method != null)
-				previousMethodErrors.add(method);
+			if(member != null)
+				previousMethodErrors.add(member);
 		}
 		else if(exception instanceof Error) {
 			title = UIText.COMPILATION_ERRORS.get();
 			int line = exception.getStackTrace()[0].getLineNumber();
 			String className = exception.getStackTrace()[0].getClassName();
 			message = UIText.CHECK_CLASS_AT.get(className, line, exception.getMessage());
-			if(method != null)
-				previousMethodErrors.add(method);
+			if(member != null)
+				previousMethodErrors.add(member);
 		}
 		else {
 			for(SpecificExceptionHandler handler : handlers)
@@ -96,16 +102,9 @@ public enum ExceptionHandler {
 					message = handler.getMessage(exception);
 		}
 		
-		for(StackTraceElement traceElement : exception.getStackTrace()) {
-			String className = traceElement.getClassName();
-			
-			if(ClassModel.getInstance().isUserClass(className)) {
-				lastException = new LastException(traceElement, message, args);
-				message += "\n(line " +  lastException.line + ")";
-				break;
-			}
-		}
-		
+		trace = new ExceptionTrace(exception, message, args);
 		SWTUtils.showMessage(title, message, icon);
 	}
+
+	
 }

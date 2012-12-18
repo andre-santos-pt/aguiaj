@@ -12,7 +12,6 @@ package pt.org.aguiaj.core.commands.java;
 
 
 
-import pt.org.aguiaj.aspects.ObjectModel;
 import pt.org.aguiaj.core.commands.Command;
 import pt.org.aguiaj.objects.ObjectsView;
 

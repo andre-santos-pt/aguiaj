@@ -106,7 +106,6 @@ public class ConstructorCall extends Expression implements Instruction {
 		ConstructorInvocationCommand cmd = getCommand();
 		cmd.setSilent();
 		cmd.execute();
-		cmd.waitToFinish();
 		return cmd.getResultingObject();
 	}
 

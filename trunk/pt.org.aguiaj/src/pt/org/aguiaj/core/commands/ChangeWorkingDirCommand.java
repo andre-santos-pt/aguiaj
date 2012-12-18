@@ -19,8 +19,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.widgets.Display;
 
-import pt.org.aguiaj.aspects.ObjectModel;
 import pt.org.aguiaj.core.AguiaJActivator;
+import pt.org.aguiaj.aspects.ObjectModel;
 
 public class ChangeWorkingDirCommand extends AbstractHandler {
 

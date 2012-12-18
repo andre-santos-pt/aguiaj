@@ -10,8 +10,8 @@
  ******************************************************************************/
 package pt.org.aguiaj.core.commands;
 
-import pt.org.aguiaj.aspects.ObjectModel;
 import pt.org.aguiaj.objects.ObjectsView;
+import pt.org.aguiaj.aspects.ObjectModel;
 
 public class RemoveReferenceCommand implements Command {
 

@@ -17,7 +17,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-import pt.org.aguiaj.aspects.ObjectModel;
 import pt.org.aguiaj.common.Reference;
 import pt.org.aguiaj.common.widgets.FieldContainer;
 import pt.org.aguiaj.common.widgets.LabelWidget;
@@ -25,11 +24,11 @@ import pt.org.aguiaj.common.widgets.LabelWidget.ObjectToHighlightProvider;
 import pt.org.aguiaj.core.DocumentationView;
 import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.TypeWidget;
-import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
+import pt.org.aguiaj.core.commands.java.MethodInvocationCommand2;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
 import pt.org.aguiaj.standard.StandardNamePolicy;
-
+import pt.org.aguiaj.aspects.ObjectModel;
 public class PropertyWidget {
 	private TypeWidget widget;
 	
@@ -58,7 +57,7 @@ public class PropertyWidget {
 			label.addHyperlinkAction(new Listener () {
 				public void handleEvent(Event event) {
 					String ref = ObjectModel.getFirstReference(object).name;
-					MethodInvocationCommand command = new MethodInvocationCommand(object, ref, propertyMethod, new Object[0], new String[0]);
+					MethodInvocationCommand2 command = new MethodInvocationCommand2(object, ref, propertyMethod, new Object[0], new String[0]);
 					command.execute();
 				}
 			});
@@ -69,12 +68,12 @@ public class PropertyWidget {
 					Reference ref = ObjectModel.getFirstReference(object);
 					Object obj = null;
 					if(ref != null) {
-						MethodInvocationCommand command = new MethodInvocationCommand(object, ref.name, propertyMethod, new Object[0], new String[0]);
+						MethodInvocationCommand2 command = new MethodInvocationCommand2(object, ref.name, propertyMethod, new Object[0], new String[0]);
 						command.setSilent();
 						command.execute();
 						obj = command.getResultingObject();
 					}
-					return obj;
+					return obj;	
 				}
 			});
 		}

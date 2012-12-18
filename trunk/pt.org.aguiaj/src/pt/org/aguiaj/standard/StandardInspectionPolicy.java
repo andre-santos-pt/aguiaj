@@ -28,7 +28,7 @@ public class StandardInspectionPolicy implements InspectionPolicy {
 						|| Modifier.isPublic(clazz.getModifiers()));
 	}
 
-	private static boolean isVisible(Method method) {
+	public static boolean isVisible(Method method) {
 		return isOnDefaultPackage(method.getDeclaringClass()) ?
 				!Modifier.isPrivate(method.getModifiers()) 
 				: 

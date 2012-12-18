@@ -14,7 +14,6 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,7 +22,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.TypeWidget;
-import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
+import pt.org.aguiaj.core.commands.java.MethodInvocationCommand2;
 
 
 public class FieldContainer extends Composite {
@@ -115,10 +114,9 @@ public class FieldContainer extends Composite {
 	private void updateProperty(Method method, Object object) {
 		TypeWidget propWidget = fieldTable.get(method);
 		Object newVal = null;
-		MethodInvocationCommand command = new MethodInvocationCommand(object, "na", method, new Object[0], new String[0]);
+		MethodInvocationCommand2 command = new MethodInvocationCommand2(object, "na", method, new Object[0], new String[0]);
 		command.setSilent();
 		command.execute();		
-		command.waitToFinish();
 		newVal = command.getResultingObject();
 		updateTypeWidget(propWidget, method.getReturnType(), newVal);
 	}
@@ -152,7 +150,6 @@ public class FieldContainer extends Composite {
 		if(needsUpdate(widget, type, newVal, previous)) {
 			isDirty = true;
 			widget.update(newVal);
-			widget.highlight();			
 		}
 	}
 
@@ -195,18 +192,5 @@ public class FieldContainer extends Composite {
 		}
 
 		return update;
-	}
-	
-	
-	public static void main(String[] args) {
-		int[] v1 = {1,2,3};
-		int[] v2 = {1,4,3};
-		
-		int[][] m1 = {{1,2,3},{4}};
-		int[][] m2 = {{1,2,3},{6}};
-		Object o1 = m1;
-		Object o2 = m2;
-		
-		System.out.println(Arrays.deepEquals((Object[]) o1, (Object[])o2));
 	}
 }

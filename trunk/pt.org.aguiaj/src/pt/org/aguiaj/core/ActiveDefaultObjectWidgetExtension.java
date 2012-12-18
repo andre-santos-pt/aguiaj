@@ -15,7 +15,6 @@ import pt.org.aguiaj.extensibility.VisualizationWidget;
 import pt.org.aguiaj.standard.extensions.Array2DObjectWidget;
 import pt.org.aguiaj.standard.extensions.ArrayObjectWidget;
 import pt.org.aguiaj.standard.extensions.PluggableObjectWidget;
-import pt.org.aguiaj.standard.extensions.StringObjectWidget;
 
 public enum ActiveDefaultObjectWidgetExtension {	
 	ARRAYOBJECT(ArrayObjectWidget.class),

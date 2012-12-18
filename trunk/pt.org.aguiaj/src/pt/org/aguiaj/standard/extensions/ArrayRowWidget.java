@@ -28,7 +28,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-import pt.org.aguiaj.aspects.ObjectModel;
 import pt.org.aguiaj.common.AguiaJColor;
 import pt.org.aguiaj.common.widgets.FieldContainer;
 import pt.org.aguiaj.common.widgets.LabelWidget;
@@ -40,6 +39,7 @@ import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
 import pt.org.aguiaj.core.typewidgets.AbstractTypeWidget;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
+import pt.org.aguiaj.aspects.ObjectModel;
 
 class ArrayRowWidget extends Composite {
 

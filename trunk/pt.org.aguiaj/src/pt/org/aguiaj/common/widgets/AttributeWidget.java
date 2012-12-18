@@ -21,7 +21,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-import pt.org.aguiaj.aspects.ObjectModel;
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.widgets.LabelWidget.ObjectToHighlightProvider;
 import pt.org.aguiaj.core.DocumentationView;
@@ -33,8 +32,9 @@ import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
 import pt.org.aguiaj.core.typewidgets.AbstractTypeWidget;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
-import pt.org.aguiaj.objects.ObjectsView;
 import pt.org.aguiaj.standard.StandardNamePolicy;
+
+import pt.org.aguiaj.aspects.ObjectModel;
 
 public class AttributeWidget extends Composite {
 	

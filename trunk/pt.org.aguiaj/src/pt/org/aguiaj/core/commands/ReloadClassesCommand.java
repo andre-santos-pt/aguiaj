@@ -20,19 +20,20 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IPath;
 
-import pt.org.aguiaj.aspects.CommandMonitor;
-import pt.org.aguiaj.aspects.ObjectModel;
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.classes.ClassesView;
 import pt.org.aguiaj.core.AguiaJActivator;
 import pt.org.aguiaj.core.commands.java.ConstructorInvocationCommand;
 import pt.org.aguiaj.core.commands.java.JavaCommand;
-import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
+import pt.org.aguiaj.core.commands.java.MethodInvocationCommand2;
 import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 import pt.org.aguiaj.core.interpreter.Instruction;
 import pt.org.aguiaj.core.interpreter.Parser;
 import pt.org.aguiaj.objects.ObjectWidget;
 import pt.org.aguiaj.objects.ObjectsView;
+
+import pt.org.aguiaj.aspects.ObjectModel;
+import pt.org.aguiaj.aspects.CommandMonitor;
 
 public class ReloadClassesCommand extends AbstractHandler {
 	private IPath workingDir = null;	
@@ -98,8 +99,8 @@ public class ReloadClassesCommand extends AbstractHandler {
 						if(blackList.contains(clazz))
 							continue;
 					}
-					else if(javaCommand instanceof MethodInvocationCommand) {
-						Method method = ((MethodInvocationCommand) javaCommand).getMethod();
+					else if(javaCommand instanceof MethodInvocationCommand2) {
+						Method method = ((MethodInvocationCommand2) javaCommand).getMethod();
 						if(method.getReturnType().equals(void.class) || method.getReturnType().isPrimitive())
 							continue;
 					}

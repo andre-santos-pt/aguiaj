@@ -16,6 +16,7 @@ public abstract class JavaCommand implements Command {
 	
 	public abstract String getJavaInstruction();
 		
+	// TODO: review subclasses
 	public boolean failed() {
 		return false;
 	}

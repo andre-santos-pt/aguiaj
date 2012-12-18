@@ -11,6 +11,7 @@
 package pt.org.aguiaj.aspects;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,22 +28,31 @@ import pt.org.aguiaj.core.commands.RemoveObjectCommand;
 import pt.org.aguiaj.core.commands.RemoveReferenceCommand;
 import pt.org.aguiaj.core.commands.java.JavaCommand;
 import pt.org.aguiaj.core.commands.java.JavaCommandWithReturn;
-import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
-import pt.org.aguiaj.core.commands.java.SeparateThreadCommand;
+import pt.org.aguiaj.core.commands.java.MethodInvocationCommand2;
 import pt.org.aguiaj.objects.ObjectsView;
 
 
 
 public aspect CommandMonitor {
 	
+	public interface CommandEventListener {
+		void commandExecuted(JavaCommand cmd);
+	}
+	
 	private LinkedList<JavaCommand> activeCommands;
+	private List<CommandEventListener> listeners;
 	
 	public CommandMonitor() {
 		activeCommands = new LinkedList<JavaCommand>();
+		listeners = new ArrayList<CommandEventListener>();
 	}
 
 	public static CommandMonitor getInstance() {
 		return CommandMonitor.aspectOf();
+	}
+	
+	public void addCommandEventListener(CommandEventListener listener) {
+		listeners.add(listener);
 	}
 	
 	// adds every Java command to the stack
@@ -52,10 +62,6 @@ public aspect CommandMonitor {
 		if(command instanceof JavaCommandWithReturn &&
 				((JavaCommandWithReturn) command).isSilent())
 			return;
-		
-		if(command instanceof SeparateThreadCommand) {
-			((SeparateThreadCommand) command).waitToFinish();
-		}
 		
 		if(!command.failed()) {
 			addToStack(command);			
@@ -71,46 +77,40 @@ public aspect CommandMonitor {
 				((JavaCommandWithReturn) command).isSilent())
 			return;
 		
-		if(command instanceof SeparateThreadCommand) {
-			((SeparateThreadCommand) command).waitToFinish();
-		}
-		
 		ObjectsView.getInstance().updateObjectWidgets();
 		ClassesView.getInstance().updateClassWidgets();	
 	}
 
 	// updates objects and classes (except if reloading)
-	after(JavaCommand command) : 
-		execution(void JavaCommand.execute()) && this(command) && !this(JavaCommandWithReturn) {
-		JavaBarView.getInstance().highlight(command.getJavaInstruction());
-	}
+//	after(JavaCommand command) : 
+//		execution(void JavaCommand.execute()) && this(command) && !this(JavaCommandWithReturn) {
+//		JavaBarView.getInstance().highlight(command.getJavaInstruction());
+//	}
 	
 	// show primitive values returned from method invocation commands
-	after(MethodInvocationCommand command) : 
-		call(void JavaCommand.execute()) && target(command) && !this(ReloadClassesCommand) {
-		
-		if(command.isSilent())
-			return;
-		
-		command.waitToFinish();
-		
-		Object result = command.getResultingObject();
-
-		if(result instanceof Double) {
-			try {
-				result = new BigDecimal((Double) result).doubleValue();
-			}
-			catch(NumberFormatException e) {
-				result = 0.0;
-			}
-		}
-		Class<?> returnType = command.getMethod().getReturnType();
-		if(result != null && returnType.isPrimitive() && !returnType.equals(void.class)) {	
-			JavaBarView.getInstance().highlight(command.getJavaInstruction());
-			SWTUtils.showMessage(UIText.RETURN_VALUE.get(), result + "", SWT.ICON_WORKING);
-			JavaBarView.getInstance().clear();
-		}	
-	}
+//	after(MethodInvocationCommand2 command) : 
+//		call(void JavaCommand.execute()) && target(command) && !this(ReloadClassesCommand) {
+//		
+//		if(command.isSilent())
+//			return;
+//		
+//		Object result = command.getResultingObject();
+//
+//		if(result instanceof Double) {
+//			try {
+//				result = new BigDecimal((Double) result).doubleValue();
+//			}
+//			catch(NumberFormatException e) {
+//				result = 0.0;
+//			}
+//		}
+//		Class<?> returnType = command.getMethod().getReturnType();
+//		if(result != null && returnType.isPrimitive() && !returnType.equals(void.class)) {	
+//			JavaBarView.getInstance().highlight(command.getJavaInstruction());
+//			SWTUtils.showMessage(UIText.RETURN_VALUE.get(), result + "", SWT.ICON_WORKING);
+//			JavaBarView.getInstance().clear();
+//		}	
+//	}
 	
 	// after executing a command that results in an object
 	// if primitive, skip
@@ -122,14 +122,10 @@ public aspect CommandMonitor {
 		if(command.isSilent())
 			return;
 		
-		if(command instanceof SeparateThreadCommand) {
-			((SeparateThreadCommand) command).waitToFinish();
-		}
-		
 		if(command.failed())
 			return;
 		
-		Object invoker = thisJoinPoint.getThis();
+//		Object invoker = thisJoinPoint.getThis();
 		Object result = command.getResultingObject();
 		Class<?> refType = command.getReferenceType();
 				
@@ -141,17 +137,17 @@ public aspect CommandMonitor {
 		if(result != null) {
 			view.addObjectWidget(result, command.getReference(), refType);
 			
-			if(!(invoker instanceof ReloadClassesCommand)) {
-				JavaBarView.getInstance().highlight(command.getJavaInstruction());
-			}
+//			if(!(invoker instanceof ReloadClassesCommand)) {
+//				JavaBarView.getInstance().highlight(command.getJavaInstruction());
+//			}
 		}
 		else {
 			if(!refType.isPrimitive())
 				view.addReference(refType, command.getReference(), null);
 			
-			if(!(invoker instanceof ReloadClassesCommand)) {
-				JavaBarView.getInstance().highlight(command.getJavaInstruction());
-			}
+//			if(!(invoker instanceof ReloadClassesCommand)) {
+//				JavaBarView.getInstance().highlight(command.getJavaInstruction());
+//			}
 		}
 	}
 
@@ -199,7 +195,10 @@ public aspect CommandMonitor {
 	
 	private void addToStack(JavaCommand command) {
 		activeCommands.add(command);
-		HistoryView.getInstance().add(command);
+		for(CommandEventListener l : listeners)
+			l.commandExecuted(command);
+		
+//		HistoryView.getInstance().add(command);
 	}
 	
 	public void clearStack() {

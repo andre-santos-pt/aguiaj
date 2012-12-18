@@ -10,6 +10,8 @@
  ******************************************************************************/
 package pt.org.aguiaj.core.commands;
 
+import java.math.BigDecimal;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -17,7 +19,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.FillLayout;
@@ -27,34 +28,55 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISizeProvider;
 import org.eclipse.ui.part.ViewPart;
 
-import pt.org.aguiaj.aspects.CommandMonitor;
-import pt.org.aguiaj.aspects.ObjectModel;
 import pt.org.aguiaj.classes.ClassModel;
-import pt.org.aguiaj.common.AguiaJColor;
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.UIText;
 import pt.org.aguiaj.core.commands.java.JavaCommand;
+import pt.org.aguiaj.core.commands.java.MethodInvocationCommand2;
 import pt.org.aguiaj.core.interpreter.Instruction;
 import pt.org.aguiaj.core.interpreter.ParseException;
 import pt.org.aguiaj.core.interpreter.Parser;
 import pt.org.aguiaj.extensibility.AguiaJContribution;
 
+import pt.org.aguiaj.aspects.ObjectModel;
+import pt.org.aguiaj.aspects.CommandMonitor;
+
 public class JavaBarView extends ViewPart implements ISizeProvider {
 	private Composite bar;	
 
 	private static JavaBarView instance;
-	private Color defaultColor;
 	private Text instructionBar;
 	private JavaCommand lastCommand;
+	private CommandMonitor monitor;
 
 	public void createPartControl(Composite parent) {
 		instance = this;
-
+		monitor = CommandMonitor.getInstance();
 		bar = new Composite(parent, SWT.BORDER);
 		bar.setLayout(new FillLayout());		
-		createInstructionBar();		
-		defaultColor = instructionBar.getBackground();	
+		createInstructionBar();	
+		monitor.addCommandEventListener(new CommandMonitor.CommandEventListener()  {
+			public void commandExecuted(JavaCommand cmd) {
+				setLine(cmd.getJavaInstruction());
+				if(cmd instanceof MethodInvocationCommand2) {
+					Class<?> returnType = ((MethodInvocationCommand2) cmd).getMethod().getReturnType();
+					Object result = ((MethodInvocationCommand2) cmd).getResultingObject();
+					if(result instanceof Double) {
+						try {
+							result = new BigDecimal((Double) result).doubleValue();
+						}
+						catch(NumberFormatException e) {
+							result = 0.0;
+						}
+					}
+					if(result != null && returnType.isPrimitive() && !returnType.equals(void.class)) {	
+						SWTUtils.showMessage(UIText.RETURN_VALUE.get(), result + "", SWT.ICON_WORKING);
+						clear();
+					}	
+				}
+			}
+		});
 	}
 
 
@@ -83,23 +105,24 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 
 			public void keyPressed(KeyEvent event) {
 				if(event.keyCode == SWT.CR && !instructionBar.getText().equals("")) {
-					executeCommand();		
+					executeCommand();
+					clear();
 				}
 				else if(event.keyCode == SWT.ARROW_UP) {
-					if(lastCommand != null && CommandMonitor.aspectOf().isFirstCommand(lastCommand))
+					if(lastCommand != null && monitor.isFirstCommand(lastCommand))
 						clear();
 					else {
-						lastCommand = CommandMonitor.aspectOf().getCommandBefore(lastCommand);
+						lastCommand = monitor.getCommandBefore(lastCommand);
 						if(lastCommand != null)
 							setLine(lastCommand.getJavaInstruction());
 					}
 
 				}
 				else if(event.keyCode == SWT.ARROW_DOWN) {
-					if(lastCommand != null && CommandMonitor.aspectOf().isLastCommand(lastCommand))
+					if(lastCommand != null && monitor.isLastCommand(lastCommand))
 						clear();
 					else {
-						lastCommand = CommandMonitor.aspectOf().getCommandAfter(lastCommand);
+						lastCommand = monitor.getCommandAfter(lastCommand);
 						if(lastCommand != null)
 							setLine(lastCommand.getJavaInstruction());
 					}
@@ -129,7 +152,7 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 		String input = instructionBar.getText().trim();
 		if(input.endsWith(";"))
 			input = input.substring(0,input.length()-1);
-		
+
 		Instruction instruction = null;
 		JavaCommand command = null;
 
@@ -169,56 +192,34 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 		}
 	}
 
-	public void setLine(final String line) {
+	private Job clearJob;
+	private void setLine(final String line) {
 		instructionBar.setText(line);
-	}
-
-	public void clear() {
-		instructionBar.setText("");
-		unhighlight();
-		lastCommand = null;
-	}
-
-	public void highlight(String line) {
-		setLine(line);
-		bar.setBackground(AguiaJColor.HIGHLIGHT.getColor());
-		instructionBar.setBackground(AguiaJColor.HIGHLIGHT.getColor());
-		bar.layout();
-		launchStatusUnhilight();
-	}
-
-	public void unhighlight() {
-		bar.setBackground(defaultColor);
-		instructionBar.setBackground(defaultColor);
-		bar.layout();
-	}
-
-	private Job statusUnhilightJob;
-
-	private void launchStatusUnhilight() {
-		if(statusUnhilightJob != null)
-			synchronized (statusUnhilightJob) {
-				statusUnhilightJob.cancel();
-			}
-
-		statusUnhilightJob = new Job("javabar highlight") {
-
+		if(clearJob != null)
+			clearJob.cancel();
+		clearJob = new Job("javabar") {
+			
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				Display.getDefault().syncExec(new Runnable() {
-
+					
 					@Override
 					public void run() {
-						JavaBarView.getInstance().clear();
-						if(statusUnhilightJob != null)
-							synchronized (statusUnhilightJob) {
-								statusUnhilightJob = null;
-							}						
+						instructionBar.setText("");
 					}
 				});
 				return Status.OK_STATUS;
 			}
 		};
-		statusUnhilightJob.schedule(AguiaJParam.HIGHLIGHT_TIMEOUT.getInt() * 1000);
+		clearJob.schedule(AguiaJParam.HIGHLIGHT_TIMEOUT.getInt() * 1000);
 	}
+
+	public void clear() {
+		instructionBar.setText("");
+		lastCommand = null;
+	}
+
+	//	public void highlight(String line) {
+	//		setLine(line);
+	//	}
 }

@@ -42,15 +42,17 @@ import pt.org.aguiaj.common.widgets.NullReferenceWidget;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.commands.ReloadClassesCommand;
 import pt.org.aguiaj.core.commands.RemoveObjectsCommand;
+import pt.org.aguiaj.core.commands.java.JavaCommand;
 import pt.org.aguiaj.extensibility.AguiaJContribution;
 import pt.org.aguiaj.aspects.ObjectModel;
 import pt.org.aguiaj.aspects.CommandMonitor;
+import pt.org.aguiaj.aspects.ObjectModelRefactor;
 
-public class ObjectsView extends ViewPart {
+public class ObjectsViewRefactor extends ViewPart {
 
 	private static final int padding = 20;
 
-	private static ObjectsView instance;
+	private static ObjectsViewRefactor instance;
 
 	private Composite area;
 	private ScrolledComposite scrl;
@@ -67,12 +69,41 @@ public class ObjectsView extends ViewPart {
 
 	private Map<String, ReferenceWidget> nullReferenceMap;
 
+	private class ObjectListener implements ObjectModelRefactor.EventListener {
 
-	public ObjectsView() {
-		instance = this;	
+		@Override
+		public void newObjectEvent(Object obj) {
+			
+		}
+
+		@Override
+		public void removeObjectEvent(Object obj) {
+			remove(obj);
+		}
+
+		@Override
+		public void newReferenceEvent(Reference ref) {
+			addObjectWidget(ref.object, ref.name, ref.type);
+		}
+
+		@Override
+		public void removeReferenceEvent(Reference ref) {
+			removeReference(ref.name);
+		}
+
+		@Override
+		public void commandExecuted(JavaCommand cmd) {
+			updateObjectWidgets();
+		}
+		
 	}
 
-	public static ObjectsView getInstance() {
+	public ObjectsViewRefactor() {
+		instance = this;
+		ObjectModelRefactor.getInstance().addEventListener(new ObjectListener());
+	}
+
+	public static ObjectsViewRefactor getInstance() {
 		if(instance == null)			
 			SWTUtils.showView(AguiaJContribution.OBJECTS_VIEW);			
 
@@ -183,9 +214,9 @@ public class ObjectsView extends ViewPart {
 				
 				List<Reference> nullRefs = ObjectModel.aspectOf().getNullReferences();
 				for(Reference ref : nullRefs)
-					ObjectsView.getInstance().removeNullReference(ref.name);
+					ObjectsViewRefactor.getInstance().removeNullReference(ref.name);
 				
-				ObjectsView.getInstance().unhighlight();
+				ObjectsViewRefactor.getInstance().unhighlight();
 				CommandMonitor.aspectOf().clearStack();
 			}
 		};
@@ -229,7 +260,7 @@ public class ObjectsView extends ViewPart {
 
 
 
-	public void addObjectWidget(Object object, String reference, Class<?> referenceType) {
+	private void addObjectWidget(Object object, String reference, Class<?> referenceType) {
 		assert object != null;
 		assert reference != null;
 		assert referenceType != null;
@@ -246,7 +277,7 @@ public class ObjectsView extends ViewPart {
 		updateLayout(reference);
 	}
 
-	public void addDeadObjectWidget(Object object) {
+	private void addDeadObjectWidget(Object object) {
 		if(object == null)
 			return;
 		
@@ -262,7 +293,7 @@ public class ObjectsView extends ViewPart {
 	}
 
 
-	public void addReference(Class<?> type, String reference, Object object) {
+	private void addReference(Class<?> type, String reference, Object object) {
 		if(object == null) {
 			if(!nullReferenceMap.containsKey(reference)) {
 				ReferenceObjectPairWidget widget = getRefAndObjectPairWidget(reference);
@@ -297,13 +328,13 @@ public class ObjectsView extends ViewPart {
 	}
 
 
-	public void removeReference(String id) {
+	private void removeReference(String id) {
 		ReferenceObjectPairWidget widget = getRefAndObjectPairWidget(id);
 		if(widget != null)
 			widget.removeReference(id);
 	}	
 
-	public void removeNullReference(String id) {
+	private void removeNullReference(String id) {
 		if(nullReferenceMap.containsKey(id)) {
 			nullReferenceMap.get(id).dispose();
 			nullReferenceMap.remove(id);
@@ -359,7 +390,7 @@ public class ObjectsView extends ViewPart {
 		new RemoveObjectsCommand(allObjects).execute();
 	}
 
-	public void remove(Object object) {
+	private void remove(Object object) {
 		ObjectWidget widget = getObjectWidget(object);
 
 		if(widget != null) {
@@ -407,7 +438,7 @@ public class ObjectsView extends ViewPart {
 		highlighted = null;
 	}
 
-	public void updateObjectWidgets() {
+	private void updateObjectWidgets() {
 		for(ObjectWidget widget : widgetsTable.values())
 			widget.updateFields();
 
@@ -444,7 +475,7 @@ public class ObjectsView extends ViewPart {
 				Display.getDefault().syncExec(new Runnable() {
 					@Override
 					public void run() {
-						ObjectsView.getInstance().unhighlight();						
+						ObjectsViewRefactor.getInstance().unhighlight();						
 					}
 				});
 				return Status.OK_STATUS;
