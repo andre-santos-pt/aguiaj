@@ -39,8 +39,8 @@ import pt.org.aguiaj.core.commands.java.ConstructorInvocationCommand;
 import pt.org.aguiaj.core.typewidgets.AbstractTypeWidget;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
+import pt.org.aguiaj.objects.ObjectModel;
 import pt.org.aguiaj.standard.StandardNamePolicy;
-import pt.org.aguiaj.aspects.ObjectModel;
 
 public class ConstructorWidget {
 
@@ -118,14 +118,8 @@ public class ConstructorWidget {
 		for(int i = 0; i < args.length; i++)
 			args[i] = params.get(i).getObject();
 		
-		ConstructorInvocationCommand command = new ConstructorInvocationCommand(constructor, args, ObjectModel.aspectOf().nextReference(clazz), clazz);
-		try {
-			command.execute();
-		}
-		catch(RuntimeException e) {
-			e.printStackTrace();
-			SWTUtils.showMessage("Too long time executing...", "Infinite cycle?", SWT.ICON_WARNING);
-		}
+		ConstructorInvocationCommand command = new ConstructorInvocationCommand(constructor, args, ObjectModel.getInstance().nextReference(clazz), clazz);
+		ObjectModel.getInstance().execute(command);
 	}
 	
 	

@@ -142,7 +142,6 @@ public class TableArrayObjectWidget implements VisualizationWidget<Object> {
 
 				for(Method m : properties) {							
 					MethodInvocationCommand2 cmd = new MethodInvocationCommand2(element, "", m, new Object[0], new String[0]);
-					cmd.setSilent();
 					cmd.execute();
 					Object val = cmd.getResultingObject();
 					data[i][j++] = val == null ? "null" : val.toString();

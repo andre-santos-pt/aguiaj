@@ -104,7 +104,6 @@ public class ConstructorCall extends Expression implements Instruction {
 	@Override
 	public Object resolve() throws ParseException {
 		ConstructorInvocationCommand cmd = getCommand();
-		cmd.setSilent();
 		cmd.execute();
 		return cmd.getResultingObject();
 	}

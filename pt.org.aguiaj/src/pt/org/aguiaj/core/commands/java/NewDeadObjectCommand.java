@@ -12,11 +12,11 @@ package pt.org.aguiaj.core.commands.java;
 
 
 
-import pt.org.aguiaj.core.commands.Command;
-import pt.org.aguiaj.objects.ObjectsView;
+import pt.org.aguiaj.core.commands.ObjectModelCommand;
+import pt.org.aguiaj.objects.ObjectModel;
 
 
-public class NewDeadObjectCommand implements Command {
+public class NewDeadObjectCommand extends ObjectModelCommand {
 
 	private Object object;
 	
@@ -24,9 +24,9 @@ public class NewDeadObjectCommand implements Command {
 		this.object = object;
 	}
 
-	
-	public void execute() {
-		ObjectsView.getInstance().addDeadObjectWidget(object);
+	@Override
+	protected void execute(ObjectModel model) {
+		model.addObject(object);		
 	}
 	
 }

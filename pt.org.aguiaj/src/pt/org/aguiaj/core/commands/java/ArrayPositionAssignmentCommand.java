@@ -73,4 +73,12 @@ public class ArrayPositionAssignmentCommand extends JavaCommand {
 			throw runtimeEx;
 		}
 	}
+
+
+
+	@Override
+	public String getReference() {
+		return arrayReference;
+	}
+	
 }

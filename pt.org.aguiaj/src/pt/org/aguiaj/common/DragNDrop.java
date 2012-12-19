@@ -137,7 +137,7 @@ public class DragNDrop {
 //					}
 //					else {
 //						TextBuffer text = new TextBuffer(data);
-//						ObjectsView.getInstance().addObjectWidget(text, ObjectModel.aspectOf().nextReference(TextBuffer.class), TextBuffer.class);					
+//						ObjectsView.getInstance().addObjectWidget(text, ObjectModelRefactor.getInstance().nextReference(TextBuffer.class), TextBuffer.class);					
 //					}
 //				}
 			}

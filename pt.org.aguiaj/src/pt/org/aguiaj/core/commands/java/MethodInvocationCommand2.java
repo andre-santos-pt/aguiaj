@@ -21,8 +21,8 @@ import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.UIText;
 import pt.org.aguiaj.core.exceptions.ExceptionHandler;
+import pt.org.aguiaj.objects.ObjectModel;
 
-import pt.org.aguiaj.aspects.ObjectModel;
 
 public class MethodInvocationCommand2 extends JavaCommandWithReturn {	
 	private Object object;
@@ -33,7 +33,7 @@ public class MethodInvocationCommand2 extends JavaCommandWithReturn {
 	private final MethodInvocationThread2 thread;
 
 	public MethodInvocationCommand2(Object object, String objectReference, Method method, Object[] args, String[] argsText) {
-		this(object, objectReference, method, args, argsText, ObjectModel.aspectOf().nextReference(method.getReturnType()));
+		this(object, objectReference, method, args, argsText, ObjectModel.getInstance().nextReference(method.getReturnType()));
 	}
 
 	public MethodInvocationCommand2(Object object, String objectReference, Method method, Object[] args, String[] argsText, String reference) {

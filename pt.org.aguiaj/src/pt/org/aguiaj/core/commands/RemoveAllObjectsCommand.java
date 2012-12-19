@@ -10,24 +10,14 @@
  ******************************************************************************/
 package pt.org.aguiaj.core.commands;
 
-import java.util.Collection;
+import pt.org.aguiaj.objects.ObjectModel;
 
 
-public class RemoveObjectsCommand implements Command {
 
-	private Collection<Object> objects;
+public class RemoveAllObjectsCommand extends ObjectModelCommand {
 	
-	public RemoveObjectsCommand(Collection<Object> objects) {
-		this.objects = objects;
-	}
-	
-	
-	public void execute() {
-		for(Object object : objects.toArray())
-			new RemoveObjectCommand(object).execute();
-		
-		HistoryView.getInstance().clear();
-		System.gc();
-	}
-
+		@Override
+		protected void execute(ObjectModel model) {
+			model.clearAll();
+		}
 }

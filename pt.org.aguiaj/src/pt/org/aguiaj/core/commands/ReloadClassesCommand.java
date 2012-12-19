@@ -29,11 +29,10 @@ import pt.org.aguiaj.core.commands.java.MethodInvocationCommand2;
 import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 import pt.org.aguiaj.core.interpreter.Instruction;
 import pt.org.aguiaj.core.interpreter.Parser;
+import pt.org.aguiaj.objects.ObjectModel;
 import pt.org.aguiaj.objects.ObjectWidget;
 import pt.org.aguiaj.objects.ObjectsView;
 
-import pt.org.aguiaj.aspects.ObjectModel;
-import pt.org.aguiaj.aspects.CommandMonitor;
 
 public class ReloadClassesCommand extends AbstractHandler {
 	private IPath workingDir = null;	
@@ -42,53 +41,46 @@ public class ReloadClassesCommand extends AbstractHandler {
 		this.workingDir = workingDir;
 	}
 
+	private List<String> expandedPrivates = new ArrayList<String>();
+	private List<String> expandedOperations = new ArrayList<String>();
 
 	@Override
-	//	@MonitorExecution
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		List<String> commands = new ArrayList<String>();
-		for(JavaCommand c : CommandMonitor.aspectOf().getActiveCommands()) {
+		for(JavaCommand c : ObjectModel.getInstance().getActiveCommands()) {
 			String instruction = c.getJavaInstruction();
 			if(instruction != null)
 				commands.add(instruction);
 		}
 
 		ObjectsView objectsView = ObjectsView.getInstance();
+		objectsView.hide();
 
-		List<String> expandedPrivates = new ArrayList<String>();
-		List<String> expandedOperations = new ArrayList<String>();
-		
-		if(objectsView != null) {
-			expandedPrivates.addAll(objectsView.getReferencesForExpandedPrivatesObjects());
-			expandedOperations.addAll(objectsView.getReferencesForExpandedOperationsObjects());
-			objectsView.hide();
-			objectsView.removeAll();
-		}
-		
-		
-		CommandMonitor.getInstance().clearStack();
-		ClassModel.getInstance().clearClasses();
+		saveExpanded();
+
 		ExceptionHandler.INSTANCE.clearErrors();
-		HistoryView.getInstance().clear();	
-		ObjectModel.getInstance().clear();
-		
+		ClassModel.getInstance().clearClasses();
+		ObjectModel.getInstance().clearAll();
+
 		if(workingDir == null)
 			AguiaJActivator.getDefault().reloadClasses();
 		else
 			AguiaJActivator.getDefault().loadClasses(workingDir);
-		
+
 		Collection<Class<?>> allClasses = AguiaJActivator.getDefault().getPackagesClasses().values();
-		
+
 		for(Class<?> c : allClasses)
 			ClassModel.getInstance().addClass(c);
-		
+
 		ClassesView.getInstance().reload(workingDir);				
 
+		ObjectModel.getInstance().addStaticReferences(allClasses);
+		
 		List<Class<?>> blackList = new ArrayList<Class<?>>();
 		for(String command : commands) {
 			try {
 				Instruction instruction = Parser.accept(command, 
-						ObjectModel.aspectOf().getReferenceTable(), 
+						ObjectModel.getInstance().getReferenceTable(), 
 						ClassModel.getInstance().getAllClasses());
 
 				if(instruction != null) {
@@ -105,7 +97,7 @@ public class ReloadClassesCommand extends AbstractHandler {
 							continue;
 					}
 
-					javaCommand.execute();
+					ObjectModel.getInstance().execute(javaCommand);
 
 					if(javaCommand instanceof ConstructorInvocationCommand && javaCommand.failed()) {
 						blackList.add(((ConstructorInvocationCommand) javaCommand).getConstructor().getDeclaringClass());
@@ -113,33 +105,41 @@ public class ReloadClassesCommand extends AbstractHandler {
 				}
 
 			} catch (Exception e) {
-//				System.err.println(e.getMessage() + " -- " + command);
+				//				System.err.println(e.getMessage() + " -- " + command);
 				//				e.printStackTrace();
 				//StackTraceElement element = e.getStackTrace()[0];
 				//				System.err.println(e.getMessage() + " - " + element.getClassName() + " (line " + element + ")");
 			}
 		}
 
-		objectsView.updateObjectWidgets();
+		restoreExpanded();
+		ClassesView.getInstance().updateClassWidgets();	
+		objectsView.show();
 
+		return null;
+	}
+
+	private void restoreExpanded() {
+		ObjectsView objectsView = ObjectsView.getInstance();
+		
 		for(String ref : expandedPrivates) {
 			ObjectWidget widget = objectsView.getObjectWidgetByReference(ref);
 			if(widget != null)
 				widget.showPrivateAttributes(true);
 		}
-		
+
 		for(String ref : expandedOperations) {
 			ObjectWidget widget = objectsView.getObjectWidgetByReference(ref);
 			if(widget != null)
 				widget.showOperations(true);
 		}
+	}
 
-		ClassesView.getInstance().updateClassWidgets();	
-		JavaBarView.getInstance().clear();
-
-		objectsView.show();
-
-		return null;
+	private void saveExpanded() {
+		ObjectsView objectsView = ObjectsView.getInstance();
+		expandedPrivates.addAll(objectsView.getReferencesForExpandedPrivatesObjects());
+		expandedOperations.addAll(objectsView.getReferencesForExpandedOperationsObjects());
+		objectsView.hide();
 	}
 
 

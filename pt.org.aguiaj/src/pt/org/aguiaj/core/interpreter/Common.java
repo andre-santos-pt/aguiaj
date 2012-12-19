@@ -164,13 +164,11 @@ public class Common {
 
 			if(argExp instanceof MethodCall) {
 				MethodInvocationCommand2 cmd = ((MethodCall) argExp).getCommand();
-				cmd.setSilent();
 				cmd.execute();
 				args[i] = cmd.getResultingObject();
 			}
 			else if(argExp instanceof ConstructorCall) {
 				ConstructorInvocationCommand cmd = ((ConstructorCall) argExp).getCommand();
-				cmd.setSilent();
 				cmd.execute();
 				args[i] = cmd.getResultingObject();				
 			}	

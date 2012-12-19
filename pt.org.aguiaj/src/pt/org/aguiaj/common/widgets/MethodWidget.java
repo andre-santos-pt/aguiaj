@@ -40,9 +40,9 @@ import pt.org.aguiaj.core.commands.java.MethodInvocationCommand2;
 import pt.org.aguiaj.core.typewidgets.AbstractTypeWidget;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
+import pt.org.aguiaj.objects.ObjectModel;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
-import pt.org.aguiaj.aspects.ObjectModel;
 
 public class MethodWidget { 
 
@@ -162,6 +162,6 @@ public class MethodWidget {
 		String objectReference = object != null && ref != null ? ref.name : null;
 		
 		MethodInvocationCommand2 cmd = new MethodInvocationCommand2(object, objectReference, method, args, argsText);
-		cmd.execute();
+		ObjectModel.getInstance().execute(cmd);
 	}
 }

@@ -12,7 +12,7 @@ package pt.org.aguiaj.core.commands.java;
 
 
 
-import pt.org.aguiaj.aspects.ObjectModel;
+import pt.org.aguiaj.objects.ObjectModel;
 
 public class NewReferenceCommand extends JavaCommandWithReturn {
 

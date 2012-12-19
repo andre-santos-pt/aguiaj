@@ -41,10 +41,10 @@ import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.common.widgets.NullReferenceWidget;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.commands.ReloadClassesCommand;
-import pt.org.aguiaj.core.commands.RemoveObjectsCommand;
+import pt.org.aguiaj.core.commands.RemoveAllObjectsCommand;
+import pt.org.aguiaj.core.commands.RemoveDeadObjectsCommand;
+import pt.org.aguiaj.core.commands.java.JavaCommand;
 import pt.org.aguiaj.extensibility.AguiaJContribution;
-import pt.org.aguiaj.aspects.ObjectModel;
-import pt.org.aguiaj.aspects.CommandMonitor;
 
 public class ObjectsView extends ViewPart {
 
@@ -67,9 +67,51 @@ public class ObjectsView extends ViewPart {
 
 	private Map<String, ReferenceWidget> nullReferenceMap;
 
+	private class ObjectListener extends ObjectModel.EventListenerAdapter {
+
+		@Override
+		public void newObjectEvent(Object obj) {
+			addDeadObjectWidget(obj);
+		}
+
+		@Override
+		public void removeObjectEvent(Object obj) {
+			remove(obj);
+			
+		}
+
+		@Override
+		public void newReferenceEvent(Reference ref) {
+			if(ref.object != null)
+				addObjectWidget(ref.object, ref.name, ref.type);
+			else
+				addNullReference(ref.type, ref.name);
+		}
+
+		@Override
+		public void changeReferenceEvent(Reference ref) {
+			addReference(ref.type, ref.name, ref.object);
+		}
+		
+		@Override
+		public void removeReferenceEvent(Reference ref) {
+			removeReference(ref.name);
+		}
+
+		@Override
+		public void commandExecuted(JavaCommand cmd) {
+			updateObjectWidgets();
+		}
+
+		@Override
+		public void clearAll() {
+			clearAllWidgets();
+		}
+	}
 
 	public ObjectsView() {
-		instance = this;	
+		instance = this;
+		ObjectModel.getInstance().addEventListener(new ObjectListener());
 	}
 
 	public static ObjectsView getInstance() {
@@ -120,6 +162,20 @@ public class ObjectsView extends ViewPart {
 		DragNDrop.addFileDragNDropSupportObjectArea(area);
 	}
 
+	private void clearAllWidgets() {
+		for(ReferenceWidget w : nullReferenceMap.values()) {
+			w.dispose();
+		}
+		nullRefWidget.setVisible(false);
+			
+		for(ReferenceObjectPairWidget w : refAndObjectPairsTable.values())
+			w.dispose();
+		
+		refAndObjectPairsTable.clear();
+		widgetsTable.clear();
+		nullReferenceMap.clear();
+		area.layout();
+	}
 
 	// update to last created widget ...
 	public void updateLayout(String reference) {
@@ -174,29 +230,17 @@ public class ObjectsView extends ViewPart {
 		toolbarManager.add(refreshAction);
 
 		Action removeAllAction = new Action("Remove all") {
-			public void run() { 	
-				List<Object> objs = Arrays.asList(ObjectModel.aspectOf().getAllObjects());
-				new RemoveObjectsCommand(objs).execute();
-
-				List<Object> dead = Arrays.asList(ObjectModel.aspectOf().getDeadObjects());
-				new RemoveObjectsCommand(dead).execute();
-				
-				List<Reference> nullRefs = ObjectModel.aspectOf().getNullReferences();
-				for(Reference ref : nullRefs)
-					ObjectsView.getInstance().removeNullReference(ref.name);
-				
-				ObjectsView.getInstance().unhighlight();
-				CommandMonitor.aspectOf().clearStack();
+			public void run() { 
+				new RemoveAllObjectsCommand().execute();
 			}
 		};
+		
 		removeAllAction.setImageDescriptor(AguiaJImage.DELETE.getImageDescriptor());
 		toolbarManager.add(removeAllAction);
 
 		Action removeDeadAction = new Action("Garbage collection") {
 			public void run() { 
-				List<Object> objs = Arrays.asList(ObjectModel.aspectOf().getDeadObjects());
-				new RemoveObjectsCommand(objs).execute();
-				updateObjectWidgets();
+				new RemoveDeadObjectsCommand().execute();
 			}
 		};
 		removeDeadAction.setImageDescriptor(AguiaJImage.DELETEDEAD.getImageDescriptor());
@@ -229,7 +273,7 @@ public class ObjectsView extends ViewPart {
 
 
 
-	public void addObjectWidget(Object object, String reference, Class<?> referenceType) {
+	private void addObjectWidget(Object object, String reference, Class<?> referenceType) {
 		assert object != null;
 		assert reference != null;
 		assert referenceType != null;
@@ -262,7 +306,7 @@ public class ObjectsView extends ViewPart {
 	}
 
 
-	public void addReference(Class<?> type, String reference, Object object) {
+	private void addReference(Class<?> type, String reference, Object object) {
 		if(object == null) {
 			if(!nullReferenceMap.containsKey(reference)) {
 				ReferenceObjectPairWidget widget = getRefAndObjectPairWidget(reference);
@@ -281,7 +325,7 @@ public class ObjectsView extends ViewPart {
 	private void addNonNullReference(Class<?> type, String reference, Object object) {		
 		if(nullReferenceMap.containsKey(reference))
 			removeNullReference(reference);
-		else if(ObjectModel.aspectOf().isReferenceInUse(reference))
+		else if(ObjectModel.getInstance().isReferenceInUse(reference))
 			removeReference(reference);
 
 		ReferenceObjectPairWidget widget = refAndObjectPairsTable.get(object);
@@ -297,13 +341,15 @@ public class ObjectsView extends ViewPart {
 	}
 
 
-	public void removeReference(String id) {
-		ReferenceObjectPairWidget widget = getRefAndObjectPairWidget(id);
+	private void removeReference(String name) {
+		ReferenceObjectPairWidget widget = getRefAndObjectPairWidget(name);
 		if(widget != null)
-			widget.removeReference(id);
+			widget.removeReference(name);
+		else
+			removeNullReference(name);
 	}	
 
-	public void removeNullReference(String id) {
+	private void removeNullReference(String id) {
 		if(nullReferenceMap.containsKey(id)) {
 			nullReferenceMap.get(id).dispose();
 			nullReferenceMap.remove(id);
@@ -349,17 +395,7 @@ public class ObjectsView extends ViewPart {
 	}
 
 
-	public void removeAll() {
-		List<Object> allObjects = new ArrayList<Object>();
-		allObjects.addAll(widgetsTable.keySet());
-
-		for(String ref : nullReferenceMap.keySet().toArray(new String[nullReferenceMap.keySet().size()]))
-			removeNullReference(ref);
-
-		new RemoveObjectsCommand(allObjects).execute();
-	}
-
-	public void remove(Object object) {
+	private void remove(Object object) {
 		ObjectWidget widget = getObjectWidget(object);
 
 		if(widget != null) {
@@ -407,7 +443,7 @@ public class ObjectsView extends ViewPart {
 		highlighted = null;
 	}
 
-	public void updateObjectWidgets() {
+	private void updateObjectWidgets() {
 		for(ObjectWidget widget : widgetsTable.values())
 			widget.updateFields();
 

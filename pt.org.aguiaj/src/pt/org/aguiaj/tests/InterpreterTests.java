@@ -118,7 +118,6 @@ public class InterpreterTests {
 		JavaCommand cmd = inst.getCommand();
 		assertTrue(cmd instanceof JavaCommandWithReturn);
 		JavaCommandWithReturn jcmd = (JavaCommandWithReturn) cmd;
-		jcmd.setSilent();
 		jcmd.execute();			
 		
 		if(exp.expected.getClass().isArray()) {

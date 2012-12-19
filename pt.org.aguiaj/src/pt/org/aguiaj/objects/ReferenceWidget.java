@@ -70,6 +70,7 @@ public class ReferenceWidget extends Composite {
 		
 		Menu menu = createMenu();
 		setMenu(menu);
+		refBox.setMenu(menu);
 		
 		LabelWidget label = 
 			new LabelWidget.Builder()

@@ -8,7 +8,7 @@
  * Contributors:
  *     André L. Santos - initial API and implementation
  ******************************************************************************/
-package pt.org.aguiaj.aspects;
+package pt.org.aguiaj.objects;
 
 import java.util.Arrays;
 

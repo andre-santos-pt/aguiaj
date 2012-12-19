@@ -23,7 +23,7 @@ import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.UIText;
 import pt.org.aguiaj.core.commands.CommandsCommon;
 import pt.org.aguiaj.core.exceptions.ExceptionHandler;
-import pt.org.aguiaj.aspects.ObjectModel;
+import pt.org.aguiaj.objects.ObjectModel;
 
 public class ConstructorInvocationCommand extends JavaCommandWithReturn {
 
@@ -36,7 +36,7 @@ public class ConstructorInvocationCommand extends JavaCommandWithReturn {
 	private ConstructorInvocationThread thread;
 	
 	public ConstructorInvocationCommand(final Constructor<?> constructor, Object[] args) {
-		this(constructor, args, ObjectModel.aspectOf().nextReference(constructor.getDeclaringClass()), constructor.getDeclaringClass());
+		this(constructor, args, ObjectModel.getInstance().nextReference(constructor.getDeclaringClass()), constructor.getDeclaringClass());
 	}
 	
 	public ConstructorInvocationCommand(final Constructor<?> constructor, Object[] args, String reference, Class<?> referenceType) {

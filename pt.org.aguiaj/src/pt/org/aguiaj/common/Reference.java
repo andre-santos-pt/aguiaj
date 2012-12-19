@@ -18,6 +18,12 @@ public class Reference {
 	public final Object object;
 	
 	public Reference(String name, Class<?> type, Object object) {
+		if(name == null)
+			throw new IllegalArgumentException("name cannot be null");
+		
+		if(type == null)
+			throw new IllegalArgumentException("type cannot be null");
+		
 		this.name = name;
 		this.type = type;
 		this.object = object;

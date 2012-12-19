@@ -14,6 +14,7 @@ import pt.org.aguiaj.core.commands.Command;
 
 public abstract class JavaCommand implements Command {
 	
+	public abstract String getReference();
 	public abstract String getJavaInstruction();
 		
 	// TODO: review subclasses

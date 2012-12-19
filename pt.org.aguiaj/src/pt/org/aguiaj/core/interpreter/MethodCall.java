@@ -142,7 +142,6 @@ public class MethodCall extends Expression implements Instruction {
 	@Override
 	public Object resolve() {
 		MethodInvocationCommand2 cmd = getCommand();
-		cmd.setSilent();
 		cmd.execute();
 		return cmd.getResultingObject();
 	}

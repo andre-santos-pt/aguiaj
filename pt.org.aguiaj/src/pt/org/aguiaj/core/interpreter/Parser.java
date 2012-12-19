@@ -15,7 +15,7 @@ import java.util.Set;
 
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.Reference;
-import pt.org.aguiaj.aspects.ObjectModel;
+import pt.org.aguiaj.objects.ObjectModel;
 
 public class Parser {
 	

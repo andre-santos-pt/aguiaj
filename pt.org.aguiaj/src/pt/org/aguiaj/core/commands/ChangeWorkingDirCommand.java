@@ -20,7 +20,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.swt.widgets.Display;
 
 import pt.org.aguiaj.core.AguiaJActivator;
-import pt.org.aguiaj.aspects.ObjectModel;
+import pt.org.aguiaj.objects.ObjectModel;
 
 public class ChangeWorkingDirCommand extends AbstractHandler {
 
@@ -37,8 +37,7 @@ public class ChangeWorkingDirCommand extends AbstractHandler {
 			workingDir = dia.open();
 		}
 		
-		RemoveObjectsCommand removeObjectsCommand = new RemoveObjectsCommand(Arrays.asList(ObjectModel.aspectOf().getAllObjects()));
-		removeObjectsCommand.execute();
+		new RemoveAllObjectsCommand().execute();
 
 		ReloadClassesCommand reloadCommand = new ReloadClassesCommand();
 		reloadCommand.setWorkingDir(workingDir);
