@@ -10,26 +10,19 @@
  ******************************************************************************/
 package pt.org.aguiaj.core.commands;
 
-import pt.org.aguiaj.objects.ObjectsView;
-import pt.org.aguiaj.aspects.ObjectModel;
+import pt.org.aguiaj.objects.ObjectModel;
 
-public class RemoveReferenceCommand implements Command {
+public class RemoveReferenceCommand extends ObjectModelCommand {
 
-	private String referenceName;
+	private String name;
 	
-	public RemoveReferenceCommand(String referenceName) {
-		this.referenceName = referenceName;
+	public RemoveReferenceCommand(String name) {
+		this.name = name;
 	}
-	
-	public String referenceName() {
-		return referenceName;
-	}
-	
-	public void execute() {
-		if(ObjectModel.aspectOf().isNullReference(referenceName))			
-			ObjectsView.getInstance().removeNullReference(referenceName);
-		else
-			ObjectsView.getInstance().removeReference(referenceName);
+
+	@Override
+	protected void execute(ObjectModel model) {
+		model.removeReference(name);
 	}
 
 }

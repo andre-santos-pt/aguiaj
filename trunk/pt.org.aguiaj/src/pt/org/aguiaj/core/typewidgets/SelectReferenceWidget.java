@@ -10,9 +10,12 @@
  ******************************************************************************/
 package pt.org.aguiaj.core.typewidgets;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.RowData;
@@ -24,6 +27,7 @@ import org.eclipse.swt.widgets.Control;
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.Reference;
 import pt.org.aguiaj.common.widgets.IconWidget;
+import pt.org.aguiaj.objects.ObjectModel;
 
 public class SelectReferenceWidget extends ReferenceTypeWidget {
 	private static final int NULL_INDEX = 0;
@@ -37,6 +41,8 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 
 	private Composite border;
 
+	private ObjectModel.EventListener listener;
+	
 	public SelectReferenceWidget(final Composite parent, Class<?> clazz, final WidgetProperty type) {
 		super(parent, SWT.NONE, clazz, type, true);
 		this.type = type;
@@ -79,10 +85,44 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 				}
 			});
 		}
+		
+		setObjects(ObjectModel.getInstance().getCompatibleReferences(getType()));
+		
+		listener = new ObjectModel.EventListenerAdapter() {
+			@Override
+			public void newReferenceEvent(Reference ref) {
+				if(getType().isAssignableFrom(ref.type)) {
+					setObjects(ObjectModel.getInstance().getCompatibleReferences(getType()));
+				}
+			}
+			
+			@Override
+			public void removeReferenceEvent(Reference ref) {
+				if(getType().isAssignableFrom(ref.type)) {
+					setObjects(ObjectModel.getInstance().getCompatibleReferences(getType()));
+				}
+			}
+			
+			@Override
+			public void clearAll() {
+				List<Reference> empty = Collections.emptyList();
+				if(!combo.isDisposed())
+					setObjects(empty);
+			}
+		};
+		
+		ObjectModel.getInstance().addEventListener(listener);
+		
+		combo.addDisposeListener(new DisposeListener() {
+			@Override
+			public void widgetDisposed(DisposeEvent e) {
+				ObjectModel.getInstance().removeEventListener(listener);
+			}
+		});
 	}
 
 
-	public void setObjects(List<Reference> newReferences) {
+	private void setObjects(List<Reference> newReferences) {
 		int selectedIndex = combo.getSelectionIndex();
 		String selected = null;
 		Object object = getObject();
@@ -115,8 +155,6 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 			}	
 		}
 	}
-
-
 
 
 	public Object getObject() {

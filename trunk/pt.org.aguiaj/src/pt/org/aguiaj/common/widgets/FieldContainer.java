@@ -115,7 +115,6 @@ public class FieldContainer extends Composite {
 		TypeWidget propWidget = fieldTable.get(method);
 		Object newVal = null;
 		MethodInvocationCommand2 command = new MethodInvocationCommand2(object, "na", method, new Object[0], new String[0]);
-		command.setSilent();
 		command.execute();		
 		newVal = command.getResultingObject();
 		updateTypeWidget(propWidget, method.getReturnType(), newVal);

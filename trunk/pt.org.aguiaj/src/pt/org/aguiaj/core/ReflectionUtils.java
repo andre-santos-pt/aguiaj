@@ -302,7 +302,6 @@ public class ReflectionUtils {
 
 				if(!toStringMethod.getDeclaringClass().equals(Object.class)) {
 					MethodInvocationCommand2 command = new MethodInvocationCommand2(object, "na", toStringMethod, new Object[0], new String[0]);
-					command.setSilent();
 					command.execute();
 
 					if(command.failed())

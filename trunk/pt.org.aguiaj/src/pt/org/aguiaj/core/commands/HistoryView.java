@@ -33,7 +33,7 @@ import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.commands.java.JavaCommand;
 import pt.org.aguiaj.extensibility.AguiaJContribution;
-import pt.org.aguiaj.aspects.CommandMonitor;
+import pt.org.aguiaj.objects.ObjectModel;
 
 
 
@@ -70,9 +70,21 @@ public class HistoryView extends ViewPart {
 		list.setFont(new Font(Display.getDefault(), data));		
 		Menu menu = buildMenu(parent);		
 		list.setMenu(menu);
-		CommandMonitor.getInstance().addCommandEventListener(new CommandMonitor.CommandEventListener() {
+		ObjectModel.getInstance().addEventListener(new ObjectModel.EventListenerAdapter() {
 			public void commandExecuted(JavaCommand cmd) {
 				add(cmd);
+			}
+			
+			@Override
+			public void clearAll() {
+				clear();
+			}
+
+			@Override
+			public void commandRemoved(JavaCommand cmd) {
+				for(String item : list.getItems())
+					if(item.equals(statement(cmd)))
+						list.remove(item);
 			}
 		});
 	}
@@ -107,12 +119,16 @@ public class HistoryView extends ViewPart {
 		return menu;
 	}
 
+	private String statement(JavaCommand command) {
+		return command.getJavaInstruction() + ";";
+	}
+	
 	private void add(JavaCommand command) {
-		list.add(command.toString() + ";");	
+		list.add(statement(command));	
 		list.setSelection(list.getItemCount()-1);
 	}
 
-	public void clear() {
+	private void clear() {
 		list.removeAll();
 	}
 

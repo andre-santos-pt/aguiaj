@@ -39,7 +39,7 @@ import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
 import pt.org.aguiaj.core.typewidgets.AbstractTypeWidget;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
-import pt.org.aguiaj.aspects.ObjectModel;
+import pt.org.aguiaj.objects.ObjectModel;
 
 class ArrayRowWidget extends Composite {
 
@@ -121,7 +121,7 @@ class ArrayRowWidget extends Composite {
 				label.addHyperlinkAction(new Listener() {
 					public void handleEvent(Event e) {
 						JavaCommand cmd = createAccessCommand(iTmp);
-						cmd.execute();
+						ObjectModel.getInstance().execute(cmd);
 					}
 				});
 				label.addObjectHighlightCapability(new ObjectToHighlightProvider() {						

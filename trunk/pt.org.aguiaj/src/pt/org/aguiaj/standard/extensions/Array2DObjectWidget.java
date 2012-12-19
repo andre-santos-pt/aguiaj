@@ -30,8 +30,8 @@ import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
 import pt.org.aguiaj.extensibility.VisualizationWidget;
+import pt.org.aguiaj.objects.ObjectModel;
 
-import pt.org.aguiaj.aspects.ObjectModel;
 
 @PluggableObjectWidget({
 	int[][].class, 

@@ -30,8 +30,9 @@ import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.ArrayPositionAssignmentCommand;
 import pt.org.aguiaj.core.commands.java.AttributeAssignmentCommand;
+import pt.org.aguiaj.core.commands.java.JavaCommand;
+import pt.org.aguiaj.objects.ObjectModel;
 
-import pt.org.aguiaj.aspects.ObjectModel;
 
 public abstract class AbstractTypeWidget extends Composite implements TypeWidget {
 
@@ -84,7 +85,8 @@ public abstract class AbstractTypeWidget extends Composite implements TypeWidget
 	}
 
 	protected final void modifyAttribute(String expression) {
-		new AttributeAssignmentCommand(attributeOwner, attributeField, getObject(), expression).execute();
+		JavaCommand cmd = new AttributeAssignmentCommand(attributeOwner, attributeField, getObject(), expression);
+		ObjectModel.getInstance().execute(cmd);
 		try {
 			Object val = attributeField.get(attributeOwner);
 			update(val);
@@ -95,7 +97,8 @@ public abstract class AbstractTypeWidget extends Composite implements TypeWidget
 	
 	protected final void modifyArrayPosition(String expression) {
 		String ref = ObjectModel.getFirstReference(arrayObject).name;
-		new ArrayPositionAssignmentCommand(arrayObject, ref, new int[] {lineArray}, getObject(), expression).execute();
+		JavaCommand cmd = new ArrayPositionAssignmentCommand(arrayObject, ref, new int[] {lineArray}, getObject(), expression);
+		ObjectModel.getInstance().execute(cmd);
 	}
 
 

@@ -8,17 +8,16 @@
  * Contributors:
  *     André L. Santos - initial API and implementation
  ******************************************************************************/
-package pt.org.aguiaj.aspects;
+package pt.org.aguiaj.core.commands;
 
-public aspect PolicyEnforcement {
+import pt.org.aguiaj.objects.ObjectModel;
 
-	declare warning
-	: get(java.io.PrintStream System.out) &&
-	!within(pt.aguiaj.debug..*)
-	: "illegal access to System.out";
 
-	declare warning
-	: get(java.io.PrintStream System.err) &&
-	!within(pt.aguiaj.debug..*)
-	: "review access to System.err";
+
+public class RemoveDeadObjectsCommand extends ObjectModelCommand {
+	
+		@Override
+		protected void execute(ObjectModel model) {
+			model.removeDeadObjects();
+		}
 }

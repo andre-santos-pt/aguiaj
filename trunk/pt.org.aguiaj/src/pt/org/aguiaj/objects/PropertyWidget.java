@@ -28,7 +28,6 @@ import pt.org.aguiaj.core.commands.java.MethodInvocationCommand2;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
 import pt.org.aguiaj.standard.StandardNamePolicy;
-import pt.org.aguiaj.aspects.ObjectModel;
 public class PropertyWidget {
 	private TypeWidget widget;
 	
@@ -58,7 +57,7 @@ public class PropertyWidget {
 				public void handleEvent(Event event) {
 					String ref = ObjectModel.getFirstReference(object).name;
 					MethodInvocationCommand2 command = new MethodInvocationCommand2(object, ref, propertyMethod, new Object[0], new String[0]);
-					command.execute();
+					ObjectModel.getInstance().execute(command);
 				}
 			});
 			
@@ -69,7 +68,6 @@ public class PropertyWidget {
 					Object obj = null;
 					if(ref != null) {
 						MethodInvocationCommand2 command = new MethodInvocationCommand2(object, ref.name, propertyMethod, new Object[0], new String[0]);
-						command.setSilent();
 						command.execute();
 						obj = command.getResultingObject();
 					}

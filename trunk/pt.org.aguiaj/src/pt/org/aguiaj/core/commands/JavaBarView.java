@@ -38,9 +38,8 @@ import pt.org.aguiaj.core.interpreter.Instruction;
 import pt.org.aguiaj.core.interpreter.ParseException;
 import pt.org.aguiaj.core.interpreter.Parser;
 import pt.org.aguiaj.extensibility.AguiaJContribution;
+import pt.org.aguiaj.objects.ObjectModel;
 
-import pt.org.aguiaj.aspects.ObjectModel;
-import pt.org.aguiaj.aspects.CommandMonitor;
 
 public class JavaBarView extends ViewPart implements ISizeProvider {
 	private Composite bar;	
@@ -48,15 +47,16 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 	private static JavaBarView instance;
 	private Text instructionBar;
 	private JavaCommand lastCommand;
-	private CommandMonitor monitor;
+	private ObjectModel model;
 
 	public void createPartControl(Composite parent) {
 		instance = this;
-		monitor = CommandMonitor.getInstance();
+		model = ObjectModel.getInstance();
 		bar = new Composite(parent, SWT.BORDER);
 		bar.setLayout(new FillLayout());		
-		createInstructionBar();	
-		monitor.addCommandEventListener(new CommandMonitor.CommandEventListener()  {
+		createInstructionBar();
+		model.addEventListener(new ObjectModel.EventListenerAdapter() {
+			@Override
 			public void commandExecuted(JavaCommand cmd) {
 				setLine(cmd.getJavaInstruction());
 				if(cmd instanceof MethodInvocationCommand2) {
@@ -109,20 +109,20 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 					clear();
 				}
 				else if(event.keyCode == SWT.ARROW_UP) {
-					if(lastCommand != null && monitor.isFirstCommand(lastCommand))
+					if(lastCommand != null && model.isFirstCommand(lastCommand))
 						clear();
 					else {
-						lastCommand = monitor.getCommandBefore(lastCommand);
+						lastCommand = model.getCommandBefore(lastCommand);
 						if(lastCommand != null)
 							setLine(lastCommand.getJavaInstruction());
 					}
 
 				}
 				else if(event.keyCode == SWT.ARROW_DOWN) {
-					if(lastCommand != null && monitor.isLastCommand(lastCommand))
+					if(lastCommand != null && model.isLastCommand(lastCommand))
 						clear();
 					else {
-						lastCommand = monitor.getCommandAfter(lastCommand);
+						lastCommand = model.getCommandAfter(lastCommand);
 						if(lastCommand != null)
 							setLine(lastCommand.getJavaInstruction());
 					}
@@ -182,6 +182,7 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 		}			
 
 		if(command != null) {
+			ObjectModel.getInstance().execute(command);
 			try {
 				command.execute();
 			}
@@ -214,7 +215,7 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 		clearJob.schedule(AguiaJParam.HIGHLIGHT_TIMEOUT.getInt() * 1000);
 	}
 
-	public void clear() {
+	private void clear() {
 		instructionBar.setText("");
 		lastCommand = null;
 	}

@@ -575,8 +575,10 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		for(IPath path : workingDirs) {
 			Map<String,List<Class<?>>> classes = ReflectionUtils.readClassFiles(path);
 
-			for(String key : classes.keySet()) {
-				ret.putAll(key, classes.get(key));
+			if(ret.isEmpty()) {
+				for(String key : classes.keySet()) {
+					ret.putAll(key, classes.get(key));
+				}
 			}
 		}
 

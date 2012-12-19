@@ -95,7 +95,6 @@ public class ArrayCreation extends Expression implements Instruction {
 	@Override
 	public Object resolve() {
 		JavaCommandWithReturn cmd = getCommand();
-		cmd.setSilent();
 		cmd.execute();
 		return cmd.getResultingObject();
 	}

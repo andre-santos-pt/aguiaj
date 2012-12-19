@@ -10,11 +10,13 @@
  ******************************************************************************/
 package pt.org.aguiaj.core.commands.java;
 
+import pt.org.aguiaj.objects.ObjectModel;
 
 
-public class ReferenceSetCommand extends JavaCommandWithReturn {
 
-	private String refId;
+public class ReferenceSetCommand extends JavaCommand {
+
+	private String name;
 	private Object object;
 	private Class<?> refType;
 	private String targetRef;
@@ -23,35 +25,26 @@ public class ReferenceSetCommand extends JavaCommandWithReturn {
 		assert refId != null;
 		assert refType != null;
 		
-		this.refId = refId;
+		this.name = refId;
 		this.refType = refType;
 		this.object = object;
 		this.targetRef = targetRef;
 	}
 
 
-	
+	@Override
 	public String getJavaInstruction() {
-		return refId + " = " + targetRef; 
-	}
-
-	
-	public void execute() {
-//		ObjectsView.getInstance().addReference(refType, refId, object);
-	}
-
-	
-	public String getReference() {
-		return refId;
-	}
-
-	
-	public Object getResultingObject() {
-		return object;
+		return name + " = " + targetRef; 
 	}
 
 	@Override
-	public Class<?> getReferenceType() {
-		return refType;
+	public void execute() {
+		ObjectModel.getInstance().changeReference(name, object);
+	}
+
+
+	@Override
+	public String getReference() {
+		return name;
 	}
 }

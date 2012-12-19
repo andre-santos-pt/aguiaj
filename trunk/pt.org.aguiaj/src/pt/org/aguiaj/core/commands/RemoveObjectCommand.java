@@ -10,22 +10,19 @@
  ******************************************************************************/
 package pt.org.aguiaj.core.commands;
 
-import pt.org.aguiaj.objects.ObjectsView;
+import pt.org.aguiaj.objects.ObjectModel;
 
-public class RemoveObjectCommand implements Command {
+public class RemoveObjectCommand extends ObjectModelCommand {
 
 	private Object object;
 	
 	public RemoveObjectCommand(Object object) {
 		this.object = object;
 	}
-	
-	
-	public void execute() {
-		ObjectsView.getInstance().remove(object);
-	}
 
-	public Object getObject() {
-		return object;
+	@Override
+	protected void execute(ObjectModel model) {
+		model.removeObject(object);
+		
 	}
 }

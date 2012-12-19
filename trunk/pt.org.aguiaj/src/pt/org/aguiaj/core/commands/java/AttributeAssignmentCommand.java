@@ -14,7 +14,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import pt.org.aguiaj.common.Reference;
-import pt.org.aguiaj.aspects.ObjectModel;
+import pt.org.aguiaj.objects.ObjectModel;
+import pt.org.aguiaj.objects.ObjectModel.EventListener;
 
 public class AttributeAssignmentCommand extends JavaCommand {	
 	private Object owner;
@@ -94,5 +95,10 @@ public class AttributeAssignmentCommand extends JavaCommand {
 		catch (Exception e) {
 			e.printStackTrace();
 		} 
+	}
+	
+	@Override
+	public String getReference() {
+		return reference;
 	}
 }

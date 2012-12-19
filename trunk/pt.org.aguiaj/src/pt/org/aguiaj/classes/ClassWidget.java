@@ -26,7 +26,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Listener;
 
-import pt.org.aguiaj.aspects.ObjectModel;
 import pt.org.aguiaj.common.widgets.AttributeWidget;
 import pt.org.aguiaj.common.widgets.FieldContainer;
 import pt.org.aguiaj.common.widgets.IconWidget;
@@ -36,6 +35,7 @@ import pt.org.aguiaj.common.widgets.MethodWidget;
 import pt.org.aguiaj.core.DocumentationView;
 import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
+import pt.org.aguiaj.objects.ObjectModel;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 
@@ -139,7 +139,7 @@ public class ClassWidget extends FieldContainer {
 						try {
 							Object enumConst = field.get(null);
 							String source = clazz.getSimpleName() + "." + field.getName();
-							String ref = ObjectModel.aspectOf().nextReference(field.getType());
+							String ref = ObjectModel.getInstance().nextReference(field.getType());
 							new NewReferenceCommand(clazz, enumConst, source, ref).execute();
 						} catch (Exception e) {
 							e.printStackTrace();

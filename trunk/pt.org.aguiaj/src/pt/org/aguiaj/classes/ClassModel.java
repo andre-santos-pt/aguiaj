@@ -68,7 +68,7 @@ public class ClassModel {
 	
 	private Inspector inspector;
 	
-	private static ClassModel _instance;
+	private static ClassModel instance;
 
 	public ClassModel() {
 		userClasses = newHashSet();
@@ -93,10 +93,10 @@ public class ClassModel {
 	}
 	
 	public static ClassModel getInstance() {
-		if(_instance == null)
-			_instance = new ClassModel();
+		if(instance == null)
+			instance = new ClassModel();
 		
-		return _instance;
+		return instance;
 	}
 	
 	private InspectionPolicy loadInspectionPolicy() {
