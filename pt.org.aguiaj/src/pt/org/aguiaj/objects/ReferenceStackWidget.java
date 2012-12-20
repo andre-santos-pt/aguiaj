@@ -18,19 +18,20 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Widget;
 
 import pt.org.aguiaj.common.AguiaJColor;
+import pt.org.aguiaj.common.widgets.NullReferenceWidget;
 
-public class ReferenceObjectPairWidget extends Composite {
+public class ReferenceStackWidget<C extends Composite> extends Composite {
 
-	public final ObjectWidget widget;
+	private C widget;
 	private Composite referenceStack;
 	private List<ReferenceWidget> referenceWidgets;
 
-	public ReferenceObjectPairWidget(Composite parent, final Object object) {
+	private ReferenceStackWidget(Composite parent) {
 		super(parent, SWT.NONE);
 		assert parent != null;
-		assert object != null;
 		
 		referenceWidgets = new ArrayList<ReferenceWidget>();
 
@@ -41,21 +42,39 @@ public class ReferenceObjectPairWidget extends Composite {
 		layout.verticalSpacing = 10;
 		referenceStack.setLayout(layout);
 		referenceStack.setBackground(AguiaJColor.OBJECT_AREA.getColor());
-		widget = new ObjectWidget(this, object); 
+	
+	}
+	
+	public C getWidget() {
+		return widget;
 	}
 
-	public void addReference(String id, Class<?> type, Object object) {
-		ReferenceWidget widget = new ReferenceWidget(referenceStack, id, type, object);
+	public static ReferenceStackWidget<ObjectWidget> newObject(Composite parent, Object object) {
+		ReferenceStackWidget<ObjectWidget> w = new ReferenceStackWidget<ObjectWidget>(parent);
+		w.widget = new ObjectWidget(w, object);
+		return w;
+	}
+	
+	public static ReferenceStackWidget<NullReferenceWidget> newNull(Composite parent) {
+		ReferenceStackWidget<NullReferenceWidget> w = 
+				new ReferenceStackWidget<NullReferenceWidget>(parent);
+		w.widget = new NullReferenceWidget(w, SWT.BORDER);
+		w.widget.update(100);
+		return w;
+	}
+	
+	public void addReference(String name, Class<?> type, Object object) {
+		ReferenceWidget widget = new ReferenceWidget(referenceStack, name, type, object);
 		widget.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 		referenceWidgets.add(widget);
 		layout();
 		getParent().layout();
 	}
 
-	public void removeReference(String id) {
+	public void removeReference(String name) {
 		ReferenceWidget toRemove = null;
 		for(ReferenceWidget widget : referenceWidgets)
-			if(widget.id.equals(id)) {
+			if(widget.id.equals(name)) {
 				toRemove = widget;
 				widget.dispose();
 				layout();
@@ -64,18 +83,15 @@ public class ReferenceObjectPairWidget extends Composite {
 
 		if(toRemove != null)
 			referenceWidgets.remove(toRemove);
-		
-		if(!hasReferences())
-			widget.die();
 	}
 
-	private boolean hasReferences() {
+	public boolean hasReferences() {
 		return referenceWidgets.size() > 0;
 	}
-
-	public boolean hasReference(String id) {
+	
+	public boolean hasReference(String name) {
 		for(ReferenceWidget widget : referenceWidgets)
-			if(widget.id.equals(id))
+			if(widget.id.equals(name))
 				return true;
 		return false;
 	}
@@ -92,5 +108,12 @@ public class ReferenceObjectPairWidget extends Composite {
 			return referenceWidgets.get(0).id;
 		else
 			return null;
+	}
+
+	public void clearReferences() {
+		for(ReferenceWidget widget : referenceWidgets)
+			widget.dispose();
+		
+		referenceWidgets.clear();
 	}
 }

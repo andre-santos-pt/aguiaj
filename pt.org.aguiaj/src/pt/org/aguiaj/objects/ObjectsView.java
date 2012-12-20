@@ -11,8 +11,6 @@
 package pt.org.aguiaj.objects;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,16 +54,12 @@ public class ObjectsView extends ViewPart {
 	private ScrolledComposite scrl;
 
 	private Map<Object, ObjectWidget> widgetsTable;
-	private Map<Object, ReferenceObjectPairWidget> refAndObjectPairsTable;
+	private Map<Object, ReferenceStackWidget<ObjectWidget>> refStackTable;
 
 	private ObjectWidget highlighted;
 
-	private Composite nullReferencesStack;
+	private ReferenceStackWidget<NullReferenceWidget> nullStack;
 
-	private Composite nulls;
-	private NullReferenceWidget nullRefWidget;
-
-	private Map<String, ReferenceWidget> nullReferenceMap;
 
 	private class ObjectListener extends ObjectModel.EventListenerAdapter {
 
@@ -77,7 +71,7 @@ public class ObjectsView extends ViewPart {
 		@Override
 		public void removeObjectEvent(Object obj) {
 			remove(obj);
-			
+
 		}
 
 		@Override
@@ -85,14 +79,14 @@ public class ObjectsView extends ViewPart {
 			if(ref.object != null)
 				addObjectWidget(ref.object, ref.name, ref.type);
 			else
-				addNullReference(ref.type, ref.name);
+				nullStack.addReference(ref.name, ref.type, null);
 		}
 
 		@Override
 		public void changeReferenceEvent(Reference ref) {
 			addReference(ref.type, ref.name, ref.object);
 		}
-		
+
 		@Override
 		public void removeReferenceEvent(Reference ref) {
 			removeReference(ref.name);
@@ -124,8 +118,7 @@ public class ObjectsView extends ViewPart {
 	public void createPartControl(final Composite parent) {
 		parent.setLayout(new FillLayout());
 		widgetsTable = new IdentityHashMap<Object, ObjectWidget>();
-		refAndObjectPairsTable = new IdentityHashMap<Object, ReferenceObjectPairWidget>();
-		nullReferenceMap = new HashMap<String, ReferenceWidget>();
+		refStackTable = new IdentityHashMap<Object, ReferenceStackWidget<ObjectWidget>>();
 
 		scrl = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);		
 		area = new Composite(scrl, SWT.NONE);
@@ -146,16 +139,8 @@ public class ObjectsView extends ViewPart {
 		scrl.setExpandHorizontal(true);
 		scrl.setAlwaysShowScrollBars(true);
 
-		nulls = new Composite(area, SWT.NONE);
-		nulls.setLayout(new RowLayout(SWT.HORIZONTAL));
-		nulls.setBackground(AguiaJColor.OBJECT_AREA.getColor());
-		nullReferencesStack = new Composite(nulls, SWT.NONE);
-		nullReferencesStack.setBackground(AguiaJColor.OBJECT_AREA.getColor());
-		nullReferencesStack.setLayout(new RowLayout(SWT.VERTICAL));
-
-		nullRefWidget = new NullReferenceWidget(nulls, SWT.BORDER);
-		nullRefWidget.update(100);
-		nullRefWidget.setVisible(false);
+		nullStack = ReferenceStackWidget.newNull(area);
+		nullStack.setVisible(false);
 
 		addActions();
 
@@ -163,17 +148,13 @@ public class ObjectsView extends ViewPart {
 	}
 
 	private void clearAllWidgets() {
-		for(ReferenceWidget w : nullReferenceMap.values()) {
+		nullStack.clearReferences();
+
+		for(ReferenceStackWidget<ObjectWidget> w : refStackTable.values())
 			w.dispose();
-		}
-		nullRefWidget.setVisible(false);
-			
-		for(ReferenceObjectPairWidget w : refAndObjectPairsTable.values())
-			w.dispose();
-		
-		refAndObjectPairsTable.clear();
+
+		refStackTable.clear();
 		widgetsTable.clear();
-		nullReferenceMap.clear();
 		area.layout();
 	}
 
@@ -186,7 +167,7 @@ public class ObjectsView extends ViewPart {
 		scrl.setMinSize(area.computeSize(maxWidth + padding * 2, SWT.DEFAULT));
 
 		if(reference != null) {
-			ReferenceObjectPairWidget widget = getRefAndObjectPairWidget(reference);
+			ReferenceStackWidget<ObjectWidget> widget = getRefAndObjectPairWidget(reference);
 			if(widget != null) {
 				Point loc = widget.getLocation();		
 				if(isDistant(loc, scrl.getOrigin()))
@@ -207,7 +188,7 @@ public class ObjectsView extends ViewPart {
 
 	private int maxWidth() {
 		int max = 0;
-		for(ReferenceObjectPairWidget widget : refAndObjectPairsTable.values()) {
+		for(ReferenceStackWidget<ObjectWidget> widget : refStackTable.values()) {
 			if(widget.getSize().x > max)
 				max = widget.getSize().x;
 		}
@@ -234,7 +215,7 @@ public class ObjectsView extends ViewPart {
 				new RemoveAllObjectsCommand().execute();
 			}
 		};
-		
+
 		removeAllAction.setImageDescriptor(AguiaJImage.DELETE.getImageDescriptor());
 		toolbarManager.add(removeAllAction);
 
@@ -263,9 +244,9 @@ public class ObjectsView extends ViewPart {
 
 
 	public ObjectWidget getObjectWidgetByReference(String reference) {
-		for(ReferenceObjectPairWidget widget : refAndObjectPairsTable.values())
+		for(ReferenceStackWidget<ObjectWidget> widget : refStackTable.values())
 			if(widget.hasReference(reference))
-				return widget.widget;
+				return widget.getWidget();
 
 		return null;
 	}
@@ -277,13 +258,12 @@ public class ObjectsView extends ViewPart {
 		assert object != null;
 		assert reference != null;
 		assert referenceType != null;
-		
+
 		ObjectWidget widget = getObjectWidget(object);
 		if(widget == null) {
-			ReferenceObjectPairWidget pair =  new ReferenceObjectPairWidget(area, object);
-			widget = pair.widget;
-			widgetsTable.put(object, widget);
-			refAndObjectPairsTable.put(object, pair);	
+			ReferenceStackWidget<ObjectWidget> pair =  ReferenceStackWidget.newObject(area, object);
+			widgetsTable.put(object, pair.getWidget());
+			refStackTable.put(object, pair);	
 		}
 
 		addReference(referenceType, reference, object);
@@ -293,14 +273,13 @@ public class ObjectsView extends ViewPart {
 	public void addDeadObjectWidget(Object object) {
 		if(object == null)
 			return;
-		
+
 		ObjectWidget widget = getObjectWidget(object);
 		if(widget == null) {
-			ReferenceObjectPairWidget pair =  new ReferenceObjectPairWidget(area, object);
-			widget = pair.widget;
+			ReferenceStackWidget<ObjectWidget> pair =  ReferenceStackWidget.newObject(area, object);
+			widget = pair.getWidget();
 			widgetsTable.put(object, widget);
-			refAndObjectPairsTable.put(object, pair);
-			widget.die();
+			refStackTable.put(object, pair);
 		}
 		updateLayout(null);
 	}
@@ -308,12 +287,15 @@ public class ObjectsView extends ViewPart {
 
 	private void addReference(Class<?> type, String reference, Object object) {
 		if(object == null) {
-			if(!nullReferenceMap.containsKey(reference)) {
-				ReferenceObjectPairWidget widget = getRefAndObjectPairWidget(reference);
-				if(widget != null)
-					widget.removeReference(reference);
-				addNullReference(type, reference);
+			ReferenceStackWidget<ObjectWidget> widget = getRefAndObjectPairWidget(reference);
+			if(widget != null)
+				widget.removeReference(reference);
+
+			if(!nullStack.hasReference(reference)) {
+				nullStack.addReference(reference, type, null);
+				nullStack.setVisible(true);
 			}
+			
 		}
 		else {
 			addNonNullReference(type, reference, object);
@@ -322,50 +304,35 @@ public class ObjectsView extends ViewPart {
 		updateLayout(reference);
 	}
 
-	private void addNonNullReference(Class<?> type, String reference, Object object) {		
-		if(nullReferenceMap.containsKey(reference))
-			removeNullReference(reference);
-		else if(ObjectModel.getInstance().isReferenceInUse(reference))
-			removeReference(reference);
+	private void addNonNullReference(Class<?> type, String name, Object object) {		
+		if(nullStack.hasReference(name))
+			nullStack.removeReference(name);
+		else if(ObjectModel.getInstance().isReferenceInUse(name))
+			removeReference(name);
 
-		ReferenceObjectPairWidget widget = refAndObjectPairsTable.get(object);
+		ReferenceStackWidget<ObjectWidget> widget = refStackTable.get(object);
 		if(widget != null)
-			widget.addReference(reference, type, object);				
-	}
-
-	private void addNullReference(Class<?> type, String reference) {
-		ReferenceWidget widget = new ReferenceWidget(nullReferencesStack, reference, type, null);
-		nullReferenceMap.put(reference, widget);
-		nullRefWidget.setVisible(true);
-		nulls.layout();
+			widget.addReference(name, type, object);				
 	}
 
 
 	private void removeReference(String name) {
-		ReferenceObjectPairWidget widget = getRefAndObjectPairWidget(name);
+		ReferenceStackWidget<ObjectWidget> widget = getRefAndObjectPairWidget(name);
 		if(widget != null)
 			widget.removeReference(name);
-		else
-			removeNullReference(name);
-	}	
-
-	private void removeNullReference(String id) {
-		if(nullReferenceMap.containsKey(id)) {
-			nullReferenceMap.get(id).dispose();
-			nullReferenceMap.remove(id);
-			if(nullReferenceMap.keySet().size() == 0)
-				nullRefWidget.setVisible(false);
-			nulls.layout();
-			area.layout();
+		else {
+			nullStack.removeReference(name);
+			if(!nullStack.hasReferences())
+				nullStack.setVisible(false);
 		}
-	}
+	}	
 
 	public List<String> getReferencesForExpandedOperationsObjects() {
 		List<String> refs = new ArrayList<String>();
 
-		for(ReferenceObjectPairWidget widget : refAndObjectPairsTable.values()) {
-			String ref = widget.getFirstReference();
-			if(ref != null && widget.widget.isOperationsVisible()) {
+		for(ReferenceStackWidget<ObjectWidget> w : refStackTable.values()) {
+			String ref = w.getFirstReference();
+			if(ref != null && w.getWidget().isOperationsVisible()) {
 				refs.add(ref);
 			}
 		}
@@ -376,9 +343,9 @@ public class ObjectsView extends ViewPart {
 	public List<String> getReferencesForExpandedPrivatesObjects() {
 		List<String> refs = new ArrayList<String>();
 
-		for(ReferenceObjectPairWidget widget : refAndObjectPairsTable.values()) {
+		for(ReferenceStackWidget<ObjectWidget> widget : refStackTable.values()) {
 			String ref = widget.getFirstReference();
-			if(ref != null && widget.widget.isPrivateAttributesVisible()) {
+			if(ref != null && widget.getWidget().isPrivateAttributesVisible()) {
 				refs.add(ref);
 			}
 		}
@@ -387,8 +354,8 @@ public class ObjectsView extends ViewPart {
 	}
 
 
-	private ReferenceObjectPairWidget getRefAndObjectPairWidget(String refId) {
-		for(ReferenceObjectPairWidget widget : refAndObjectPairsTable.values())
+	private ReferenceStackWidget<ObjectWidget> getRefAndObjectPairWidget(String refId) {
+		for(ReferenceStackWidget<ObjectWidget> widget : refStackTable.values())
 			if(widget.hasReference(refId))
 				return widget;
 		return null;
@@ -402,8 +369,8 @@ public class ObjectsView extends ViewPart {
 			widget.dispose();
 			widgetsTable.remove(object);
 
-			refAndObjectPairsTable.get(object).dispose();
-			refAndObjectPairsTable.remove(object);
+			refStackTable.get(object).dispose();
+			refStackTable.remove(object);
 
 			if(highlighted == widget)
 				highlighted = null;

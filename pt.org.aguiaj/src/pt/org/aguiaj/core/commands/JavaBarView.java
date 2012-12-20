@@ -104,6 +104,9 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 		instructionBar.addKeyListener(new KeyAdapter() {
 
 			public void keyPressed(KeyEvent event) {
+				if(clearJob != null)
+					clearJob.cancel();
+				
 				if(event.keyCode == SWT.CR && !instructionBar.getText().equals("")) {
 					executeCommand();
 					clear();
