@@ -586,3 +586,4 @@ public class AguiaJActivator extends AbstractUIPlugin {
 	}
 
 }
+

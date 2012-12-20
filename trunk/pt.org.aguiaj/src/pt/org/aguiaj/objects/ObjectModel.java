@@ -62,8 +62,7 @@ public class ObjectModel {
 
 	private Set<EventListener> listeners;
 
-	// LISTEN TO CLASS MODEL
-
+	
 
 	private ObjectModel() {
 		referenceTable = newLinkedHashMap();
@@ -106,8 +105,7 @@ public class ObjectModel {
 
 		objectSet.remove(object);
 
-		Iterator<Entry<String, Object>> it = referenceTable.entrySet().iterator();
-		while(it.hasNext()) {
+		for(Iterator<Entry<String, Object>> it = referenceTable.entrySet().iterator(); it.hasNext(); ) {
 			Entry<String, Object> entry = it.next();
 			if(entry.getValue() == object) {
 				it.remove();
@@ -117,6 +115,16 @@ public class ObjectModel {
 
 		for(EventListener l : listeners())
 			l.removeObjectEvent(object);
+		
+		for(Iterator<JavaCommand> it = activeCommands.iterator(); it.hasNext(); ) {
+			JavaCommand cmd = it.next();
+			if( cmd instanceof JavaCommandWithReturn &&
+				((JavaCommandWithReturn) cmd).getResultingObject() == object) {
+				it.remove();
+				for(EventListener l : listeners())
+					l.commandRemoved(cmd);
+			}
+		}
 	}
 
 
@@ -162,7 +170,7 @@ public class ObjectModel {
 		Reference ref = new Reference(
 				name, 
 				referenceTypeTable.get(name),
-				null);
+				referenceTable.get(name));
 
 		referenceTable.remove(name);
 		referenceTypeTable.remove(name);
@@ -239,29 +247,22 @@ public class ObjectModel {
 
 	// functions------------------------------------------------------
 
-	public Object[] getAllObjects() {
-		return getObjects(Object.class);
-	}
+	
+//	public Object[] getObjects(Class<?> type) {
+//		assert type != null;
+//
+//		IdentityObjectSet set = new IdentityObjectSet();
+//
+//		for(Object o : objectSet.objects())
+//			if(!type.isInstance(o) && !isDeadObject(o))
+//				set.add(o);
+//
+//		return set.objects();
+//	}
 
-	public Object[] getObjects(Class<?> type) {
-		assert type != null;
 
-		IdentityObjectSet set = new IdentityObjectSet();
-
-		for(Object o : objectSet.objects())
-			if(!(o == NULL_OBJECT) && type.isInstance(o) && !isDeadObject(o))
-				set.add(o);
-
-		return set.objects();
-	}
-
-	public boolean objectExists(Object object) {
-		return objectSet.contains(object);
-	}
-
-	public static Object getObject(String reference) {
-		Object obj = instance.referenceTable.get(reference);
-
+	private Object getObject(String reference) {
+		Object obj = referenceTable.get(reference);
 		return obj == NULL_OBJECT ? null : obj;
 	}
 
@@ -273,9 +274,7 @@ public class ObjectModel {
 	public Map<String, Reference> getReferenceTable() {
 		Map<String, Reference> table = newHashMap();
 		for(String key : referenceTable.keySet()) {
-			Object obj = referenceTable.get(key);
-			if(obj == NULL_OBJECT)
-				obj = null;
+			Object obj = getObject(key);
 			table.put(key, new Reference(key, referenceTypeTable.get(key), obj));
 		}
 		return table;
@@ -288,9 +287,7 @@ public class ObjectModel {
 			Class<?> refType = referenceTypeTable.get(r);
 
 			if(type.isAssignableFrom(refType)) {
-				Object obj = referenceTable.get(r);
-				if(obj == NULL_OBJECT)
-					obj = null;
+				Object obj = getObject(r);
 				refs.add(new Reference(r, refType, obj));
 			}
 		}
@@ -360,8 +357,8 @@ public class ObjectModel {
 	public List<Reference> getNullReferences() {
 		List<Reference> nullRefs = new ArrayList<Reference>();
 		for(String ref : referenceTable.keySet()) {
-			Object obj = referenceTable.get(ref);
-			if(obj == NULL_OBJECT) {
+			Object obj = getObject(ref);
+			if(obj == null) {
 				Class<?> refType = referenceTypeTable.get(ref);
 				nullRefs.add(new Reference(ref, refType , null));
 			}
