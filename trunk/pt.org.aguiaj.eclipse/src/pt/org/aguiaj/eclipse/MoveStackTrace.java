@@ -11,6 +11,7 @@
 package pt.org.aguiaj.eclipse;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -26,28 +27,39 @@ import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.ide.IDE;
 
 import pt.org.aguiaj.extensibility.AguiaJHelper;
-import pt.org.aguiaj.extensibility.LastException;
+import pt.org.aguiaj.extensibility.TraceLocation;
 
-public class GoToError implements IViewActionDelegate {
-	private IWorkbench workbench;
+public abstract class MoveStackTrace implements IViewActionDelegate {
+//	private IWorkbench workbench;
 	
-	private IMarker marker;
+	private boolean backward;
+	
+	public MoveStackTrace(boolean backward) {
+		this.backward = backward;
+	}
 	
 	@Override
 	public void run(IAction action) {
 		IJavaProject project = Activator.getProject();
-
-		LastException exception = AguiaJHelper.getLastException();
-		if(exception == null || exception.fileName == null)
+		
+		if(backward)
+			Activator.getInstance().movePreviousLocation();
+		else		
+			Activator.getInstance().moveNextLocation();
+	
+		TraceLocation loc = Activator.getInstance().getLocation();
+		
+		if(loc == null)
 			return;
 		
 		IJavaElement element = null;
 		try {
-			element = project.findElement(new Path(exception.fileName));
+			element = project.findElement(new Path(loc.fileName));
 		} catch (JavaModelException e1) {
 			e1.printStackTrace();
 		}
@@ -56,23 +68,22 @@ public class GoToError implements IViewActionDelegate {
 			return;
 		
 		IFile file = (IFile) element.getResource();
-		IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
-		
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(); 
+
 		String pers = Activator.getPerspective();
 		if(pers == null)
 			pers = JavaUI.ID_PERSPECTIVE;
 
 		try {			
-			workbench.showPerspective(pers, workbench.getActiveWorkbenchWindow());
+			PlatformUI.getWorkbench().showPerspective(pers, PlatformUI.getWorkbench().getActiveWorkbenchWindow());
 		} catch (WorkbenchException e) {
 			e.printStackTrace();
 		}
 		
 		try {
-			marker = file.createMarker(IMarker.TEXT);
+			IMarker marker = file.createMarker(IMarker.TEXT);
 			HashMap<String, Object> map = new HashMap<String, Object>();
-			map.put(IMarker.LINE_NUMBER, new Integer(exception.line));
-			map.put(IMarker.MESSAGE, exception.message);
+			map.put(IMarker.LINE_NUMBER, new Integer(loc.line));
 			marker.setAttributes(map);
 			IDE.openEditor(page, marker); 
 			marker.delete();
@@ -88,7 +99,7 @@ public class GoToError implements IViewActionDelegate {
 
 	@Override
 	public void init(IViewPart view) {
-		workbench = view.getSite().getWorkbenchWindow().getWorkbench();
+//		workbench = view.getSite().getWorkbenchWindow().getWorkbench();
 	}
 
 }
