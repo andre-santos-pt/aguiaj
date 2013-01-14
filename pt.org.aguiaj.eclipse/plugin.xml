@@ -19,20 +19,6 @@
             id="pt.org.aguiaj.eclipse.actionsaguia"
             targetID="pt.org.aguiaj.classesView">
          <action
-               class="pt.org.aguiaj.eclipse.GoToError"
-               icon="icons/exception.gif"
-               id="pt.org.aguiaj.eclipse.GoToError"
-               label="Go to last error"
-               style="push"
-               toolbarPath="additions">
-            <enablement>
-               <pluginState
-                     id="org.eclipse.jdt"
-                     value="installed">
-               </pluginState>
-            </enablement>
-         </action>
-         <action
                class="pt.org.aguiaj.eclipse.SwitchProject"
                icon="icons/switch_project.gif"
                id="pt.org.aguiaj.eclipse.SwitchProject"
@@ -64,6 +50,38 @@
       <viewContribution
             id="pt.org.aguiaj.eclipse.actionsjava"
             targetID="org.eclipse.jdt.ui.PackageExplorer">
+         <menu
+               id="AguiaJEclipse.menu1"
+               label="AGUIAJ">
+         </menu>
+         <action
+               class="pt.org.aguiaj.eclipse.TraceForward"
+               icon="icons/forward_loc.gif"
+               id="pt.org.aguiaj.eclipse.GoToError"
+               label="Go to last error"
+               style="push"
+               toolbarPath="aguia">
+            <enablement>
+               <pluginState
+                     id="org.eclipse.jdt"
+                     value="installed">
+               </pluginState>
+            </enablement>
+         </action>
+         <action
+               class="pt.org.aguiaj.eclipse.TraceBack"
+               icon="icons/backward_loc.gif"
+               id="pt.org.aguiaj.eclipse.GoToError"
+               label="Go to last error"
+               style="push"
+               toolbarPath="aguia">
+            <enablement>
+               <pluginState
+                     id="org.eclipse.jdt"
+                     value="installed">
+               </pluginState>
+            </enablement>
+         </action>
          <action
                class="pt.org.aguiaj.eclipse.OpenAguiaJ"
                icon="icons/eagle-icon-16.png"
@@ -72,10 +90,6 @@
                style="push"
                toolbarPath="aguia">
          </action>
-         <menu
-               id="AguiaJEclipse.menu1"
-               label="AGUIAJ">
-         </menu>
       </viewContribution>
       <viewContribution
             id="AguiaJEclipse.viewContribution1"

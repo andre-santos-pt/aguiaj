@@ -14,6 +14,11 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
+import pt.org.aguiaj.extensibility.AguiaJHelper;
+import pt.org.aguiaj.extensibility.ExceptionListener;
+import pt.org.aguiaj.extensibility.ExceptionTrace;
+import pt.org.aguiaj.extensibility.TraceLocation;
+
 public class Activator implements BundleActivator {
 
 	private static BundleContext context;
@@ -22,6 +27,8 @@ public class Activator implements BundleActivator {
 	private static String perspective;
 	
 	private static Activator instance;
+	
+	private ExceptionTrace trace;
 	
 	public Activator() {
 		instance = this;
@@ -41,6 +48,26 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
+		AguiaJHelper.addExceptionListener(new ExceptionListener() {
+			@Override
+			public void newException(ExceptionTrace t) {
+				trace = t;
+				TraceBack cmd = new TraceBack();
+				cmd.run(null);
+			}
+		});
+	}
+	
+	public TraceLocation getLocation() {
+		return trace.getLocation();
+	}
+	
+	public void moveNextLocation() {
+		trace.moveFrontwards();
+	}
+	
+	public void movePreviousLocation() {
+		trace.moveBackwards();
 	}
 
 	/*
