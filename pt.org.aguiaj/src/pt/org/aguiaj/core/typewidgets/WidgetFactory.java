@@ -27,18 +27,29 @@ import pt.org.aguiaj.extensibility.VisualizationWidget;
 import pt.org.aguiaj.standard.extensions.StringObjectWidget;
 import pt.org.aguiaj.standard.extensions.TableArrayObjectWidget;
 
-import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 
 public enum WidgetFactory {
 	INSTANCE;
+	
+	private static Constructor<? extends VisualizationWidget<?>> stringWidget;
+	
+	static {
+		try {
+			stringWidget = StringObjectWidget.class.getConstructor();
+		} catch (Exception e) {		
+			e.printStackTrace();
+		}
+	}
+	
 
 	private Map<Class<?>, Constructor<? extends TypeWidget>> widgetTypeTable;
 	private Multimap<Class<?>, Constructor<? extends VisualizationWidget<?>>> objectWidgetTypeTable;
 
 	private WidgetFactory() {
 		widgetTypeTable = newHashMap();
-		objectWidgetTypeTable = ArrayListMultimap.create();		
+		objectWidgetTypeTable = LinkedListMultimap.create();
 	}
 
 
@@ -82,23 +93,10 @@ public enum WidgetFactory {
 		return bestExtension(clazz) != null;
 	}
 
-	//	private static int depth(Class<?> clazz) {
-	//		if(clazz.equals(Object.class))
-	//			return 1;
-	//		else
-	//			return 2;
-	//	}
+	
 
 	
-	private static Constructor<? extends VisualizationWidget<?>> stringWidget;
 	
-	static {
-		try {
-			stringWidget = StringObjectWidget.class.getConstructor();
-		} catch (Exception e) {		
-			e.printStackTrace();
-		}
-	}
 	
 	
 	private Constructor<? extends VisualizationWidget<?>> bestExtension(Class<?> clazz) {
@@ -165,6 +163,7 @@ public enum WidgetFactory {
 			else if(clazz.isArray() &&					
 					!clazz.getComponentType().isArray() &&
 					ownerType.equals(WidgetProperty.PROPERTY)) {
+				
 					if(clazz.getComponentType().isPrimitive()) {
 						widget = new ExtensionTypeWidget(parent, ownerType,  new StringObjectWidget());
 					}
