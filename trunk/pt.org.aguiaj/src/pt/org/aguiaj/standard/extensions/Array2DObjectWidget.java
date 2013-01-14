@@ -49,9 +49,6 @@ public class Array2DObjectWidget implements VisualizationWidget<Object> {
 	public void createSection(Composite section) {
 		section.setLayout(new RowLayout(SWT.VERTICAL));
 		this.section = section;
-//		section = new Composite(parent, SWT.NONE);
-//		section.setBackground(parent.getBackground());
-//		section.setLayout(new RowLayout(SWT.VERTICAL));
 		rows = new ArrayList<TypeWidget>();
 		numberOfRows = -1;
 	}
@@ -77,7 +74,7 @@ public class Array2DObjectWidget implements VisualizationWidget<Object> {
 					String source = ref + "[" + iFinal + "]";					
 					Object obj = Array2DObjectWidget.this.getIndex(iFinal);
 					Class<?> type = Array2DObjectWidget.this.object.getClass().getComponentType();
-					new NewReferenceCommand(type, obj, source).execute();
+					ObjectModel.getInstance().execute(new NewReferenceCommand(type, obj, source));
 				}
 			});
 

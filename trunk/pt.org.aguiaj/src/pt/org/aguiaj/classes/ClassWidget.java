@@ -140,7 +140,7 @@ public class ClassWidget extends FieldContainer {
 							Object enumConst = field.get(null);
 							String source = clazz.getSimpleName() + "." + field.getName();
 							String ref = ObjectModel.getInstance().nextReference(field.getType());
-							new NewReferenceCommand(clazz, enumConst, source, ref).execute();
+							ObjectModel.getInstance().execute(new NewReferenceCommand(clazz, enumConst, source, ref));
 						} catch (Exception e) {
 							e.printStackTrace();
 						} 

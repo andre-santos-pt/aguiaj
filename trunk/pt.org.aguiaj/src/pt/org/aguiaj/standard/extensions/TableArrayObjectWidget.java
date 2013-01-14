@@ -30,7 +30,6 @@ import pt.org.aguiaj.extensibility.VisualizationWidget;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 
-@PluggableObjectWidget(Object[].class)
 public class TableArrayObjectWidget implements VisualizationWidget<Object> {
 
 	private Table table;
@@ -70,7 +69,7 @@ public class TableArrayObjectWidget implements VisualizationWidget<Object> {
 		
 		String[][] tmp = tableData((Object[]) object);
 
-		System.err.println("DATA: " + Arrays.deepToString(data));
+		System.err.println("x " + Arrays.deepToString(data));
 		System.err.println(" TMP: " + Arrays.deepToString(tmp));
 		
 		if(!Arrays.deepEquals(data, tmp)) {
@@ -80,7 +79,7 @@ public class TableArrayObjectWidget implements VisualizationWidget<Object> {
 	}
 
 	private void redrawTable() {
-		System.err.println("redwar!");
+		System.err.println("redraw!");
 		table.removeAll();
 		for(TableColumn col : table.getColumns()) {
 			col.dispose();
