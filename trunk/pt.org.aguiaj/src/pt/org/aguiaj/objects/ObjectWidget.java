@@ -159,7 +159,6 @@ public final class ObjectWidget extends FieldContainer {
 
 	public void die() {
 		setEnabled(false);
-		//		SWTUtils.setColorRecursively(this, AguiaJColor.DEAD_OBJECT.getColor());
 	}
 
 	public void highlight() {
@@ -412,28 +411,6 @@ public final class ObjectWidget extends FieldContainer {
 		hideItemsTable.put(section, hideItem);
 	}
 
-
-
-	//	private void createShowHideOperations() {
-	//
-	//		showOperationsItem = new MenuItem(menu, SWT.PUSH);
-	//		showOperationsItem.setText(UIText.SHOW_OPERATIONS.get());
-	//		showOperationsItem.setEnabled(operationsExist);
-	//		showOperationsItem.addListener(SWT.Selection, new Listener() {
-	//			public void handleEvent(Event e) {
-	//				showOperations(true);
-	//			}
-	//		});
-	//
-	//		hideOperationsItem = new MenuItem(menu, SWT.PUSH);
-	//		hideOperationsItem.setText(UIText.HIDE_OPERATIONS.get());
-	//		hideOperationsItem.setEnabled(operationsExist);
-	//		hideOperationsItem.addListener(SWT.Selection, new Listener() {
-	//			public void handleEvent(Event e) {
-	//				showOperations(false);
-	//			}
-	//		});
-	//	}
 
 	private Composite createSection() {
 		Composite section = new Composite(this, SWT.NONE);

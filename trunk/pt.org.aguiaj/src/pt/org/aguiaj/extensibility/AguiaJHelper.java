@@ -55,14 +55,10 @@ public class AguiaJHelper {
 		DocumentationView.getInstance().load(url);
 	}
 	
-	public static TraceLocation getPreviousTraceLocation() {
-		return ExceptionHandler.INSTANCE.getPreviousLocation();
+	public static void addExceptionListener(ExceptionListener l) {
+		ExceptionHandler.INSTANCE.addListener(l);
 	}
 	
-	public static TraceLocation getNextTraceLocation() {
-		return ExceptionHandler.INSTANCE.getNextLocation();
-	}
-
 	
 	public static void updateObject(Object object) {
 		ObjectWidget widget = ObjectsView.getInstance().getObjectWidget(object);

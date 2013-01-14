@@ -25,7 +25,7 @@ public class ExceptionTrace {
 	public ExceptionTrace(Throwable exception, String message, String[] args) {
 		this.args = args;
 		this.message = message;
-		next = 0;
+		next = -1;
 		trace = new ArrayList<TraceLocation>();
 		for(StackTraceElement e : exception.getStackTrace()) {
 			String className = e.getClassName();
@@ -42,25 +42,20 @@ public class ExceptionTrace {
 		return message;
 	}
 
-	public TraceLocation getNext() {
-		if(!hasNext())
-			throw new IllegalStateException();
-		return trace.get(--next);
+	public TraceLocation getLocation() {
+		return trace.get(next);
 	}
 	
-	public TraceLocation getPrevious() {
-		if(!hasPrevious())
-			throw new IllegalStateException();
-		
-		return trace.get(next++);
-	}
-	public boolean hasNext() {
-		return next > 0;
+	public void moveFrontwards() {		
+		if(next > 0)
+			next--;
 	}
 	
-	public boolean hasPrevious() {
-		return next < trace.size();
+	public void moveBackwards() {
+		if(next + 1 < trace.size())
+			next++;
 	}
+	
 	
 	@Override
 	public String toString() {
