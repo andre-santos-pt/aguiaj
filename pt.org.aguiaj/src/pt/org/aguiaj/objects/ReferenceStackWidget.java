@@ -55,6 +55,12 @@ public class ReferenceStackWidget<C extends Composite> extends Composite {
 		return w;
 	}
 	
+	public static ReferenceStackWidget<ObjectWidget> newDeadObject(Composite parent, Object object) {
+		ReferenceStackWidget<ObjectWidget> w = newObject(parent, object);
+		w.widget.die();
+		return w;
+	}
+	
 	public static ReferenceStackWidget<NullReferenceWidget> newNull(Composite parent) {
 		ReferenceStackWidget<NullReferenceWidget> w = 
 				new ReferenceStackWidget<NullReferenceWidget>(parent);

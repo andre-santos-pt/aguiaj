@@ -69,9 +69,6 @@ public class TableArrayObjectWidget implements VisualizationWidget<Object> {
 		
 		String[][] tmp = tableData((Object[]) object);
 
-		System.err.println("x " + Arrays.deepToString(data));
-		System.err.println(" TMP: " + Arrays.deepToString(tmp));
-		
 		if(!Arrays.deepEquals(data, tmp)) {
 			data = tmp;
 			redrawTable();
@@ -79,7 +76,6 @@ public class TableArrayObjectWidget implements VisualizationWidget<Object> {
 	}
 
 	private void redrawTable() {
-		System.err.println("redraw!");
 		table.removeAll();
 		for(TableColumn col : table.getColumns()) {
 			col.dispose();

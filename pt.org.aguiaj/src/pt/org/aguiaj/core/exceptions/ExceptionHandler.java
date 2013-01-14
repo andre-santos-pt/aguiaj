@@ -11,19 +11,20 @@
 package pt.org.aguiaj.core.exceptions;
 
 import java.lang.reflect.Member;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 
 import pt.org.aguiaj.common.PluggableExceptionHandler;
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.core.UIText;
+import pt.org.aguiaj.extensibility.ExceptionListener;
 import pt.org.aguiaj.extensibility.ExceptionTrace;
-import pt.org.aguiaj.extensibility.TraceLocation;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 public enum ExceptionHandler {
@@ -31,6 +32,7 @@ public enum ExceptionHandler {
 	
 	private List<SpecificExceptionHandler> handlers;
 	private Set<Member> previousMethodErrors;
+	private List<ExceptionListener> listeners;
 	
 	private ExceptionTrace trace;
 	
@@ -39,18 +41,11 @@ public enum ExceptionHandler {
 	private ExceptionHandler() {
 		handlers = new ArrayList<SpecificExceptionHandler>();
 		previousMethodErrors = new HashSet<Member>();
+		listeners = new ArrayList<ExceptionListener>();
 	}
 
 	public void addHandler(SpecificExceptionHandler handler) {
 		handlers.add(handler);		
-	}
-
-	public TraceLocation getNextLocation() {
-		return trace != null && trace.hasNext() ? trace.getNext() : null;
-	}
-	
-	public TraceLocation getPreviousLocation() {
-		return trace != null && trace.hasPrevious() ? trace.getPrevious() : null;
 	}
 	
 	public String[] getLastArgs() {
@@ -61,18 +56,22 @@ public enum ExceptionHandler {
 		previousMethodErrors.clear();
 	}
 
+	public void addListener(ExceptionListener l) {
+		listeners.add(l);
+	}
+	
 	public synchronized void handleException(Member member, String[] args, Throwable exception) {
 		String message = exception.getMessage();
 		if(message == null)
 			message = "";
 		
 		String title = StandardNamePolicy.prettyClassName(exception.getClass());
-		int icon = SWT.ICON_ERROR;
+		int icon = MessageDialog.ERROR;
 
 		if(exception instanceof IllegalArgumentException || 
 				exception instanceof IllegalStateException ||
 				exception instanceof NullPointerException && exception.getMessage() != null) {
-			icon = SWT.ICON_WARNING;	
+			icon = MessageDialog.WARNING;	
 		}
 		else if(exception instanceof StackOverflowError) {
 			title = UIText.STACK_OVERFLOW.get();
@@ -103,8 +102,18 @@ public enum ExceptionHandler {
 		}
 		
 		trace = new ExceptionTrace(exception, message, args);
-		SWTUtils.showMessage(title, message, icon);
+		
+//		SWTUtils.showMessage(title, message, icon);
+		
+		MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), title, null,
+			    message, icon, new String[] {"Go to error", "OK"}, 1);
+		
+		if(dialog.open() == 0) {
+//		if(icon == SWT.ERROR)
+			for(ExceptionListener l : listeners)
+				l.newException(trace);
+		}
+//		int result = dialog.open();
 	}
-
 	
 }
