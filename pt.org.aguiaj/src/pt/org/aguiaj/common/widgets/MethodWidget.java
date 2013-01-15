@@ -36,7 +36,7 @@ import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.DocumentationView;
 import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.TypeWidget;
-import pt.org.aguiaj.core.commands.java.MethodInvocationCommand2;
+import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
 import pt.org.aguiaj.core.typewidgets.AbstractTypeWidget;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
@@ -161,7 +161,7 @@ public class MethodWidget {
 		Reference ref = ObjectModel.getFirstReference(object);
 		String objectReference = object != null && ref != null ? ref.name : null;
 		
-		MethodInvocationCommand2 cmd = new MethodInvocationCommand2(object, objectReference, method, args, argsText);
+		MethodInvocationCommand cmd = new MethodInvocationCommand(object, objectReference, method, args, argsText);
 		ObjectModel.getInstance().execute(cmd);
 	}
 }

@@ -33,7 +33,7 @@ import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.UIText;
 import pt.org.aguiaj.core.commands.java.JavaCommand;
-import pt.org.aguiaj.core.commands.java.MethodInvocationCommand2;
+import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
 import pt.org.aguiaj.core.interpreter.Instruction;
 import pt.org.aguiaj.core.interpreter.ParseException;
 import pt.org.aguiaj.core.interpreter.Parser;
@@ -59,9 +59,9 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 			@Override
 			public void commandExecuted(JavaCommand cmd) {
 				setLine(cmd.getJavaInstruction());
-				if(cmd instanceof MethodInvocationCommand2) {
-					Class<?> returnType = ((MethodInvocationCommand2) cmd).getMethod().getReturnType();
-					Object result = ((MethodInvocationCommand2) cmd).getResultingObject();
+				if(cmd instanceof MethodInvocationCommand) {
+					Class<?> returnType = ((MethodInvocationCommand) cmd).getMethod().getReturnType();
+					Object result = ((MethodInvocationCommand) cmd).getResultingObject();
 					if(result instanceof Double) {
 						try {
 							result = new BigDecimal((Double) result).doubleValue();

@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.TypeWidget;
-import pt.org.aguiaj.core.commands.java.MethodInvocationCommand2;
+import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
 
 
 public class FieldContainer extends Composite {
@@ -114,7 +114,7 @@ public class FieldContainer extends Composite {
 	private void updateProperty(Method method, Object object) {
 		TypeWidget propWidget = fieldTable.get(method);
 		Object newVal = null;
-		MethodInvocationCommand2 command = new MethodInvocationCommand2(object, "na", method, new Object[0], new String[0]);
+		MethodInvocationCommand command = new MethodInvocationCommand(object, "na", method, new Object[0], new String[0]);
 		command.execute();		
 		newVal = command.getResultingObject();
 		updateTypeWidget(propWidget, method.getReturnType(), newVal);
