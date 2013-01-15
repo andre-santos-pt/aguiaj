@@ -11,6 +11,11 @@
 package pt.org.aguiaj.eclipse;
 
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.ui.JavaUI;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.WorkbenchException;
+import org.eclipse.ui.internal.Workbench;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -25,19 +30,17 @@ public class Activator implements BundleActivator {
 
 	private static IJavaProject project;
 	private static String perspective;
-	
+
 	private static Activator instance;
-	
-	private ExceptionTrace trace;
-	
+
 	public Activator() {
 		instance = this;
 	}
-	
+
 	public static Activator getInstance() {
 		return instance;
 	}
-	
+
 	static BundleContext getContext() {
 		return context;
 	}
@@ -50,24 +53,31 @@ public class Activator implements BundleActivator {
 		Activator.context = bundleContext;
 		AguiaJHelper.addExceptionListener(new ExceptionListener() {
 			@Override
-			public void newException(ExceptionTrace t) {
-				trace = t;
-				TraceBack cmd = new TraceBack();
-				cmd.run(null);
+			public void newException(ExceptionTrace trace, boolean goToError) {
+
+				if(goToError) {
+					String pers = Activator.getPerspective();
+					if(pers == null)
+						pers = JavaUI.ID_PERSPECTIVE;
+
+					try {			
+						PlatformUI.getWorkbench().showPerspective(pers, PlatformUI.getWorkbench().getActiveWorkbenchWindow());				
+					} catch (WorkbenchException e) {
+						e.printStackTrace();
+					}
+
+					try {
+						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(ExceptionTraceView.ID);
+					} catch (PartInitException e) {
+						e.printStackTrace();
+					}
+					ExceptionTraceView.getInstance().setInput(trace);
+				}
+				else {
+					ExceptionTraceView.getInstance().clear();
+				}
 			}
 		});
-	}
-	
-	public TraceLocation getLocation() {
-		return trace.getLocation();
-	}
-	
-	public void moveNextLocation() {
-		trace.moveFrontwards();
-	}
-	
-	public void movePreviousLocation() {
-		trace.moveBackwards();
 	}
 
 	/*
@@ -77,7 +87,7 @@ public class Activator implements BundleActivator {
 	public void stop(BundleContext bundleContext) throws Exception {
 		Activator.context = null;
 	}
-	
+
 	static void setProject(IJavaProject proj) {
 		project = proj;
 	}
@@ -89,7 +99,7 @@ public class Activator implements BundleActivator {
 	static void setPerspective(String id) {
 		perspective = id;
 	}
-	
+
 	static String getPerspective() {
 		return perspective;
 	}

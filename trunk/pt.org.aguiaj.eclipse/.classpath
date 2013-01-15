@@ -2,6 +2,6 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry excluding="pt/org/aguiaj/eclipse/editors/XMLScanner.java|pt/org/aguiaj/eclipse/ViewActionDelegate1.java|pt/org/aguiaj/eclipse/AddJarToBuildPath.java" kind="src" path="src"/>
+	<classpathentry excluding="pt/org/aguiaj/eclipse/editors/XMLScanner.java|pt/org/aguiaj/eclipse/ViewActionDelegate1.java|pt/org/aguiaj/eclipse/AddJarToBuildPath.java|pt/org/aguiaj/eclipse/Handler.java|pt/org/aguiaj/eclipse/MoveStackTrace.java|pt/org/aguiaj/eclipse/TraceBack.java|pt/org/aguiaj/eclipse/TraceForward.java" kind="src" path="src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
