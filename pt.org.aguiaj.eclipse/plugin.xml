@@ -55,34 +55,6 @@
                label="AGUIAJ">
          </menu>
          <action
-               class="pt.org.aguiaj.eclipse.TraceForward"
-               icon="icons/forward_loc.gif"
-               id="pt.org.aguiaj.eclipse.GoToError"
-               label="Go to last error"
-               style="push"
-               toolbarPath="aguia">
-            <enablement>
-               <pluginState
-                     id="org.eclipse.jdt"
-                     value="installed">
-               </pluginState>
-            </enablement>
-         </action>
-         <action
-               class="pt.org.aguiaj.eclipse.TraceBack"
-               icon="icons/backward_loc.gif"
-               id="pt.org.aguiaj.eclipse.GoToError"
-               label="Go to last error"
-               style="push"
-               toolbarPath="aguia">
-            <enablement>
-               <pluginState
-                     id="org.eclipse.jdt"
-                     value="installed">
-               </pluginState>
-            </enablement>
-         </action>
-         <action
                class="pt.org.aguiaj.eclipse.OpenAguiaJ"
                icon="icons/eagle-icon-16.png"
                id="pt.org.aguiaj.eclipse.runInAguiaJ"
@@ -126,6 +98,29 @@
             id="AguiaJEclipse.openAguiaJPerspective"
             name="Open AGUIA/J perspective">
       </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            category="pt.org.aguiaj.viewCategory"
+            class="pt.org.aguiaj.eclipse.ExceptionTraceView"
+            icon="icons/exception.gif"
+            id="pt.org.aguiaj.eclipse.exceptionview"
+            name="Exception trace"
+            restorable="true">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.jdt.ui.JavaPerspective">
+         <view
+               id="pt.org.aguiaj.eclipse.view1"
+               minimized="false"
+               relationship="right"
+               relative="org.eclipse.ui.console.ConsoleView">
+         </view>
+      </perspectiveExtension>
    </extension>
 
 
