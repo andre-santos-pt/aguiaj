@@ -29,15 +29,15 @@ import pt.org.aguiaj.standard.StandardNamePolicy;
 
 public enum ExceptionHandler {
 	INSTANCE;
-	
+
 	private List<SpecificExceptionHandler> handlers;
 	private Set<Member> previousMethodErrors;
 	private List<ExceptionListener> listeners;
-	
+
 	private ExceptionTrace trace;
-	
+
 	private String[] lastArgs;
-	
+
 	private ExceptionHandler() {
 		handlers = new ArrayList<SpecificExceptionHandler>();
 		previousMethodErrors = new HashSet<Member>();
@@ -47,11 +47,11 @@ public enum ExceptionHandler {
 	public void addHandler(SpecificExceptionHandler handler) {
 		handlers.add(handler);		
 	}
-	
+
 	public String[] getLastArgs() {
 		return lastArgs;
 	}
-	
+
 	public void clearErrors() {
 		previousMethodErrors.clear();
 	}
@@ -59,12 +59,12 @@ public enum ExceptionHandler {
 	public void addListener(ExceptionListener l) {
 		listeners.add(l);
 	}
-	
+
 	public synchronized void handleException(Member member, String[] args, Throwable exception) {
 		String message = exception.getMessage();
 		if(message == null)
 			message = "";
-		
+
 		String title = StandardNamePolicy.prettyClassName(exception.getClass());
 		int icon = MessageDialog.ERROR;
 
@@ -100,20 +100,24 @@ public enum ExceptionHandler {
 				if(handler.getClass().getAnnotation(PluggableExceptionHandler.class).value().equals(exception.getClass()))
 					message = handler.getMessage(exception);
 		}
-		
+
 		trace = new ExceptionTrace(exception, message, args);
-		
-//		SWTUtils.showMessage(title, message, icon);
-		
-		MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), title, null,
-			    message, icon, new String[] {"Go to error", "OK"}, 1);
-		
-		if(dialog.open() == 0) {
-//		if(icon == SWT.ERROR)
-			for(ExceptionListener l : listeners)
-				l.newException(trace);
+
+		if(trace.getTrace().isEmpty()) {
+			MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), title, null,
+					message, icon, new String[] {"OK"}, 0);
+
+			dialog.open();
 		}
-//		int result = dialog.open();
+		else {
+			MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), title, null,
+					message, icon, new String[] {"Go to error", "OK"}, 1);
+
+			int result = dialog.open();
+
+			for(ExceptionListener l : listeners)
+				l.newException(trace, result == 0);
+		}
 	}
-	
+
 }

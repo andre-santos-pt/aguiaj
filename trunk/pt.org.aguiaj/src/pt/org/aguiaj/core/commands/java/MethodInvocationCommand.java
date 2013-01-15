@@ -24,19 +24,18 @@ import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 import pt.org.aguiaj.objects.ObjectModel;
 
 
-public class MethodInvocationCommand2 extends JavaCommandWithReturn {	
-	private Object object;
+public class MethodInvocationCommand extends JavaCommandWithReturn {	
 	private String objectReference;
 	private Method method;
 	private String[] argsText;
 	private String reference;
 	private final MethodInvocationThread2 thread;
 
-	public MethodInvocationCommand2(Object object, String objectReference, Method method, Object[] args, String[] argsText) {
+	public MethodInvocationCommand(Object object, String objectReference, Method method, Object[] args, String[] argsText) {
 		this(object, objectReference, method, args, argsText, ObjectModel.getInstance().nextReference(method.getReturnType()));
 	}
 
-	public MethodInvocationCommand2(Object object, String objectReference, Method method, Object[] args, String[] argsText, String reference) {
+	public MethodInvocationCommand(Object object, String objectReference, Method method, Object[] args, String[] argsText, String reference) {
 		assert method != null;
 		assert args != null;
 		assert argsText != null;
@@ -47,7 +46,6 @@ public class MethodInvocationCommand2 extends JavaCommandWithReturn {
 
 		assert ReflectionUtils.checkParamTypes(method.getParameterTypes(), args);
 
-		this.object = object;
 		this.method = method;
 		this.argsText = argsText;
 		this.reference = reference;

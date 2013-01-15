@@ -18,7 +18,7 @@ import java.util.Set;
 
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.Reference;
-import pt.org.aguiaj.core.commands.java.MethodInvocationCommand2;
+import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
 
 public class MethodCall extends Expression implements Instruction {
 
@@ -141,14 +141,14 @@ public class MethodCall extends Expression implements Instruction {
 
 	@Override
 	public Object resolve() {
-		MethodInvocationCommand2 cmd = getCommand();
+		MethodInvocationCommand cmd = getCommand();
 		cmd.execute();
 		return cmd.getResultingObject();
 	}
 
 
 	@Override
-	public MethodInvocationCommand2 getCommand() {
+	public MethodInvocationCommand getCommand() {
 		targetObject = target != null ? target.resolve() : null;	
 
 		if(targetObject == null && !staticInvocation)
@@ -156,7 +156,7 @@ public class MethodCall extends Expression implements Instruction {
 
 		args = Common.resolveArgs(argsExp);
 
-		return new MethodInvocationCommand2(
+		return new MethodInvocationCommand(
 				targetObject, 
 				target != null ? target.getText() : targetClass.getSimpleName(), 
 				method, 

@@ -24,7 +24,7 @@ import pt.org.aguiaj.common.widgets.LabelWidget.ObjectToHighlightProvider;
 import pt.org.aguiaj.core.DocumentationView;
 import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.TypeWidget;
-import pt.org.aguiaj.core.commands.java.MethodInvocationCommand2;
+import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
 import pt.org.aguiaj.standard.StandardNamePolicy;
@@ -56,7 +56,7 @@ public class PropertyWidget {
 			label.addHyperlinkAction(new Listener () {
 				public void handleEvent(Event event) {
 					String ref = ObjectModel.getFirstReference(object).name;
-					MethodInvocationCommand2 command = new MethodInvocationCommand2(object, ref, propertyMethod, new Object[0], new String[0]);
+					MethodInvocationCommand command = new MethodInvocationCommand(object, ref, propertyMethod, new Object[0], new String[0]);
 					ObjectModel.getInstance().execute(command);
 				}
 			});
@@ -67,7 +67,7 @@ public class PropertyWidget {
 					Reference ref = ObjectModel.getFirstReference(object);
 					Object obj = null;
 					if(ref != null) {
-						MethodInvocationCommand2 command = new MethodInvocationCommand2(object, ref.name, propertyMethod, new Object[0], new String[0]);
+						MethodInvocationCommand command = new MethodInvocationCommand(object, ref.name, propertyMethod, new Object[0], new String[0]);
 						command.execute();
 						obj = command.getResultingObject();
 					}
