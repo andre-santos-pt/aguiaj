@@ -1,9 +1,5 @@
 #summary This page lists the dependencies of the AGUIA/J component.
 
-= Aspect/J =
-
-http://download.eclipse.org/tools/ajdt/42/update
-
 = Guava =
  
 http://guava-osgi.googlecode.com/svn/trunk/repository/
