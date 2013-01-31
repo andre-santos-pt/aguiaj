@@ -9,7 +9,7 @@
    <feature url="features/pt.org.aguiaj.plugins.feature_0.9.6.3.jar" id="pt.org.aguiaj.plugins.feature" version="0.9.6.3">
       <category name="pt.org.aguiaj.plugins"/>
    </feature>
-   <feature url="features/pt.org.aguiaj.feature_1.0.3.jar" id="pt.org.aguiaj.feature" version="1.0.3">
+   <feature url="features/pt.org.aguiaj.feature_0.9.9.4.jar" id="pt.org.aguiaj.feature" version="0.9.9.4">
       <category name="pt.org.aguiaj.environment"/>
    </feature>
    <category-def name="pt.org.aguiaj.environment" label="AGUIA/J">
