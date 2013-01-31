@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2012 André L. Santos.
+ * Copyright (c) 2013 Andre L. Santos.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
- *     André L. Santos - initial API and implementation
+ *     Andre L. Santos - initial API and implementation
  ******************************************************************************/
 package aguiaj.images;
 
@@ -32,7 +32,7 @@ public class ColorImage implements ImageWithTransparency {
 	 * @param height Image height
 	 */
 	public ColorImage(int width, int height) {
-		if(!ImageUtils.isValidDimension(width, height))
+		if(!ImageCommon.isValidDimension(width, height))
 			throw new IllegalArgumentException("Invalid dimensions - " + width + "x" + height);
 
 		pixels = new Color[height][width];
@@ -94,7 +94,7 @@ public class ColorImage implements ImageWithTransparency {
 	
 	@Override
 	public Color getColor(int x, int y) {
-		if(!ImageUtils.isValidPoint(x, y, this))
+		if(!ImageCommon.isValidPoint(x, y, this))
 			throw new IllegalArgumentException("Invalid point - (" + x + ", " + y + ")");
 
 		return pixels[y][x];
@@ -113,7 +113,7 @@ public class ColorImage implements ImageWithTransparency {
 	 * @param color Color
 	 */
 	public void setColor(int x, int y, Color color) {
-		if(!ImageUtils.isValidPoint(x, y, this))
+		if(!ImageCommon.isValidPoint(x, y, this))
 			throw new IllegalArgumentException("Invalid point - (" + x + ", " + y + ")");
 
 		if(color == null)
