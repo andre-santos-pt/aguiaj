@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: AGUIA/J Colors Plugin
 Bundle-SymbolicName: pt.org.aguiaj.colors;singleton:=true
-Bundle-Version: 1.0.2
+Bundle-Version: 1.0.3
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: pt.org.aguiaj;bundle-version="0.0.0",
  org.eclipse.swt;bundle-version="0.0.0"

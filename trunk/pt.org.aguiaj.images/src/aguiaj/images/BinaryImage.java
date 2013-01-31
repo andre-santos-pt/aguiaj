@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2012 André L. Santos.
+ * Copyright (c) 2013 Andre L. Santos.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
- *     André L. Santos - initial API and implementation
+ *     Andre L. Santos - initial API and implementation
  ******************************************************************************/
 package aguiaj.images;
 
@@ -30,7 +30,7 @@ public class BinaryImage implements Image {
 	 * @param height Image height
 	 */
 	public BinaryImage(int width, int height) {
-		if(!ImageUtils.isValidDimension(width, height))
+		if(!ImageCommon.isValidDimension(width, height))
 			throw new IllegalArgumentException("Invalid dimensions - " + width + "x" + height);
 
 		pixels = new boolean[height][width];
@@ -67,6 +67,8 @@ public class BinaryImage implements Image {
 		return img;
 	}
 	
+	
+	
 	@Override
 	public int getWidth() {
 		return pixels[0].length;
@@ -79,7 +81,7 @@ public class BinaryImage implements Image {
 	
 	@Override
 	public Color getColor(int x, int y) {
-		if(!ImageUtils.isValidPoint(x, y, this))
+		if(!ImageCommon.isValidPoint(x, y, this))
 			throw new IllegalArgumentException("Invalid point - (" + x + ", " + y + ")");
 
 		return pixels[y][x] ? Color.BLACK : Color.WHITE;
@@ -93,7 +95,7 @@ public class BinaryImage implements Image {
 	 * @param y y-axis coordinate
 	 */
 	public void setBlack(int x, int y) {
-		if(!ImageUtils.isValidPoint(x, y, this))
+		if(!ImageCommon.isValidPoint(x, y, this))
 			throw new IllegalArgumentException("Invalid point - (" + x + ", " + y + ")");
 		
 		pixels[y][x] = true;
@@ -106,7 +108,7 @@ public class BinaryImage implements Image {
 	 * @param y y-axis coordinate
 	 */
 	public void setWhite(int x, int y) {
-		if(!ImageUtils.isValidPoint(x, y, this))
+		if(!ImageCommon.isValidPoint(x, y, this))
 			throw new IllegalArgumentException("Invalid point - (" + x + ", " + y + ")");
 		
 		pixels[y][x] = false;

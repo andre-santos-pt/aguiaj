@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: AGUIA/J Images Plugin
 Bundle-SymbolicName: pt.org.aguiaj.images;singleton:=true
-Bundle-Version: 0.9.6.3
+Bundle-Version: 0.9.6.4
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.swt;bundle-version="3.6.0",
  org.eclipse.ui;bundle-version="3.6.2",

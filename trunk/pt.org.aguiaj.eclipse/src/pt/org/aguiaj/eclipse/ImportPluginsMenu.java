@@ -1,17 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2012 André L. Santos.
+ * Copyright (c) 2013 Andre L. Santos.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
- *     André L. Santos - initial API and implementation
+ *     Andre L. Santos - initial API and implementation
  ******************************************************************************/
 package pt.org.aguiaj.eclipse;
 
 import static pt.org.aguiaj.extensibility.AguiaJContribution.EXTENSION_OBJECT_WIDGET;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +24,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jdt.core.IClasspathAttribute;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
@@ -148,8 +150,17 @@ public class ImportPluginsMenu extends ContributionItem {
 
 						if(!exists) {
 							IClasspathEntry[] newEntries = new IClasspathEntry[entries.length + 1];
-							System.arraycopy(entries, 0, newEntries, 0, entries.length);						
-							newEntries[entries.length] = JavaCore.newLibraryEntry(new Path(jarLocation), null, null, true);						
+							System.arraycopy(entries, 0, newEntries, 0, entries.length);			
+							
+							Path root = new Path(jarLocation);
+							
+							IClasspathAttribute atts[] = new IClasspathAttribute[] {
+							    JavaCore.newClasspathAttribute("javadoc_location", root.append("doc").toFile().toURI().toString()),
+							};
+							IClasspathEntry entry = JavaCore.newLibraryEntry(root, root.append("src"), null, null, atts, false);
+							
+//							IClasspathEntry entry = JavaCore.newLibraryEntry(new Path(jarLocation), new Path(jarLocation).append("src"), null, true);
+							newEntries[entries.length] = entry;				
 							project.setRawClasspath(newEntries, null);
 							message.setMessage("Plugin classes imported into project " + project.getElementName() + ".");
 						}
