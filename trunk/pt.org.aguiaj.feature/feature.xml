@@ -52,10 +52,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
    <requires>
       <import plugin="org.eclipse.core.runtime" version="3.6.0" match="greaterOrEqual"/>
-      <import plugin="org.aspectj.runtime" version="1.6.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.resources" version="3.6.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jdt.core" version="3.6.0" match="greaterOrEqual"/>
-      <import plugin="com.google.guava" version="8.0.0" match="greaterOrEqual"/>
       <import plugin="org.junit" version="3.8.2" match="greaterOrEqual"/>
       <import plugin="org.eclipse.swt" version="3.6.2" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui" version="3.6.0" match="greaterOrEqual"/>
@@ -64,6 +62,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <import plugin="org.eclipse.jface.text" version="3.6.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.ide" version="3.6.2" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.expressions" version="3.4.200" match="greaterOrEqual"/>
+      <import plugin="com.google.guava" version="11.0.1" match="greaterOrEqual"/>
    </requires>
 
    <plugin
@@ -92,11 +91,5 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-
-   <plugin
-         id="org.aspectj.runtime"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
 
 </feature>
