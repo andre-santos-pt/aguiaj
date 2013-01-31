@@ -6,11 +6,11 @@
    <feature url="features/pt.iscte.dcti.editor.feature_1.0.0.jar" id="pt.iscte.dcti.editor.feature" version="1.0.0">
       <category name="pt.iscte.dcti.aguiaj"/>
    </feature>
-   <feature url="features/pt.org.aguiaj.feature_0.9.9.5.jar" id="pt.org.aguiaj.feature" version="0.9.9.5">
-      <category name="pt.org.aguiaj.environment"/>
-   </feature>
    <feature url="features/pt.org.aguiaj.plugins.feature_0.9.6.4.jar" id="pt.org.aguiaj.plugins.feature" version="0.9.6.4">
       <category name="pt.org.aguiaj.plugins"/>
+   </feature>
+   <feature url="features/pt.org.aguiaj.feature_0.9.9.6.jar" id="pt.org.aguiaj.feature" version="0.9.9.6">
+      <category name="pt.org.aguiaj.environment"/>
    </feature>
    <category-def name="pt.org.aguiaj.environment" label="AGUIA/J">
       <description>
