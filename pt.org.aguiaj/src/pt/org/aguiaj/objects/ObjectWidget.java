@@ -16,6 +16,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,6 +27,9 @@ import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseTrackAdapter;
+import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -47,6 +51,7 @@ import pt.org.aguiaj.common.widgets.IconWidget;
 import pt.org.aguiaj.common.widgets.LabelWidget;
 import pt.org.aguiaj.common.widgets.MethodWidget;
 import pt.org.aguiaj.core.AguiaJActivator;
+import pt.org.aguiaj.core.Highlightable;
 import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.UIText;
@@ -59,13 +64,13 @@ import com.google.common.collect.Sets;
 
 // TODO fail-proof extensions
 
-public final class ObjectWidget extends FieldContainer {
+public final class ObjectWidget extends FieldContainer implements Highlightable {
 
 	private final Object object;
 	private final Class<?> objectClass;
 
 	private final boolean hasExtension;
-	private TypeWidget extension;
+	private List<TypeWidget> extensions;
 
 	private Stack<Composite> sections;
 	private Composite visualSection;
@@ -73,6 +78,8 @@ public final class ObjectWidget extends FieldContainer {
 	private Composite attributesGroup;
 	private Composite propertiesGroup;
 	private Composite operationsGroup;
+
+	private Map<Method, Highlightable> methodToWidget;
 
 	private Menu menu;
 
@@ -89,6 +96,7 @@ public final class ObjectWidget extends FieldContainer {
 
 		this.object = object;
 		this.objectClass = object.getClass();
+		methodToWidget = new HashMap<>();
 
 		setLayout(new FormLayout());
 
@@ -103,7 +111,9 @@ public final class ObjectWidget extends FieldContainer {
 
 		if(hasExtension) {
 			visualSection = createSection();
-			this.extension = WidgetFactory.INSTANCE.createWidget(
+			visualSection.setLayout(new RowLayout(SWT.HORIZONTAL));
+			
+			this.extensions = WidgetFactory.INSTANCE.createWidgets(
 					visualSection, 
 					objectClass, 
 					EnumSet.of(WidgetProperty.OBJECT_WIDGET));					
@@ -224,7 +234,8 @@ public final class ObjectWidget extends FieldContainer {
 			propertiesGroup.setLayout(createGridLayout());
 
 			for(final Method propertyMethod : queryMethods) {				
-				new PropertyWidget(propertiesGroup, object, propertyMethod, this);
+				PropertyWidget widget = new PropertyWidget(propertiesGroup, object, propertyMethod, this);
+				methodToWidget.put(propertyMethod, widget);
 			}
 
 			createShowHide(UIText.SHOW_PROPERTIES, UIText.HIDE_PROPERTIES, propertiesGroup);
@@ -240,8 +251,9 @@ public final class ObjectWidget extends FieldContainer {
 			operationsGroup.setLayout(createGridLayout());
 
 			for(Class<?> interfacce : commandMethodsByType.keySet()) {
-				for(Method method : commandMethodsByType.get(interfacce)) {
-					new MethodWidget(operationsGroup, objectClass, getObject(), method, this);
+				for(Method m : commandMethodsByType.get(interfacce)) {
+					MethodWidget widget = new MethodWidget(operationsGroup, objectClass, getObject(), m, this);
+					methodToWidget.put(m, widget);
 				}
 			}
 
@@ -298,7 +310,7 @@ public final class ObjectWidget extends FieldContainer {
 				}
 			}
 		});
-		
+
 		nameLabel.getControl().setMenu(menu);
 
 		List<Class<?>> types = Inspector.getAllCompatibleTypes(objectClass);
@@ -320,6 +332,25 @@ public final class ObjectWidget extends FieldContainer {
 				}
 
 				icon.setToolTipText(toolTip);
+
+				if(type.isInterface()) {
+					icon.addMouseTrackListener(new MouseTrackAdapter() {
+						@Override
+						public void mouseExit(MouseEvent e) {
+							for(Method m : Inspector.methodsOfInterface(objectClass, type)) {
+								if(methodToWidget.containsKey(m))
+									methodToWidget.get(m).unhighlight();
+							}
+						}
+
+						@Override
+						public void mouseEnter(MouseEvent e) {
+							for(Method m : Inspector.methodsOfInterface(objectClass, type))
+								if(methodToWidget.containsKey(m))
+									methodToWidget.get(m).highlight();
+						}
+					});
+				}
 			}
 		}
 
@@ -455,8 +486,9 @@ public final class ObjectWidget extends FieldContainer {
 		super.updateFields(object);
 
 		try {
-			if(extension != null)
-				extension.update(object);
+			if(extensions != null)
+				for(TypeWidget extension : extensions)
+					extension.update(object);
 		}
 		catch(Exception e) {
 			AguiaJActivator.handlePluginError(e.getMessage());

@@ -34,6 +34,8 @@ import org.eclipse.swt.widgets.Display;
 import pt.org.aguiaj.common.Reference;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.DocumentationView;
+import pt.org.aguiaj.core.Highlightable;
+import pt.org.aguiaj.core.Highlighter;
 import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
@@ -44,9 +46,9 @@ import pt.org.aguiaj.objects.ObjectModel;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 
-public class MethodWidget { 
+public class MethodWidget implements Highlightable { 
 
-	private Map<Method, List<TypeWidget>> methodTextArgsTable = new HashMap<Method, List<TypeWidget>>();
+	private Map<Method, List<TypeWidget>> methodTextArgsTable;
 
 	private Object object;
 	private Method method;
@@ -55,6 +57,7 @@ public class MethodWidget {
 	private boolean overriding;
 
 	private Button invokeButton;
+	private Highlighter highlighter;
 	
 	public MethodWidget(Composite parent, Class<?> clazz, Object object, final Method method, final FieldContainer fieldContainer) {
 		assert parent != null;
@@ -75,6 +78,7 @@ public class MethodWidget {
 		layout.horizontalSpacing = 0;
 		argsComposite.setLayout(layout);
 		List<TypeWidget> paramTexts = createParameterWidgets(fieldContainer, method, argsComposite);
+		methodTextArgsTable = new HashMap<Method, List<TypeWidget>>();
 		methodTextArgsTable.put(method, paramTexts);
 	}
 
@@ -89,6 +93,8 @@ public class MethodWidget {
 		invokeButton.setText(StandardNamePolicy.prettyCommandName(method));
 		//		invokeButton.setBounds(5, 5, 80, 30);
 
+		highlighter = new Highlighter(comp);
+		
 		String toolTip = StandardNamePolicy.getMethodToolTip(object, method);
 
 		invokeButton.setToolTipText(toolTip);
@@ -163,5 +169,15 @@ public class MethodWidget {
 		
 		MethodInvocationCommand cmd = new MethodInvocationCommand(object, objectReference, method, args, argsText);
 		ObjectModel.getInstance().execute(cmd);
+	}
+
+	@Override
+	public void highlight() {
+		highlighter.highlight();
+	}
+
+	@Override
+	public void unhighlight() {
+		highlighter.unhighlight();
 	}
 }

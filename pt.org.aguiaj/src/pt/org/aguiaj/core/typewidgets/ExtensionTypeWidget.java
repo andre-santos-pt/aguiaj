@@ -24,7 +24,7 @@ import pt.org.aguiaj.extensibility.VisualizationWidget;
 
 public class ExtensionTypeWidget extends AbstractTypeWidget {
 
-	public VisualizationWidget extension;
+	private VisualizationWidget extension;
 
 	private Object object;
 

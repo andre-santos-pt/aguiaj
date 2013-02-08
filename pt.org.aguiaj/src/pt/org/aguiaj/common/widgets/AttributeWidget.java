@@ -13,6 +13,7 @@ package pt.org.aguiaj.common.widgets;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.swt.SWT;
@@ -38,9 +39,9 @@ import pt.org.aguiaj.standard.StandardNamePolicy;
 
 
 public class AttributeWidget extends Composite {
-	
+
 	private boolean inherited;
-	
+
 	public AttributeWidget(
 			final Composite parent, 
 			final Field field, 
@@ -50,9 +51,9 @@ public class AttributeWidget extends Composite {
 			final boolean isPrivate) {
 
 		super(parent, SWT.NONE);
-		
+
 		setLayout(new GridLayout(2, false));
-		
+
 		// there are no inherited static fields
 		this.inherited = object != null && Inspector.isInherited(object.getClass(), field);
 
@@ -61,10 +62,10 @@ public class AttributeWidget extends Composite {
 
 	private void createContents(final Field field, final Object object,
 			FieldContainer fieldContainer, boolean modifiable, boolean isPrivate) {
-		
+
 		String prettyName = StandardNamePolicy.prettyField(field);
 		boolean referenceType = !field.getType().isPrimitive();
-		
+
 		LabelWidget label = new LabelWidget.Builder()
 		.text(prettyName)
 		.medium()
@@ -74,7 +75,7 @@ public class AttributeWidget extends Composite {
 		.create(this);
 
 		DocumentationView.getInstance().addDocumentationSupport(label.getControl(), field);
-		
+
 		if(referenceType)
 			addLinking(field, object, label);
 
@@ -86,35 +87,33 @@ public class AttributeWidget extends Composite {
 		catch(Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		if(isPrivate && !(field.getType().isPrimitive() || field.getType().equals(String.class)))
 			return;
 
 		Set<WidgetProperty> props = EnumSet.of(WidgetProperty.ATTRIBUTE);
 		if(!Modifier.isFinal(field.getModifiers()) && modifiable)
 			props.add(WidgetProperty.MODIFIABLE);
-		
-		final TypeWidget fieldWidget = 
-			WidgetFactory.INSTANCE.createWidget(
-					this, 
-					field.getType(), 					
-					props);
 
-		if(fieldWidget instanceof AbstractTypeWidget)
-			((AbstractTypeWidget) fieldWidget).setAttribute(field, object);		
+		List<TypeWidget> widgets = 	WidgetFactory.INSTANCE.createWidgets(this, field.getType(), props);
 
-		fieldContainer.mapToWidget(field, fieldWidget);
+		for(TypeWidget fieldWidget : widgets) {
+			if(fieldWidget instanceof AbstractTypeWidget)
+				((AbstractTypeWidget) fieldWidget).setAttribute(field, object);		
 
-		try {
-			fieldWidget.update(obj);
-		} 
-		catch (Exception e) {
-			e.printStackTrace();
+			fieldContainer.mapToWidget(field, fieldWidget);
+
+			try {
+				fieldWidget.update(obj);
+			} 
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
 	private void addLinking(final Field field, final Object object, LabelWidget label) {
-		
+
 		label.addHyperlinkAction(new Listener () {
 			public void handleEvent(Event event) {
 				Object value = null;
@@ -126,8 +125,8 @@ public class AttributeWidget extends Composite {
 
 				InspectionPolicy policy = ClassModel.getInspector().getPolicy();
 				if(policy.isInstanceFieldVisible(field) ||
-				   policy.isStaticFieldVisible(field)) {
-					
+						policy.isStaticFieldVisible(field)) {
+
 					String source = "." + field.getName();					
 					if(object == null)
 						source = field.getDeclaringClass().getSimpleName() + source;
@@ -142,10 +141,10 @@ public class AttributeWidget extends Composite {
 				else {
 					new NewDeadObjectCommand(value).execute();
 				}
-				
+
 			}
 		});
-		
+
 		label.addObjectHighlightCapability(new ObjectToHighlightProvider() {
 
 			@Override

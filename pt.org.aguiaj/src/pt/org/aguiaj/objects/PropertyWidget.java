@@ -11,7 +11,9 @@
 package pt.org.aguiaj.objects;
 
 import java.lang.reflect.Method;
+
 import java.util.EnumSet;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -22,36 +24,38 @@ import pt.org.aguiaj.common.widgets.FieldContainer;
 import pt.org.aguiaj.common.widgets.LabelWidget;
 import pt.org.aguiaj.common.widgets.LabelWidget.ObjectToHighlightProvider;
 import pt.org.aguiaj.core.DocumentationView;
+import pt.org.aguiaj.core.Highlightable;
 import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
 import pt.org.aguiaj.standard.StandardNamePolicy;
-public class PropertyWidget {
-	private TypeWidget widget;
-	
+
+
+public class PropertyWidget implements Highlightable {
+	private LabelWidget label;
+
 	public PropertyWidget(Composite parent, final Object object, final Method propertyMethod, FieldContainer fieldContainer) {
 		boolean inherited = Inspector.isInherited(object.getClass(), propertyMethod);
 		boolean overriding = Inspector.isOverriding(object.getClass(), propertyMethod);
 		boolean returnsReferenceType = !propertyMethod.getReturnType().isPrimitive();
-		
+
 		String name = StandardNamePolicy.prettyPropertyName(propertyMethod);
 		String toolTip = StandardNamePolicy.getMethodToolTip(object, propertyMethod);
-		
-		LabelWidget label = 
-			new LabelWidget.Builder()
-			.text(name)
-			.medium()
-			.italicIf(inherited)
-			.boldIf(overriding)
-			.toolTip(toolTip)
-			.linkIf(returnsReferenceType)
-			.create(parent);
-		
+
+		label = new LabelWidget.Builder()
+		.text(name)
+		.medium()
+		.italicIf(inherited)
+		.boldIf(overriding)
+		.toolTip(toolTip)
+		.linkIf(returnsReferenceType)
+		.create(parent);
+
 		DocumentationView.getInstance().addDocumentationSupport(label.getControl(), propertyMethod);
-		
-		
+
+
 		if(returnsReferenceType) {		
 			label.addHyperlinkAction(new Listener () {
 				public void handleEvent(Event event) {
@@ -60,7 +64,7 @@ public class PropertyWidget {
 					ObjectModel.getInstance().execute(command);
 				}
 			});
-			
+
 			label.addObjectHighlightCapability(new ObjectToHighlightProvider() {
 				@Override
 				public Object getObjectToHighlight() {
@@ -75,13 +79,24 @@ public class PropertyWidget {
 				}
 			});
 		}
-		
-		widget = WidgetFactory.INSTANCE.createWidget(
+
+		List<TypeWidget> widgets = WidgetFactory.INSTANCE.createWidgets(
 				parent, 
 				propertyMethod.getReturnType(),
 				EnumSet.of(WidgetProperty.PROPERTY));				
-		
-		fieldContainer.mapToWidget(propertyMethod, widget);
+
+		for(TypeWidget w : widgets)
+			fieldContainer.mapToWidget(propertyMethod, w);
+	}
+
+	@Override
+	public void highlight() {
+		label.highlight();		
+	}
+
+	@Override
+	public void unhighlight() {
+		label.unhighlight();		
 	}
 }
 

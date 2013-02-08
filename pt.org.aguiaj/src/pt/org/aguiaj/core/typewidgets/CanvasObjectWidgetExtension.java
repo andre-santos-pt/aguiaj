@@ -33,7 +33,7 @@ import pt.org.aguiaj.common.widgets.NullReferenceWidget;
 import pt.org.aguiaj.extensibility.CanvasVisualizationWidget;
 
 // TODO : safe execute
-class CanvasObjectWidgetExtension extends AbstractTypeWidget implements CanvasVisualizationWidget, PaintListener {
+class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintListener {
 
 
 	private Composite parent;
@@ -115,15 +115,15 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements CanvasVi
 		parent.layout();
 	}
 
-	@Override
-	public List<Rectangle> toRedraw() {
-		return extension.toRedraw();
-	}
+//	@Override
+//	public List<Rectangle> toRedraw() {
+//		return extension.toRedraw();
+//	}
 
 	@Override
 	public final void paintControl(PaintEvent e) {
 		if(getObject() != null)
-			drawObject(e.gc);
+			extension.drawObject(e.gc);
 	}
 
 	@Override
@@ -139,22 +139,22 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements CanvasVi
 
 
 	// TODO error-safe
-	@Override
-	public int canvasWidth() {
-		return extension.canvasWidth();
-	}
-
-	// TODO error-safe
-	@Override
-	public int canvasHeight() {
-		return extension.canvasHeight();
-	}
-
-	// TODO error-safe
-	@Override
-	public void drawObject(GC gc) {
-		extension.drawObject(gc);
-	}
+//	@Override
+//	public int canvasWidth() {
+//		return extension.canvasWidth();
+//	}
+//
+//	// TODO error-safe
+//	@Override
+//	public int canvasHeight() {
+//		return extension.canvasHeight();
+//	}
+//
+//	// TODO error-safe
+//	@Override
+//	public void drawObject(GC gc) {
+//		extension.drawObject(gc);
+//	}
 
 	@Override
 	public Object getObject() {		

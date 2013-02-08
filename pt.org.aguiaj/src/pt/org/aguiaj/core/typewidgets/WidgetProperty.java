@@ -23,7 +23,7 @@ public enum WidgetProperty {
 	MODIFIABLE,
 	NO_EXTENSION;
 	
-	private static Set<WidgetProperty> ownerTypes = 
+	private static final Set<WidgetProperty> ownerTypes = 
 		EnumSet.of(ATTRIBUTE, ARRAYPOSITION, PROPERTY, PARAMETER, OBJECT_WIDGET);
 	
 	public static boolean isValidSet(Set<WidgetProperty> set) {
