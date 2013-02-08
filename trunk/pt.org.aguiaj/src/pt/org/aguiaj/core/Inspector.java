@@ -203,6 +203,23 @@ public class Inspector {
 
 		return table;
 	}
+	
+	public static List<Method> methodsOfInterface(Class<?> clazz, Class<?> interfacce) {
+		if(!interfacce.isInterface())
+			throw new IllegalArgumentException("not an interface");
+		
+
+		if(!interfacce.isAssignableFrom(clazz))
+			throw new IllegalArgumentException("class does not implement interface");
+		
+		List<Method> methods = new ArrayList<Method>(interfacce.getMethods().length);
+		
+		for(Method publicMethod : clazz.getMethods())
+			if(belongsToInterface(interfacce, publicMethod))
+				methods.add(publicMethod);
+		
+		return methods;
+	}
 
 	private static boolean belongsToInterface(Class<?> interfacce, Method method) {
 		try {
@@ -246,12 +263,14 @@ public class Inspector {
 	}
 
 	public static boolean isInherited(Class<?> clazz, Method method) {
-		return !method.getDeclaringClass().equals(clazz);
+		return !method.getDeclaringClass().equals(clazz) || method.isBridge();
 	}
 
 	public static boolean isOverriding(Class<?> clazz, Method method) {
 		return
 				!Modifier.isStatic(method.getModifiers()) && 
+				!method.isBridge() &&
+				!method.isSynthetic() &&
 				method.getDeclaringClass().equals(clazz) &&
 				superTypeHasMethod(clazz.getSuperclass(), method);
 	}

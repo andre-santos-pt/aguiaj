@@ -13,6 +13,7 @@ package pt.org.aguiaj.common.widgets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.FillLayout;
@@ -25,12 +26,15 @@ import org.eclipse.swt.widgets.Listener;
 
 import pt.org.aguiaj.common.AguiaJColor;
 import pt.org.aguiaj.core.AguiaJParam;
+import pt.org.aguiaj.core.Highlightable;
+import pt.org.aguiaj.core.Highlighter;
 import pt.org.aguiaj.objects.ObjectsView;
 
 
-public class LabelWidget extends Composite {
+public class LabelWidget extends Composite implements Highlightable {
 	
 	private Control control;
+	private Highlighter highlighter;
 	
 	private LabelWidget(Composite parent, Font font, String text, boolean link, 
 			boolean hasBorder, String tooltip, AguiaJColor color) {
@@ -55,6 +59,7 @@ public class LabelWidget extends Composite {
 		
 		control.setToolTipText(tooltip);
 		control.setForeground(color.getColor());
+		highlighter = new Highlighter(control);
 	}
 	
 	public void addHyperlinkAction(Listener listener) {
@@ -189,5 +194,15 @@ public class LabelWidget extends Composite {
 			Font font = new Font(Display.getDefault(), data);
 			return new LabelWidget(parent, font, text, link, border, tooltip, color);
 		}
+	}
+
+	@Override
+	public void highlight() {
+		highlighter.highlight();
+	}
+
+	@Override
+	public void unhighlight() {
+		highlighter.unhighlight();
 	}
 }

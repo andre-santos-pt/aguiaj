@@ -35,4 +35,5 @@ public class IconWidget extends Composite {
 		setBackgroundImage(icon);
 	}
 
+
 }
