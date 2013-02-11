@@ -122,7 +122,7 @@ public class ClassModel {
 		userClasses.clear();
 
 		Map<String, Image> previousMapping = new HashMap<String, Image>(iconMapping);
-		iconMapping.clear();
+//		iconMapping.clear();
 
 		userClasses.addAll(AguiaJActivator.getDefault().getPackagesClasses().values());		
 
@@ -135,13 +135,13 @@ public class ClassModel {
 
 		for(Class<?> c : userClasses) {
 			String key = c.getName();
-			if(isPluginClass(c)) {
-				final Image icon = AguiaJActivator.getDefault().getPluginTypeIcon(c);
-				if(icon != null) {
-					iconMapping.put(key,icon);
-					continue;
-				}
-			}
+//			if(isPluginClass(c)) {
+//				final Image icon = AguiaJActivator.getDefault().getPluginTypeIcon(c);
+//				if(icon != null) {
+//					iconMapping.put(key,icon);
+//					continue;
+//				}
+//			}
 			
 			if(hasIcon(c) && !iconMapping.containsKey(key)) {				
 				final AguiaJImage typeIcon = AguiaJImage.nextTypeIcon();
@@ -194,6 +194,8 @@ public class ClassModel {
 				pluginClassesForImport.add(clazz);
 
 			pluginClassSet.put(clazz, pluginId);
+			
+			iconMapping.put(clazz.getName(), AguiaJActivator.getDefault().getPluginTypeIcon(clazz));
 		}
 	}
 

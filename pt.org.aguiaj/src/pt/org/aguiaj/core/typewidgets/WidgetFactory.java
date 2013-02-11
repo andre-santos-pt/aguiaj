@@ -100,16 +100,24 @@ public enum WidgetFactory {
 
 
 	private List<Constructor<? extends VisualizationWidget<?>>> compatibleExtensions(Class<?> clazz) {
-		List<Constructor<? extends VisualizationWidget<?>>> list = new ArrayList<>();
+		List<Constructor<? extends VisualizationWidget<?>>> list = new ArrayList<Constructor<? extends VisualizationWidget<?>>>();
 
 		for(Class<?> key : objectWidgetTypeTable.keySet()) {
-			if(key.isAssignableFrom(clazz))
+			if(compatible(key, clazz))
 				list.addAll(objectWidgetTypeTable.get(key));
 		}
 
 		return list;
 	}
+	
+	private boolean compatible(Class<?> a, Class<?> b) {
+		if(a.isArray() && b.isArray())
+			return ReflectionUtils.equalArrayDim(a, b) && a.isAssignableFrom(b);
+		else
+			return a.isAssignableFrom(b);
+	}
 
+	
 
 	private Constructor<? extends VisualizationWidget<?>> bestExtension(Class<?> clazz) {
 		Collection<Constructor<? extends VisualizationWidget<?>>> all = 
@@ -128,63 +136,44 @@ public enum WidgetFactory {
 		return ReflectionUtils.declaresToString(clazz) ? stringWidget : null;
 	}
 
-//	public TypeWidget createWidget(Composite parent, 
-//			Class<?> clazz,
-//			Set<WidgetProperty> properties) {
-//
-//		return createWidgets(parent, clazz, properties).get(0);
-//	}
-
-	public List<TypeWidget> createWidgets(Composite parent, 
+	public TypeWidget createWidget(Composite parent, 
 			Class<?> clazz,
 			Set<WidgetProperty> properties) {
 
+		return createWidgets(parent, clazz, properties, true).get(0);
+	}
+
+	public List<TypeWidget> createWidgets(Composite parent, 
+			Class<?> type,
+			Set<WidgetProperty> properties) {
+		
+		return createWidgets(parent, type, properties, false);
+	}
+	
+	private List<TypeWidget> createWidgets(Composite parent, 
+			Class<?> type,
+			Set<WidgetProperty> properties, boolean single) {
+
 		assert parent != null;
-		assert clazz != null;
+		assert type != null;
 		assert WidgetProperty.isValidSet(properties);
 
-		List<TypeWidget> widgets = new ArrayList<>(1);
-
-		//		TypeWidget widget = null;
-
+		List<TypeWidget> widgets = new ArrayList<TypeWidget>(single ? 1 : 3);
+		
 		WidgetProperty ownerType = WidgetProperty.getOwnerType(properties);
 
-		// primitive types
-		if(clazz.isPrimitive()) { 
-
-			if(widgetTypeTable.containsKey(clazz)) { 
-				Constructor<? extends TypeWidget> constructor = widgetTypeTable.get(clazz);
-				try {
-					widgets.add(constructor.newInstance(
-							parent, 
-							ownerType,
-							properties.contains(WidgetProperty.MODIFIABLE)));
-				}
-				catch (Exception e) {
-					System.err.println("Error creating plugglable type widget " + 
-							constructor.getDeclaringClass().getName());
-					e.printStackTrace();
-					widgets.add(new NotSupportedWidget(parent, ownerType, clazz));
-				}
-			}
-			else {
-				widgets.add(new NotSupportedWidget(parent, ownerType, clazz));
-			}
+		if(type.isPrimitive()) {
+			widgets.add(createPrimitiveTypeWidget(parent, type, properties, ownerType));
 		}
-
-		// objects
 		else {
-
-			if(properties.contains(WidgetProperty.MODIFIABLE) && 
-					ownerType != WidgetProperty.PROPERTY) {
-
-				widgets.add(new SelectReferenceWidget(parent, clazz, ownerType));	
+			if(properties.contains(WidgetProperty.MODIFIABLE) && ownerType != WidgetProperty.PROPERTY) {
+				widgets.add(new SelectReferenceWidget(parent, type, ownerType));	
 			}
-			else if(clazz.isArray() &&					
-					!clazz.getComponentType().isArray() &&
+			else if(type.isArray() &&					
+					!type.getComponentType().isArray() &&
 					ownerType.equals(WidgetProperty.PROPERTY)) {
 
-				if(clazz.getComponentType().isPrimitive()) {
+				if(type.getComponentType().isPrimitive()) {
 					widgets.add(new ExtensionTypeWidget(parent, ownerType,  new StringObjectWidget()));
 				}
 				else {
@@ -192,41 +181,77 @@ public enum WidgetFactory {
 				}
 			}
 			else if(!properties.contains(WidgetProperty.NO_EXTENSION)) {
-
-					
-				for(Constructor<? extends VisualizationWidget<?>> constructor : compatibleExtensions(clazz)) {
-					if(CanvasVisualizationWidget.class.isAssignableFrom(constructor.getDeclaringClass()) && 
-							ownerType != WidgetProperty.PARAMETER) {
-
-						CanvasVisualizationWidget extension = null;
-						try {
-							extension = (CanvasVisualizationWidget) constructor.newInstance();
-						} catch (Exception e) {
-							e.printStackTrace();
-						} 
-						CanvasObjectWidgetExtension widget = new CanvasObjectWidgetExtension(parent, extension, ownerType);
-						widget.initialize();
-						widgets.add(widget);
-					}
-					else {
-						VisualizationWidget<?> extension = null;
-						try {
-							extension = constructor.newInstance();
-						} catch (Exception e) {
-							e.printStackTrace();
-						} 
-						widgets.add(new ExtensionTypeWidget(parent, ownerType, extension));
-					}
-				}
+				addExtensionWidgets(parent, type, widgets, ownerType, single);	
 			}
 		}
 
 		if(widgets.isEmpty())
-			widgets.add(new ExtensionTypeWidget(parent, ownerType,  new StringObjectWidget()));
+			widgets.add(new ExtensionTypeWidget(parent, ownerType, new StringObjectWidget()));
 
 		for(TypeWidget w : widgets)
-			SWTUtils.setTooltipRecursively(w.getControl(), clazz.getSimpleName());
+			SWTUtils.setTooltipRecursively(w.getControl(), type.getSimpleName());
 
 		return widgets;
+	}
+
+
+	private void addExtensionWidgets(Composite parent, Class<?> type,
+			List<TypeWidget> widgets, WidgetProperty ownerType, boolean single) {
+		
+		for(Constructor<? extends VisualizationWidget<?>> constructor : compatibleExtensions(type)) {
+			if(CanvasVisualizationWidget.class.isAssignableFrom(constructor.getDeclaringClass()) && 
+					ownerType != WidgetProperty.PARAMETER) {
+
+				CanvasVisualizationWidget extension = null;
+				try {
+					extension = (CanvasVisualizationWidget) constructor.newInstance();
+				} catch (Exception e) {
+					e.printStackTrace();
+				} 
+				CanvasObjectWidgetExtension widget = new CanvasObjectWidgetExtension(parent, extension, ownerType);
+				widget.initialize();
+				widgets.add(widget);
+				if(single)
+					return;
+			}
+			else {
+				VisualizationWidget<?> extension = null;
+				try {
+					extension = constructor.newInstance();
+				} catch (Exception e) {
+					e.printStackTrace();
+				} 
+				widgets.add(new ExtensionTypeWidget(parent, ownerType, extension));
+				if(single)
+					return;
+			}
+		}
+	}
+
+
+	private TypeWidget createPrimitiveTypeWidget(Composite parent, Class<?> type,
+			Set<WidgetProperty> properties, WidgetProperty ownerType) {
+		
+		if(!type.isPrimitive())
+			throw new IllegalArgumentException("Type is not primitive");
+		
+		if(widgetTypeTable.containsKey(type)) { 
+			Constructor<? extends TypeWidget> constructor = widgetTypeTable.get(type);
+			try {
+				return constructor.newInstance(
+						parent, 
+						ownerType,
+						properties.contains(WidgetProperty.MODIFIABLE));
+			}
+			catch (Exception e) {
+				System.err.println("Error creating plugglable type widget " + 
+						constructor.getDeclaringClass().getName());
+				e.printStackTrace();
+				return new NotSupportedWidget(parent, ownerType, type);
+			}
+		}
+		else {
+			return new NotSupportedWidget(parent, ownerType, type);
+		}
 	}
 }

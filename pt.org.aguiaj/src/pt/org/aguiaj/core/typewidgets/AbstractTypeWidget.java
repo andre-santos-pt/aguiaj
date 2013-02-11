@@ -13,20 +13,13 @@ package pt.org.aguiaj.core.typewidgets;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 
-import pt.org.aguiaj.common.AguiaJColor;
-import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.ArrayPositionAssignmentCommand;
 import pt.org.aguiaj.core.commands.java.AttributeAssignmentCommand;

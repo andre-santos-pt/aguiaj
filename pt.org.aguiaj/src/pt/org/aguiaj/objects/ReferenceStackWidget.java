@@ -18,7 +18,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Widget;
 
 import pt.org.aguiaj.common.AguiaJColor;
 import pt.org.aguiaj.common.widgets.NullReferenceWidget;
@@ -42,7 +41,6 @@ public class ReferenceStackWidget<C extends Composite> extends Composite {
 		layout.verticalSpacing = 10;
 		referenceStack.setLayout(layout);
 		referenceStack.setBackground(AguiaJColor.OBJECT_AREA.getColor());
-	
 	}
 	
 	public C getWidget() {
@@ -88,7 +86,7 @@ public class ReferenceStackWidget<C extends Composite> extends Composite {
 			}
 
 		if(toRemove != null)
-			referenceWidgets.remove(toRemove);
+			referenceWidgets.remove(toRemove);		
 	}
 
 	public boolean hasReferences() {

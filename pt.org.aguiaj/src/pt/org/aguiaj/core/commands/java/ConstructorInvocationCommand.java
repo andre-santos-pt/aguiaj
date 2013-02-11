@@ -11,16 +11,9 @@
 package pt.org.aguiaj.core.commands.java;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
-import org.eclipse.swt.SWT;
 
 import pt.org.aguiaj.common.ConstructorInvocationThread;
-import pt.org.aguiaj.common.InfiniteCycleException;
-import pt.org.aguiaj.common.SWTUtils;
-import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.ReflectionUtils;
-import pt.org.aguiaj.core.UIText;
 import pt.org.aguiaj.core.commands.CommandsCommon;
 import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 import pt.org.aguiaj.objects.ObjectModel;

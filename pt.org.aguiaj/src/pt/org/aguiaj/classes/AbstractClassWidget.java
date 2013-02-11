@@ -28,6 +28,7 @@ public class AbstractClassWidget extends Composite {
 		LabelWidget classNameLabel =  new LabelWidget.Builder()
 			.text(StandardNamePolicy.prettyClassName(clazz))
 			.big()
+			.italic()
 			.create(this);
 		
 		DocumentationView.getInstance().addDocumentationSupport(classNameLabel.getControl(), clazz);

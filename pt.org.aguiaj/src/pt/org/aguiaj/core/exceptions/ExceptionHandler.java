@@ -17,11 +17,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 
 import pt.org.aguiaj.common.PluggableExceptionHandler;
-import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.core.UIText;
 import pt.org.aguiaj.extensibility.ExceptionListener;
 import pt.org.aguiaj.extensibility.ExceptionTrace;
