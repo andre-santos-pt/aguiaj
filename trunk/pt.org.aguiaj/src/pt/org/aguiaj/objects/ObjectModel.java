@@ -10,18 +10,20 @@
  ******************************************************************************/
 package pt.org.aguiaj.objects;
 
+import static com.google.common.collect.Lists.newLinkedList;
+import static com.google.common.collect.Maps.newHashMap;
+import static com.google.common.collect.Maps.newLinkedHashMap;
+import static com.google.common.collect.Sets.newHashSet;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Observable;
 import java.util.Set;
 
 import pt.org.aguiaj.classes.ClassModel;
@@ -29,10 +31,6 @@ import pt.org.aguiaj.common.Reference;
 import pt.org.aguiaj.core.commands.java.JavaCommand;
 import pt.org.aguiaj.core.commands.java.JavaCommandWithReturn;
 import pt.org.aguiaj.standard.StandardNamePolicy;
-
-import static com.google.common.collect.Maps.*;
-import static com.google.common.collect.Sets.newHashSet;
-import static com.google.common.collect.Lists.*;
 // singleton
 // observable
 public class ObjectModel {

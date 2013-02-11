@@ -10,8 +10,6 @@
  ******************************************************************************/
 package pt.org.aguiaj.core.commands;
 
-import java.util.Arrays;
-
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -20,7 +18,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.swt.widgets.Display;
 
 import pt.org.aguiaj.core.AguiaJActivator;
-import pt.org.aguiaj.objects.ObjectModel;
 
 public class ChangeWorkingDirCommand extends AbstractHandler {
 

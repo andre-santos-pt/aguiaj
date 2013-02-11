@@ -30,6 +30,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
+import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
 
 
@@ -67,31 +68,31 @@ public class ReflectionUtils {
 	public static boolean isOneDimensionArray(Object array) {
 		return array.getClass().isArray() && !array.getClass().getComponentType().isArray();	
 	}
-	
+
 	public static boolean isMultiDimensionArray(Object array) {
 		return array.getClass().isArray() && array.getClass().getComponentType().isArray();
-		
+
 	}
-	
+
 	public static boolean arrayEquals(Object a, Object b) {
 		if(a == null && b == null)
 			return true;
-		
+
 		if(a != null && b == null || a == null && b != null)
 			return false;
-		
+
 		if(isOneDimensionArray(a) && isOneDimensionArray(b)) {
 			int len = Array.getLength(a); 
 			if(len != Array.getLength(b))
 				return false;
-			
+
 			for(int i = 0; i < len; i++) {
 				Object vA = Array.get(a, i);
 				Object vB = Array.get(b, i);
-				
+
 				if(vA == null && vB != null)
 					return false;
-				
+
 				if(!vA.equals(vB))
 					return false;
 			}
@@ -100,11 +101,11 @@ public class ReflectionUtils {
 		else if(isMultiDimensionArray(a) && isMultiDimensionArray(b)) {
 			return Arrays.deepEquals((Object[]) a, (Object[]) b);
 		}
-		
+
 		return false;
 	}
-	
-	
+
+
 	public static List<Field> getAllInstanceFields(Class<?> clazz) {
 		List<Field> all = new ArrayList<Field>();
 		getAllInstanceFields_rec(clazz, all);
@@ -115,20 +116,20 @@ public class ReflectionUtils {
 		for(Field f : clazz.getDeclaredFields())
 			if(!Modifier.isStatic(f.getModifiers()))
 				all.add(f);
-		
+
 		Class<?> superClass = clazz.getSuperclass();
 		if(superClass != null)
 			getAllInstanceFields_rec(superClass, all);
 	}
-	
+
 	public static Collection<Method> getAllMethods(Class<?> clazz) {
 		Set<Method> all = new HashSet<Method>();
 		getAllMethods_rec(clazz, all);
 		return all;
 	}
-	
-	
-	
+
+
+
 	private static void getAllMethods_rec(Class<?> clazz, Collection<Method> all) {
 		for(Method m : clazz.getDeclaredMethods()) {
 			if(!exists(m, all))
@@ -138,23 +139,23 @@ public class ReflectionUtils {
 		if(superClass != null)
 			getAllMethods_rec(superClass, all);
 	}
-	
-	
+
+
 	private static boolean exists(Method m, Collection<Method> all) {
 		for(Method existing : all)
 			if(isSame(m, existing))
 				return true;
-		
+
 		return false;
 	}
-	
+
 	public static boolean isSame(Method m1, Method m2) {
 		return 
-		m1.getName().equals(m2.getName()) &&
-		Arrays.deepEquals(m1.getParameterTypes(), m2.getParameterTypes());
+				m1.getName().equals(m2.getName()) &&
+				Arrays.deepEquals(m1.getParameterTypes(), m2.getParameterTypes());
 	}
-	
-	
+
+
 	public static void loadClass(Class<?> clazz) {
 		loadClass(clazz.getName());		
 	}
@@ -203,7 +204,7 @@ public class ReflectionUtils {
 			try {
 				Class<?> clazz = classLoader.loadClass(className);
 				classes.add(clazz);								
-				
+
 				addInnerClasses(clazz, classes);
 			} 
 			catch (ClassNotFoundException e) {				
@@ -220,7 +221,7 @@ public class ReflectionUtils {
 			addInnerClasses(inner, classes);
 		}
 	}
-	
+
 	public static Map<String, List<Class<?>>> readClassFiles(IPath rootPath) {
 		Map<String,List<Class<?>>> packagesClasses = new LinkedHashMap<String,List<Class<?>>>();
 		readClassFilesAux(rootPath, rootPath, "", packagesClasses);			
@@ -234,7 +235,7 @@ public class ReflectionUtils {
 
 		if(!currentPath.toFile().exists() || !currentPath.toFile().isDirectory())
 			return;
-		
+
 		for(File child : currentPath.toFile().listFiles()) {
 			if(child.isDirectory()) {
 				String nextNameSpace = namespace.equals("") ? child.getName() : namespace + "." + child.getName();
@@ -266,10 +267,10 @@ public class ReflectionUtils {
 						ret = Arrays.toString((double[]) object);
 
 					else if(clazz.equals(char[].class)) {
-//						ret = Arrays.toString((char[]) object);
+						//						ret = Arrays.toString((char[]) object);
 						ret = new String((char[]) object);
 					}
-						
+
 					else if(clazz.equals(boolean[].class))
 						ret = Arrays.toString((boolean[]) object);
 
@@ -298,32 +299,93 @@ public class ReflectionUtils {
 
 			}	
 			else {
-				Method toStringMethod = getToStringMethod(object.getClass());
-
-				if(!toStringMethod.getDeclaringClass().equals(Object.class)) {
-					MethodInvocationCommand command = new MethodInvocationCommand(object, "na", toStringMethod, new Object[0], new String[0]);
-					command.execute();
-
-					if(command.failed())
-						return null;
-
-					ret = (String) command.getResultingObject();
-				}			
+//				Method toStringMethod = getToStringMethod(object.getClass());
+//
+//				if(!toStringMethod.getDeclaringClass().equals(Object.class)) {
+//					MethodInvocationCommand command = new MethodInvocationCommand(object, "na", toStringMethod, new Object[0], new String[0]);
+//					command.execute();
+//
+//					if(command.failed())
+//						return null;
+//
+//					ret = (String) command.getResultingObject();
+//				}		
+				ret = getToStringResult(object);
 			}
 
 			// in case of an array or collection, crop the result
-			if(clazz.isArray() || Collection.class.isAssignableFrom(clazz)) {
+//			if(clazz.isArray() || Collection.class.isAssignableFrom(clazz)) {
 				if(ret != null && !complete && ret.length() > 20)
 					ret = ret.substring(0, 20) + "...";
-			}
+//			}
 		}
 
 		return ret;
 	}
 
 
+	public static String getToStringResult(Object object) {
+		Method toStringMethod = getToStringMethod(object.getClass());
+
+		if(!toStringMethod.getDeclaringClass().equals(Object.class)) {
+			MethodInvocationCommand command = new MethodInvocationCommand(object, "na", toStringMethod, new Object[0], new String[0]);
+			command.execute();
+
+			if(command.failed())
+				return null;
+
+			return (String) command.getResultingObject();
+		}
+		else {
+			String nl = System.getProperty("line.separator");
+			String ret = "";
+
+			for(Field f : ClassModel.getInstance().getVisibleAttributes(object.getClass())) {
+				if(f.getType().isPrimitive() || f.getType().equals(String.class)) {
+					Object get = null;
+					try {
+						get = f.get(object);
+					} catch (IllegalArgumentException e) {
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
+					}
+					if(!ret.isEmpty())
+						ret += nl;
+					
+					ret += f.getName() + ": " + (get == null ? "null" : get.toString());
+				}
+			}
+			return ret;
+		}
+
+	}
+
+	public static int arrayDim(Class<?> c) {
+		if(c.isArray() && !c.getComponentType().isArray())
+			return 1;
+		else
+			return 1 + arrayDim(c.getComponentType());
+	}
+
+	public static boolean isArrayDim(Class<?> c, int dim) {
+		if(dim == 1 && c.isArray() && !c.getComponentType().isArray())
+			return true;
+		else
+			return c.isArray() && isArrayDim(c.getComponentType(), dim - 1);
+	}
+
+	public static boolean equalArrayDim(Class<?> a, Class<?> b) {
+		return arrayDim(a) == arrayDim(b);
+	}
 
 
+	public static void main(String[] args) {
+		System.out.println(arrayDim(Object[][].class));
+		System.out.println(arrayDim(int.class));
+		System.out.println(arrayDim(Object[][][].class));
+
+	}
 
 	public static boolean checkParamTypes(Class<?>[] paramTypes, Object[] args) {
 		if(paramTypes.length != args.length)

@@ -66,9 +66,9 @@ public class StringObjectWidget implements VisualizationWidget<Object> {
 			}
 			else {
 				String toString = 
-					object.getClass().isArray() ?
-					ReflectionUtils.getTextualRepresentation(object, false) :
-					object.toString();
+//					object.getClass().isArray() ?
+					ReflectionUtils.getTextualRepresentation(object, false);
+//					object.toString();
 					
 				if(toString != null)
 					text.setText(toString);

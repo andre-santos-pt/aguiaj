@@ -13,7 +13,10 @@ package pt.org.aguiaj.core.commands;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -41,8 +44,7 @@ public class ReloadClassesCommand extends AbstractHandler {
 		this.workingDir = workingDir;
 	}
 
-	private List<String> expandedPrivates = new ArrayList<String>();
-	private List<String> expandedOperations = new ArrayList<String>();
+	private Map<String, EnumSet<ObjectWidget.Section>> expandedSections;
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -52,11 +54,11 @@ public class ReloadClassesCommand extends AbstractHandler {
 			if(instruction != null)
 				commands.add(instruction);
 		}
+		
+		saveExpanded();
 
 		ObjectsView objectsView = ObjectsView.getInstance();
 		objectsView.hide();
-
-		saveExpanded();
 
 		ExceptionHandler.INSTANCE.clearErrors();
 		ClassModel.getInstance().clearClasses();
@@ -75,7 +77,7 @@ public class ReloadClassesCommand extends AbstractHandler {
 		ClassesView.getInstance().reload(workingDir);				
 
 		ObjectModel.getInstance().addStaticReferences(allClasses);
-		
+
 		List<Class<?>> blackList = new ArrayList<Class<?>>();
 		for(String command : commands) {
 			try {
@@ -121,24 +123,17 @@ public class ReloadClassesCommand extends AbstractHandler {
 
 	private void restoreExpanded() {
 		ObjectsView objectsView = ObjectsView.getInstance();
-		
-		for(String ref : expandedPrivates) {
-			ObjectWidget widget = objectsView.getObjectWidgetByReference(ref);
-			if(widget != null)
-				widget.showPrivateAttributes(true);
-		}
 
-		for(String ref : expandedOperations) {
-			ObjectWidget widget = objectsView.getObjectWidgetByReference(ref);
+		for(Entry<String, EnumSet<ObjectWidget.Section>> entry : expandedSections.entrySet()) {
+			ObjectWidget widget = objectsView.getObjectWidgetByReference(entry.getKey());
 			if(widget != null)
-				widget.showOperations(true);
+				widget.expand(entry.getValue());
 		}
 	}
 
 	private void saveExpanded() {
 		ObjectsView objectsView = ObjectsView.getInstance();
-		expandedPrivates.addAll(objectsView.getReferencesForExpandedPrivatesObjects());
-		expandedOperations.addAll(objectsView.getReferencesForExpandedOperationsObjects());
+		expandedSections = objectsView.getObjectExpandedSections();
 		objectsView.hide();
 	}
 

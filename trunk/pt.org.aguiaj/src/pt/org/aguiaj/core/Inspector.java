@@ -331,7 +331,7 @@ public class Inspector {
 			typeSet.add(clazz);
 
 		typeSet.addAll(superClasses);
-		typeSet.addAll(Arrays.asList(clazz.getInterfaces()));
+		typeSet.addAll(superInterfaces(clazz));
 
 		for(Class<?> superClass : superClasses) {
 			for(Class<?> interfacce : superClass.getInterfaces()) {

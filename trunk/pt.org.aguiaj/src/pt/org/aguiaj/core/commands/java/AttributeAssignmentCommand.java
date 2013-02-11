@@ -15,7 +15,6 @@ import java.lang.reflect.Modifier;
 
 import pt.org.aguiaj.common.Reference;
 import pt.org.aguiaj.objects.ObjectModel;
-import pt.org.aguiaj.objects.ObjectModel.EventListener;
 
 public class AttributeAssignmentCommand extends JavaCommand {	
 	private Object owner;

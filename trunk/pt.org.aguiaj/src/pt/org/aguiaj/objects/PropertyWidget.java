@@ -11,10 +11,11 @@
 package pt.org.aguiaj.objects;
 
 import java.lang.reflect.Method;
-
 import java.util.EnumSet;
 import java.util.List;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -80,8 +81,11 @@ public class PropertyWidget implements Highlightable {
 			});
 		}
 
+		Composite row = new Composite(parent, SWT.NONE);
+		row.setLayout(new RowLayout(SWT.HORIZONTAL));
+		
 		List<TypeWidget> widgets = WidgetFactory.INSTANCE.createWidgets(
-				parent, 
+				row, 
 				propertyMethod.getReturnType(),
 				EnumSet.of(WidgetProperty.PROPERTY));				
 

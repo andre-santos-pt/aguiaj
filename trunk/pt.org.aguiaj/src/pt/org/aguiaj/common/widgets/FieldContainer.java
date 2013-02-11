@@ -14,7 +14,6 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -24,6 +23,9 @@ import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+
 
 public class FieldContainer extends Composite {
 
@@ -32,7 +34,7 @@ public class FieldContainer extends Composite {
 		Class<?> componentType;
 		int position;
 		TypeWidget widget;
-		
+
 		public ArrayPosition(Object arrayObject, Class<?> componentType, int position, TypeWidget widget) {
 			this.arrayObject = arrayObject;
 			this.componentType = componentType;
@@ -41,14 +43,14 @@ public class FieldContainer extends Composite {
 		}
 	}
 
-	private Map<AccessibleObject, TypeWidget> fieldTable;
+	private Multimap<AccessibleObject, TypeWidget> fieldTable;
 	private Map<Integer, ArrayPosition> arrayPositionTable;
 
 	private boolean isDirty;
 
 	public FieldContainer(Composite parent, int style) {
 		super(parent, style);
-		fieldTable = new HashMap<AccessibleObject, TypeWidget>();
+		fieldTable = ArrayListMultimap.create();
 		arrayPositionTable = new LinkedHashMap<Integer, ArrayPosition>();
 		isDirty = true;
 	}
@@ -99,25 +101,27 @@ public class FieldContainer extends Composite {
 
 
 	private void updateField(Field field, Object object) {
-		TypeWidget fieldWidget = fieldTable.get(field);
-		Object newVal = null;
-		try {
-			field.setAccessible(true);
-			newVal = field.get(object);	
-		} 
-		catch (Exception e) {
-			e.printStackTrace();
+		for(TypeWidget fieldWidget : fieldTable.get(field)) {
+			Object newVal = null;
+			try {
+				field.setAccessible(true);
+				newVal = field.get(object);	
+			} 
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			updateTypeWidget(fieldWidget, field.getType(), newVal);
 		}
-		updateTypeWidget(fieldWidget, field.getType(), newVal);
 	}
 
 	private void updateProperty(Method method, Object object) {
-		TypeWidget propWidget = fieldTable.get(method);
-		Object newVal = null;
-		MethodInvocationCommand command = new MethodInvocationCommand(object, "na", method, new Object[0], new String[0]);
-		command.execute();		
-		newVal = command.getResultingObject();
-		updateTypeWidget(propWidget, method.getReturnType(), newVal);
+		for(TypeWidget propWidget : fieldTable.get(method)) {
+			Object newVal = null;
+			MethodInvocationCommand command = new MethodInvocationCommand(object, "na", method, new Object[0], new String[0]);
+			command.execute();		
+			newVal = command.getResultingObject();
+			updateTypeWidget(propWidget, method.getReturnType(), newVal);
+		}
 	}
 
 	private void updateArrayPosition(ArrayPosition arrayPosition) {
@@ -158,25 +162,25 @@ public class FieldContainer extends Composite {
 		if(previous == null && newVal == null) {
 			update = false;
 		}
-//		else if(type.isArray()) { // && type.getComponentType().isArray()) {			
-//			if(widget != null) {
-//				String prevValText = widget.getTextualRepresentation();
-//				String newValText = ReflectionUtils.getTextualRepresentation(newVal, true);
-//				if(prevValText != null && prevValText.equals(newValText)) {
-//					update = false;
-//				}
-//			}	
-//		}
+		//		else if(type.isArray()) { // && type.getComponentType().isArray()) {			
+		//			if(widget != null) {
+		//				String prevValText = widget.getTextualRepresentation();
+		//				String newValText = ReflectionUtils.getTextualRepresentation(newVal, true);
+		//				if(prevValText != null && prevValText.equals(newValText)) {
+		//					update = false;
+		//				}
+		//			}	
+		//		}
 		// TODO: review
-//		else if(type.isArray() && !type.getComponentType().isArray()) {
-//			if(type.getComponentType().equals(int.class))
-//				update = !Arrays.equals((int[]) previous, (int[]) newVal);
-//			else if(type.getComponentType().equals(double.class))
-//				update = !Arrays.equals((double[]) previous, (double[]) newVal);
-//		}
-//		else if(type.isArray() && !type.getComponentType().isPrimitive()) {
-//			update = !Arrays.deepEquals((Object[]) previous, (Object[]) newVal);
-//		}
+		//		else if(type.isArray() && !type.getComponentType().isArray()) {
+		//			if(type.getComponentType().equals(int.class))
+		//				update = !Arrays.equals((int[]) previous, (int[]) newVal);
+		//			else if(type.getComponentType().equals(double.class))
+		//				update = !Arrays.equals((double[]) previous, (double[]) newVal);
+		//		}
+		//		else if(type.isArray() && !type.getComponentType().isPrimitive()) {
+		//			update = !Arrays.deepEquals((Object[]) previous, (Object[]) newVal);
+		//		}
 		else if(type.isArray()) {
 			update = !ReflectionUtils.arrayEquals(previous, newVal);
 		}

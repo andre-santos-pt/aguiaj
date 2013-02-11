@@ -10,9 +10,10 @@
  ******************************************************************************/
 package pt.org.aguiaj.objects;
 
-import java.util.ArrayList;
+import static com.google.common.collect.Maps.newHashMap;
+
+import java.util.EnumSet;
 import java.util.IdentityHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -80,16 +81,20 @@ public class ObjectsView extends ViewPart {
 				addObjectWidget(ref.object, ref.name, ref.type);
 			else
 				nullStack.addReference(ref.name, ref.type, null);
+			
+			nullStack.setVisible(nullStack.hasReferences());
 		}
 
 		@Override
 		public void changeReferenceEvent(Reference ref) {
 			addReference(ref.type, ref.name, ref.object);
+			nullStack.setVisible(nullStack.hasReferences());
 		}
 
 		@Override
 		public void removeReferenceEvent(Reference ref) {
 			removeReference(ref.name);
+			nullStack.setVisible(nullStack.hasReferences());
 		}
 
 		@Override
@@ -100,6 +105,7 @@ public class ObjectsView extends ViewPart {
 		@Override
 		public void clearAll() {
 			clearAllWidgets();
+			nullStack.setVisible(false);
 		}
 	}
 
@@ -291,11 +297,8 @@ public class ObjectsView extends ViewPart {
 			if(widget != null)
 				widget.removeReference(reference);
 
-			if(!nullStack.hasReference(reference)) {
+			if(!nullStack.hasReference(reference))
 				nullStack.addReference(reference, type, null);
-				nullStack.setVisible(true);
-			}
-			
 		}
 		else {
 			addNonNullReference(type, reference, object);
@@ -322,38 +325,74 @@ public class ObjectsView extends ViewPart {
 			widget.removeReference(name);
 		else {
 			nullStack.removeReference(name);
-			if(!nullStack.hasReferences())
-				nullStack.setVisible(false);
 		}
 	}	
 
-	public List<String> getReferencesForExpandedOperationsObjects() {
-		List<String> refs = new ArrayList<String>();
-
+	public Map<String, EnumSet<ObjectWidget.Section>> getObjectExpandedSections() {
+		Map<String, EnumSet<ObjectWidget.Section>> map = newHashMap();
 		for(ReferenceStackWidget<ObjectWidget> w : refStackTable.values()) {
 			String ref = w.getFirstReference();
-			if(ref != null && w.getWidget().isOperationsVisible()) {
-				refs.add(ref);
+			if(ref != null) {
+				ObjectWidget widget = w.getWidget();
+				map.put(ref, EnumSet.copyOf(widget.getExpandedSections()));
 			}
 		}
-
-		return refs;
+		return map;
 	}
-
-	public List<String> getReferencesForExpandedPrivatesObjects() {
-		List<String> refs = new ArrayList<String>();
-
-		for(ReferenceStackWidget<ObjectWidget> widget : refStackTable.values()) {
-			String ref = widget.getFirstReference();
-			if(ref != null && widget.getWidget().isPrivateAttributesVisible()) {
-				refs.add(ref);
-			}
-		}
-
-		return refs;
-	}
-
-
+	
+//	public List<String> getReferencesForExpandedOperationsObjects() {
+//		List<String> refs = new ArrayList<String>();
+//
+//		for(ReferenceStackWidget<ObjectWidget> w : refStackTable.values()) {
+//			String ref = w.getFirstReference();
+//			if(ref != null && w.getWidget().isOperationsVisible()) {
+//				refs.add(ref);
+//			}
+//		}
+//
+//		return refs;
+//	}
+//
+//	public List<String> getReferencesForExpandedPrivatesObjects() {
+//		List<String> refs = new ArrayList<String>();
+//
+//		for(ReferenceStackWidget<ObjectWidget> widget : refStackTable.values()) {
+//			String ref = widget.getFirstReference();
+//			if(ref != null && widget.getWidget().isPrivateAttributesVisible()) {
+//				refs.add(ref);
+//			}
+//		}
+//
+//		return refs;
+//	}
+//
+//
+//	public List<String> getReferencesForExpandedPropertiesObjects() {
+//		List<String> refs = new ArrayList<String>();
+//
+//		for(ReferenceStackWidget<ObjectWidget> widget : refStackTable.values()) {
+//			String ref = widget.getFirstReference();
+//			if(ref != null && widget.getWidget().isPropertiesVisible()) {
+//				refs.add(ref);
+//			}
+//		}
+//
+//		return refs;
+//	}
+//	
+//	public List<String> getReferencesForExpandedAttributesObjects() {
+//		List<String> refs = new ArrayList<String>();
+//
+//		for(ReferenceStackWidget<ObjectWidget> widget : refStackTable.values()) {
+//			String ref = widget.getFirstReference();
+//			if(ref != null && widget.getWidget().isPropertiesVisible()) {
+//				refs.add(ref);
+//			}
+//		}
+//
+//		return refs;
+//	}
+	
 	private ReferenceStackWidget<ObjectWidget> getRefAndObjectPairWidget(String refId) {
 		for(ReferenceStackWidget<ObjectWidget> widget : refStackTable.values())
 			if(widget.hasReference(refId))

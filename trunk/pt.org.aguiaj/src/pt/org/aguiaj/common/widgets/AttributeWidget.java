@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -95,7 +96,10 @@ public class AttributeWidget extends Composite {
 		if(!Modifier.isFinal(field.getModifiers()) && modifiable)
 			props.add(WidgetProperty.MODIFIABLE);
 
-		List<TypeWidget> widgets = 	WidgetFactory.INSTANCE.createWidgets(this, field.getType(), props);
+		Composite row = new Composite(this, SWT.NONE);
+		row.setLayout(new RowLayout(SWT.HORIZONTAL));
+		
+		List<TypeWidget> widgets = 	WidgetFactory.INSTANCE.createWidgets(row, field.getType(), props);
 
 		for(TypeWidget fieldWidget : widgets) {
 			if(fieldWidget instanceof AbstractTypeWidget)

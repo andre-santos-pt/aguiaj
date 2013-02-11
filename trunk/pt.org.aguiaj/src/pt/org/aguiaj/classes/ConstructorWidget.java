@@ -30,7 +30,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
-import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.common.widgets.FieldContainer;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.DocumentationView;

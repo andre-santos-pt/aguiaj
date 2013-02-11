@@ -66,7 +66,7 @@ class ArrayRowWidget extends Composite {
 
 		hasExtensionWidgets = (hasExtension || hasToString); 
 
-		if(hasExtensionWidgets)
+//		if(hasExtensionWidgets)
 			extensionWidgets = new ArrayList<TypeWidget>();
 
 		int length = Array.getLength(arrayObject);
@@ -76,7 +76,7 @@ class ArrayRowWidget extends Composite {
 		widgets = new ArrayList<TypeWidget>();
 
 		// EXTENSION WIDGET (OPTIONAL)
-		if(hasExtensionWidgets) {
+//		if(hasExtensionWidgets) {
 			for(int i = 0; i < length; i++) {
 				TypeWidget widget = WidgetFactory.INSTANCE.createWidget(
 						this, 
@@ -86,7 +86,7 @@ class ArrayRowWidget extends Composite {
 				fieldContainer.mapArrayFieldToWidget(arrayObject, arrayType, i, widget);
 				
 			}
-		}
+//		}
 
 		// NORMAL WIDGET
 		for(int i = 0; i < length; i++) {
@@ -134,15 +134,15 @@ class ArrayRowWidget extends Composite {
 		}
 
 		fieldContainer.updateFields(arrayObject);
-		if(hasExtensionWidgets) {
-			int i = 0;
-			for(TypeWidget widget : extensionWidgets) {
-				Control control = widget.getControl();
-				if(control != null)
-					addDragSupport(control, arrayType, i);
-				i++;
-			}
-		}
+//		if(hasExtensionWidgets) {
+//			int i = 0;
+//			for(TypeWidget widget : extensionWidgets) {
+//				Control control = widget.getControl();
+//				if(control != null)
+//					addDragSupport(control, arrayType, i);
+//				i++;
+//			}
+//		}
 	}
 
 	private void addDragSupport(Control control, final Class<?> arrayType, final int index) {
@@ -170,10 +170,10 @@ class ArrayRowWidget extends Composite {
 
 	public void updateFields(Object object) {
 		for(int i = 0; i < Array.getLength(array); i++) {			
-			if(hasExtensionWidgets) {
+//			if(hasExtensionWidgets) {
 				Object obj = Array.get(array, i);
 				extensionWidgets.get(i).update(obj);
-			}
+//			}
 		}
 		pack();
 		layout();
