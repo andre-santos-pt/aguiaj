@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            category="pt.org.aguiaj.viewCategory"
+            class="pt.org.aguiaj.expressionsview.ExpressionsView"
+            id="pt.org.aguiaj.expressionsview"
+            name="Function test"
+            restorable="true">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="*">
+         <view
+               id="pt.org.aguiaj.expressionsview"
+               minimized="false"
+               relationship="right"
+               relative="org.eclipse.ui.console.ConsoleView">
+         </view>
+      </perspectiveExtension>
+   </extension>
+   <extension
+      id="sampleBuilder" name="Sample Project Builder" point="org.eclipse.core.resources.builders">
+      <builder>
+         <run 
+            class="pt.org.aguiaj.expressionsview.Builder">
+            <parameter name="optimize" value="true" />
+            <parameter name="comment" value="Builder comment" />
+         </run>
+      </builder>
+   </extension>
+   
+   <extension
+         id="sampleNature"
+         name="Sample Project Nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="pt.org.aguiaj.expressionsview.builder.SampleNature">
+         </run>
+      </runtime>
+      <builder
+            id="pt.org.aguiaj.expressionsview.sampleBuilder">
+      </builder>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            id="pt.org.aguiaj.expressionsview.contribution1"
+            nameFilter="*"
+            objectClass="org.eclipse.core.resources.IProject">
+         <action
+               class="pt.org.aguiaj.expressionsview.builder.ToggleNatureAction"
+               enablesFor="+"
+               id="pt.org.aguiaj.expressionsview.addRemoveNatureAction"
+               label="Add/Remove Sample Nature"
+               menubarPath="additions">
+         </action>
+      </objectContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="pt.org.aguiaj.expressionsview.properties.SamplePropertyPage"
+            id="pt.org.aguiaj.expressionsview.properties.samplePropertyPage"
+            name="Sample Page">
+         <enabledWhen>
+            <instanceof
+                  value="org.eclipse.core.resources.IFile">
+            </instanceof>
+         </enabledWhen>
+      </page>
+   </extension>
+ 
+</plugin>
