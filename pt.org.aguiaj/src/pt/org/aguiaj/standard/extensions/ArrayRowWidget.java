@@ -44,30 +44,28 @@ import pt.org.aguiaj.objects.ObjectModel;
 class ArrayRowWidget extends Composite {
 
 	private Object array;
-
 	private List<TypeWidget> widgets;
+	private boolean hasExtension;
 	private List<TypeWidget> extensionWidgets;
-
-	private boolean hasExtensionWidgets;
-
+	
 	public ArrayRowWidget(
 			Composite parent, 
 			Class<?> arrayType, 
 			Object arrayObject, 
 			FieldContainer fieldContainer) {
-		
+
 		super(parent, SWT.NONE);
 		assert arrayObject != null;
 
 		this.array = arrayObject;
 
-		boolean hasExtension = WidgetFactory.INSTANCE.hasExtension(arrayType);		
-		boolean hasToString = !arrayType.isPrimitive() && ReflectionUtils.declaresToString(arrayType);
+		hasExtension = WidgetFactory.INSTANCE.hasExtension(arrayType);		
+		//		boolean hasToString = !arrayType.isPrimitive() && ReflectionUtils.declaresToString(arrayType);
+		//
+		//		hasExtensionWidgets = (hasExtension || hasToString); 
 
-		hasExtensionWidgets = (hasExtension || hasToString); 
-
-//		if(hasExtensionWidgets)
-			extensionWidgets = new ArrayList<TypeWidget>();
+		//		if(hasExtensionWidgets)
+		extensionWidgets = new ArrayList<TypeWidget>();
 
 		int length = Array.getLength(arrayObject);
 
@@ -76,7 +74,8 @@ class ArrayRowWidget extends Composite {
 		widgets = new ArrayList<TypeWidget>();
 
 		// EXTENSION WIDGET (OPTIONAL)
-//		if(hasExtensionWidgets) {
+		if(hasExtension) {
+
 			for(int i = 0; i < length; i++) {
 				TypeWidget widget = WidgetFactory.INSTANCE.createWidget(
 						this, 
@@ -84,9 +83,9 @@ class ArrayRowWidget extends Composite {
 						EnumSet.of(WidgetProperty.PROPERTY));
 				extensionWidgets.add(widget);
 				fieldContainer.mapArrayFieldToWidget(arrayObject, arrayType, i, widget);
-				
+
 			}
-//		}
+		}
 
 		// NORMAL WIDGET
 		for(int i = 0; i < length; i++) {
@@ -97,11 +96,11 @@ class ArrayRowWidget extends Composite {
 							WidgetProperty.ARRAYPOSITION, 
 							WidgetProperty.MODIFIABLE, 
 							WidgetProperty.NO_EXTENSION));
-			
+
 			if(widget instanceof AbstractTypeWidget) {					
 				((AbstractTypeWidget) widget).setArrayPosition(arrayObject, i);
 				widgets.add(widget);
-				if(!hasExtensionWidgets)
+				if(!hasExtension)
 					fieldContainer.mapArrayFieldToWidget(arrayObject, arrayType, i, widget);
 			}
 		}
@@ -134,20 +133,20 @@ class ArrayRowWidget extends Composite {
 		}
 
 		fieldContainer.updateFields(arrayObject);
-//		if(hasExtensionWidgets) {
-//			int i = 0;
-//			for(TypeWidget widget : extensionWidgets) {
-//				Control control = widget.getControl();
-//				if(control != null)
-//					addDragSupport(control, arrayType, i);
-//				i++;
-//			}
-//		}
+		//		if(hasExtensionWidgets) {
+		//			int i = 0;
+		//			for(TypeWidget widget : extensionWidgets) {
+		//				Control control = widget.getControl();
+		//				if(control != null)
+		//					addDragSupport(control, arrayType, i);
+		//				i++;
+		//			}
+		//		}
 	}
 
 	private void addDragSupport(Control control, final Class<?> arrayType, final int index) {
 		assert control != null;
-		
+
 		int operations = DND.DROP_MOVE | DND.DROP_COPY;
 		DragSource source = new DragSource(control, operations);
 		Transfer[] types = new Transfer[] {TextTransfer.getInstance()};
@@ -169,11 +168,11 @@ class ArrayRowWidget extends Composite {
 	}
 
 	public void updateFields(Object object) {
-		for(int i = 0; i < Array.getLength(array); i++) {			
-//			if(hasExtensionWidgets) {
+		if(hasExtension) {
+			for(int i = 0; i < Array.getLength(array); i++) {			
 				Object obj = Array.get(array, i);
 				extensionWidgets.get(i).update(obj);
-//			}
+			}
 		}
 		pack();
 		layout();

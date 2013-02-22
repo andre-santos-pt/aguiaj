@@ -109,7 +109,7 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 				
 				if(event.keyCode == SWT.CR && !instructionBar.getText().equals("")) {
 					executeCommand();
-					clear();
+//					clear();
 				}
 				else if(event.keyCode == SWT.ARROW_UP) {
 					if(lastCommand != null && model.isFirstCommand(lastCommand))
@@ -193,6 +193,8 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 				SWTUtils.showMessage("Java Bar", ex.getMessage(), SWT.ERROR);
 			}
 			lastCommand = null;	
+			if(!command.failed())
+				clear();
 		}
 	}
 
@@ -222,8 +224,4 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 		instructionBar.setText("");
 		lastCommand = null;
 	}
-
-	//	public void highlight(String line) {
-	//		setLine(line);
-	//	}
 }

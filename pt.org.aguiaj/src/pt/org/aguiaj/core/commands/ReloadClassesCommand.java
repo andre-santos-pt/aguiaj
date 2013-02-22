@@ -25,13 +25,16 @@ import org.eclipse.core.runtime.IPath;
 
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.classes.ClassesView;
+import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.core.AguiaJActivator;
+import pt.org.aguiaj.core.DocumentationView;
 import pt.org.aguiaj.core.commands.java.ConstructorInvocationCommand;
 import pt.org.aguiaj.core.commands.java.JavaCommand;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
 import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 import pt.org.aguiaj.core.interpreter.Instruction;
 import pt.org.aguiaj.core.interpreter.Parser;
+import pt.org.aguiaj.extensibility.AguiaJContribution;
 import pt.org.aguiaj.objects.ObjectModel;
 import pt.org.aguiaj.objects.ObjectWidget;
 import pt.org.aguiaj.objects.ObjectsView;
@@ -117,6 +120,10 @@ public class ReloadClassesCommand extends AbstractHandler {
 		restoreExpanded();
 		ClassesView.getInstance().updateClassWidgets();	
 		objectsView.show();
+		
+		SWTUtils.showView(AguiaJContribution.DOCUMENTATION_VIEW);
+		SWTUtils.showView(AguiaJContribution.HISTORY_VIEW);
+		SWTUtils.showView(AguiaJContribution.JAVABAR_VIEW);
 
 		return null;
 	}
