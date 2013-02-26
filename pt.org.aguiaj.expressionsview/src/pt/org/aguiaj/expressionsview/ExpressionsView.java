@@ -1,90 +1,58 @@
 package pt.org.aguiaj.expressionsview;
 
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import javax.annotation.Resources;
-
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.jdt.core.IClassFile;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IPackageFragment;
-import org.eclipse.jdt.core.IPackageFragmentRoot;
-import org.eclipse.jdt.core.IRegion;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.ui.JavaUI;
-import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.jface.viewers.ICellModifier;
-import org.eclipse.jface.viewers.IContentProvider;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPartListener2;
-import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipselabs.javainterpreter.Context;
 import org.eclipselabs.javainterpreter.JavaInterpreter;
+import org.eclipselabs.javainterpreter.SimpleContext;
 
 import pt.org.aguiaj.expressionsview.builder.SampleNature;
 
 public class ExpressionsView extends ViewPart implements IPartListener2 {
 
-	private IEditorPart editorPart;
+	private IEditorInput input;
 	private TableViewer viewer;
 	private JavaInterpreter interpreter;
-	
+
 	private static ExpressionsView _instance;
 
 	private static final Color BLACK = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
@@ -95,7 +63,47 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 	public ExpressionsView() {
 		_instance = this;
 		expressions = new HashMap<IEditorInput, List<Expression>>();
-		interpreter = new JavaInterpreter();
+		interpreter = new JavaInterpreter(new Context() {
+			
+			private Context context = new SimpleContext(null, Math.class, String.class);
+			
+			@Override
+			public boolean isClassAvailable(String name) {
+				return context.isClassAvailable(name);
+			}
+			
+			@Override
+			public Object getObject(String referenceName) {
+				return context.getObject(referenceName);
+			}
+			
+			@Override
+			public Set<Class<?>> getImplicitClasses() {
+				Set<Class<?>> set = new HashSet<Class<?>>(1);
+				set.add(loadClass());
+				return set;
+			}
+			
+			@Override
+			public Class<?> getClass(String name) {
+				return context.getClass(name);
+			}
+			
+			@Override
+			public boolean existsReference(String name) {
+				return context.existsReference(name);
+			}
+			
+			@Override
+			public void addReference(Class<?> type, String name, Object object) {
+				context.addReference(type, name, object);
+			}
+
+			@Override
+			public Class<?> referenceType(String name) {
+				return context.referenceType(name);
+			}
+		});
 	}
 
 	public static ExpressionsView getInstance() {
@@ -103,14 +111,16 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 	}
 
 	void refresh() {
-		Class<?> clazz = loadClass();
-		for(Expression exp : expressions.get(editorPart.getEditorInput()))
-			exp.setClass(clazz);
-		
-		interpreter.clear();
-		
+		if(input != null) {
+//			Class<?> clazz = loadClass();
+//			for(Expression exp : expressions.get(input))
+//				exp.setClass(clazz);
+//
+//			interpreter.clear();
+		}
+
 		if(viewer != null)
-			viewer.setInput(editorPart.getEditorInput());
+			viewer.setInput(input);
 	}
 
 	@Override
@@ -131,15 +141,15 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 
 
 	private Class<?> loadClass() {
-		if(editorPart != null) {
+		if(input != null) {
 
-			IFileEditorInput input = (IFileEditorInput) editorPart.getEditorInput();
+//			IFileEditorInput input = (IFileEditorInput) editorPart.getEditorInput();
 			IResource r = (IResource) input.getAdapter(IResource.class);
 			IProject proj = r.getProject();
 			try {
 				if(proj.hasNature(JavaCore.NATURE_ID)) {
 					ProjectClassLoader loader = new ProjectClassLoader(getClass().getClassLoader(), proj);
-					String name = input.getFile().getLocation().removeFileExtension().lastSegment();
+					String name = ((FileEditorInput) input).getFile().getLocation().removeFileExtension().lastSegment();
 					return loader.loadClass(name);
 				}
 			}
@@ -150,7 +160,7 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 		return null;
 	}
 
-	
+
 
 
 	private void createTable(Composite parent) {
@@ -164,7 +174,7 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 				event.height = 30;
 			}
 		});
-		
+
 	}
 
 	private void setContentProvider() {
@@ -179,7 +189,10 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 
 			@Override
 			public Object[] getElements(Object inputElement) {
-				return expressions.get(inputElement).toArray();
+				if(inputElement != null)
+					return expressions.get(inputElement).toArray();
+				else
+					return new Object[0];
 			}
 		});
 	}
@@ -193,9 +206,9 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 			public String getText(Object element) {
 				return ((Expression) element).getValue();
 			}
-			
+
 		});
-		
+
 		col.setEditingSupport(new EditingSupport(viewer) {
 
 			@Override
@@ -230,18 +243,19 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 					if(index != -1)
 						viewer.editElement(viewer.getElementAt(index), 0);
 				}
-				else if(e.keyCode == SWT.DEL) {
+				else if(e.keyCode == SWT.DEL || e.keyCode == SWT.BS) {
 					int index = viewer.getTable().getSelectionIndex();
 					if(index != -1) {
-						expressions.get(editorPart.getEditorInput()).remove(index);
+						expressions.get(input).remove(index);
 						refresh();
+						viewer.getTable().select(index);
 					}
 				}
 				else if(e.keyCode == SWT.ARROW_DOWN) {
 					int index = viewer.getTable().getSelectionIndex();
 					if(index == viewer.getTable().getItemCount() - 1) {
 						Expression exp = new Expression(interpreter, loadClass(), viewer.getTable().getItem(index).getText());
-						expressions.get(editorPart.getEditorInput()).add(exp);
+						expressions.get(input).add(exp);
 						refresh();
 						viewer.editElement(viewer.getElementAt(viewer.getTable().getItemCount()-1), 0);
 					}
@@ -252,9 +266,11 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 		viewer.getTable().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
-				expressions.get(editorPart.getEditorInput()).add(new Expression(interpreter, loadClass(), ""));
-				refresh();
-				viewer.editElement(viewer.getElementAt(viewer.getTable().getItemCount()-1), 0);
+				if(input != null) {
+					expressions.get(input).add(new Expression(interpreter, loadClass(), ""));
+					refresh();
+					viewer.editElement(viewer.getElementAt(viewer.getTable().getItemCount()-1), 0);
+				}
 			}
 		});
 
@@ -316,8 +332,7 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 		IWorkbenchPart part = partRef.getPart(true);
 		if(part instanceof IEditorPart) {
 			// TODO: check if java editor
-			editorPart = (IEditorPart) part;
-			IEditorInput input = editorPart.getEditorInput();
+			input = ((IEditorPart) part).getEditorInput();
 			if(input instanceof FileEditorInput) {
 				IProject proj = ((FileEditorInput) input).getFile().getProject();
 				toggleNature(proj);
@@ -332,6 +347,11 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 
 	@Override
 	public void partClosed(IWorkbenchPartReference partRef) {
+		IWorkbenchPart part = partRef.getPart(true);
+		if(part instanceof IEditorPart) {
+			input = null;
+			refresh();
+		}
 	}
 
 	@Override

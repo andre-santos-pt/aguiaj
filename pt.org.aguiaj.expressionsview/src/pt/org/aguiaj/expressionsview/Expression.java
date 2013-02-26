@@ -13,7 +13,6 @@ public class Expression {
 	
 	public Expression(JavaInterpreter interpreter, Class<?> clazz, String value) {
 		this.interpreter = interpreter;
-		interpreter.addClass(clazz);
 		setValue(value);
 	}
 	
@@ -27,9 +26,9 @@ public class Expression {
 //			value = value.substring(0, value.length()-1);
 	}
 	
-	public void setClass(Class<?> clazz) {
-		interpreter.addClass(clazz);
-	}
+//	public void setClass(Class<?> clazz) {
+//		interpreter.addClass(clazz);
+//	}
 	
 	public boolean validSyntax() {
 		try { 
