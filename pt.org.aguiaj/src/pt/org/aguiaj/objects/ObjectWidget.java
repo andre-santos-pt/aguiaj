@@ -15,10 +15,13 @@ import static com.google.common.collect.Maps.newHashMap;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -36,6 +39,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -196,14 +200,54 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 			layout.spacing = PADDING;
 			privateAttributesGroup.setLayout(layout);
 
-			for(Field field : invisibleAttributes)	
+			ReverseIterator<Field> it = new ReverseIterator<Field>(invisibleAttributes);
+			
+			Class<?> owner = null;
+			
+			while(it.hasNext())	 {
+				Field field = it.next();
+				if(owner == null)
+					owner = field.getDeclaringClass();
+			
+				if(!field.getDeclaringClass().equals(owner)) {
+					new Label(privateAttributesGroup, SWT.SEPARATOR | SWT.HORIZONTAL);
+					owner = field.getDeclaringClass();
+				}
 				new AttributeWidget(privateAttributesGroup, field, object, this, false, true);
-
+			}
 			SWTUtils.setColorRecursively(privateAttributesGroup, AguiaJColor.PRIVATES.getColor());
 
 			createShowHide(UIText.SHOW_PRIVATE_ATTRIBUTES, UIText.HIDE_PRIVATE_ATTRIBUTES, privateAttributesGroup, Section.INTERNALS);
 		}
 	}
+	
+	static class ReverseIterator<E> implements Iterator<E> {
+		private List<E> collection;
+		private int next;		
+		
+		public ReverseIterator(List<E> list) {
+			this.collection = list;
+			next = list.size();
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return next != 0;
+		}
+
+		@Override
+		public E next() {
+			return collection.get(--next);
+		}
+
+		@Override
+		public void remove() {
+			collection.remove(next);
+			if(next > 0)
+				next--;
+		}
+	}
+	
 
 	private void createAttributesGroup() {
 		List<Field> visibleAttributes = ClassModel.getInstance().getVisibleAttributes(objectClass);

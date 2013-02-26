@@ -27,7 +27,8 @@ public class ExtensionTypeWidget extends AbstractTypeWidget {
 	private VisualizationWidget extension;
 
 	private Object object;
-
+	private String text;
+	
 	private StackLayout stack;
 	private NullReferenceWidget nullWidget;
 	private Composite extensionWidget;
@@ -40,6 +41,7 @@ public class ExtensionTypeWidget extends AbstractTypeWidget {
 		super(parent, SWT.NONE, type, false);
 
 		this.extension = extension;
+		text = "null";
 		extension.createSection(extensionWidget);
 	}
 
@@ -84,7 +86,7 @@ public class ExtensionTypeWidget extends AbstractTypeWidget {
 
 	@Override
 	public String getTextualRepresentation() {		
-		return ReflectionUtils.getTextualRepresentation(object, true);
+		return text;
 	}
 
 	public void setToolTipText(String text) {
@@ -94,7 +96,8 @@ public class ExtensionTypeWidget extends AbstractTypeWidget {
 	@Override
 	public final void update(Object object) {
 		this.object = object;
-
+		text = ReflectionUtils.getTextualRepresentation(object, true);
+		
 		if(isDisposed())
 			return; 
 

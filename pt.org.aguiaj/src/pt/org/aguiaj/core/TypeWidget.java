@@ -18,5 +18,5 @@ public interface TypeWidget {
 	Control getControl();
 	void update(Object object);
 	Object defaultValue();
-	String getTextualRepresentation();
+	String getTextualRepresentation(); // TODO: TO REMOVE?
 }

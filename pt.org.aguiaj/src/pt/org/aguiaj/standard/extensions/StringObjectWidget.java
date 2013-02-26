@@ -48,14 +48,7 @@ public class StringObjectWidget implements VisualizationWidget<Object> {
 
 
 	public void update(Object object) {
-//		if(object != null && object.getClass().equals(char[].class))
-//			object = new String((char[]) object);	
-		
-		if(
-				(object == null && previousContent == null) ||
-				(object != null && previousContent != null && 
-				getTextualRepresentation(object, true).equals(previousContent))) 
-		{
+		if(getTextualRepresentation(object, true).equals(previousContent)) {
 			needsRelayout = false;
 		}		
 		else {
@@ -65,15 +58,15 @@ public class StringObjectWidget implements VisualizationWidget<Object> {
 				text.setText("");
 			}
 			else {
-				String toString = 
-//					object.getClass().isArray() ?
-					ReflectionUtils.getTextualRepresentation(object, false);
-//					object.toString();
+				String toString = ReflectionUtils.getTextualRepresentation(object, false);
 					
 				if(toString != null)
 					text.setText(toString);
 				else
 					text.setText("null");
+				
+				section.layout();
+				section.pack();
 				
 				previousContent = ReflectionUtils.getTextualRepresentation(object, true);
 			}
