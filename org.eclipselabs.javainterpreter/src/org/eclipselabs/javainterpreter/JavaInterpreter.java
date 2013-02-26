@@ -1,10 +1,7 @@
 package org.eclipselabs.javainterpreter;
 
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -13,32 +10,31 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.Expression;
-import org.eclipse.jdt.core.dom.ExpressionStatement;
-import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
-import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
 public class JavaInterpreter {
 
 	private ExpressionVisitor visitor;
 	
-	public JavaInterpreter() {
-		visitor = new ExpressionVisitor();
+	public JavaInterpreter(Context context) {
+		visitor = new ExpressionVisitor(context);
 	}
 	
-	public void addClass(Class<?> c) {
-		visitor.addBaseClass(c);
-	}
-	
-	public void addReference(Class<?> type, String name, Object object) {
-		visitor.addReference(type, name, object);
-	}
-	
-	public void clear() {
-		visitor.clear();
-	}
+//	public void setMainClass(Class<?> c) {
+//		visitor.setMainClass(c);
+//	}
+//	
+//	public void addClass(Class<?> c) {
+//		visitor.addBaseClass(c);
+//	}
+//	
+//	public void addReference(Class<?> type, String name, Object object) {
+//		visitor.addReference(type, name, object);
+//	}
+//	
+//	public void clear() {
+//		visitor.clear();
+//	}
 	
 	public void evaluateStatement(String statement) {
 		ASTParser parser = ASTParser.newParser(AST.JLS4); 
@@ -61,9 +57,6 @@ public class JavaInterpreter {
 		}
 	}
 	
-	public static void main(String[] args) {
-		new JavaInterpreter().evaluateMethodInvocation("s = 2");
-	}
 	
 	public Object evaluateMethodInvocation(String expression) {
 		ASTParser parser = ASTParser.newParser(AST.JLS4); 
@@ -73,11 +66,19 @@ public class JavaInterpreter {
 		parser.setSource(expression.toCharArray());
 		ASTNode node = parser.createAST(null);
 
-		if(node.getNodeType() == ASTNode.METHOD_INVOCATION || node.getNodeType() == ASTNode.ASSIGNMENT) {
+		if(node.getNodeType() == ASTNode.METHOD_INVOCATION || 
+		   node.getNodeType() == ASTNode.ASSIGNMENT || 
+		   node.getNodeType() == ASTNode.CLASS_INSTANCE_CREATION ||
+		   node.getNodeType() == ASTNode.ARRAY_CREATION ||	   
+		   node.getNodeType() == ASTNode.STRING_LITERAL) {
+			
 			try {
 				node.accept(visitor);
 			}
 			catch(RuntimeException ex) {
+				if(ex.getCause() != null)
+					ex.printStackTrace();
+				
 				throw ex;
 			}
 			
@@ -94,7 +95,7 @@ public class JavaInterpreter {
 //			variables.put(visitor.variable, visitor.result);
 //			return visitor.result;
 //		}
-		throw new IllegalArgumentException("Parse error - ");
+		throw new IllegalArgumentException("Parse error");
 	}
 
 	class AssignmentVisitor extends ASTVisitor {
