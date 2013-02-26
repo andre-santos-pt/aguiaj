@@ -6,6 +6,7 @@
       <view
             category="pt.org.aguiaj.viewCategory"
             class="pt.org.aguiaj.expressionsview.ExpressionsView"
+            icon="icons/watch_exp.gif"
             id="pt.org.aguiaj.expressionsview"
             name="Function test"
             restorable="true">
