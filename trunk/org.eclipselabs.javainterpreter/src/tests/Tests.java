@@ -3,9 +3,15 @@ package tests;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
+import org.eclipselabs.javainterpreter.Context;
 import org.eclipselabs.javainterpreter.JavaInterpreter;
 import org.eclipselabs.javainterpreter.Output;
+import org.eclipselabs.javainterpreter.SimpleContext;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,14 +20,17 @@ public class Tests {
 	private JavaInterpreter interpreter;
 	
 	private static final String[][] testCases = {
-		{"abs(-2)", Output.get(2)},	
-		{"abs(1.9)", Output.get(1.9)},
-		{"round(3.4)", Output.get(3)},
-		{"round(4)", Output.get(4)},
-		{"max(4,5)", Output.get(5)},
-		{"min(3.2,5.5)", Output.get(3.2)},
 		
-		{"valueOf(true)", Output.get("true")},
+		
+		{"Math.round(3.4)", Output.get(3)},
+		{"Math.abs(-2)", Output.get(2)},	
+		{"Math.abs(1.9)", Output.get(1.9)},
+		
+		{"Math.round(4)", Output.get(4)},
+		{"Math.max(4,5)", Output.get(5)},
+		{"Math.min(3.2,5.5)", Output.get(3.2)},
+		
+		{"String.valueOf(true)", Output.get("true")},
 		
 		{"parseInt(\"-8\")", Output.get(-8)},
 		{"compare(4,5)", Output.get(-1)},
@@ -39,13 +48,13 @@ public class Tests {
 		{"n = \"5\"",  Output.get("5")},
 		{"parseInt(n)",  Output.get(5)}
 	};
-	
+
 	@Before
 	public void setup() {
-		interpreter = new JavaInterpreter();
-		interpreter.addClass(Math.class);
-		interpreter.addClass(String.class);
-		interpreter.addClass(Integer.class);
+		SimpleContext context = new SimpleContext(Integer.class, Math.class, String.class);
+		context.addReference(String.class, "s", "MyString");
+		context.addReference(Integer.class, "i", null);
+		interpreter = new JavaInterpreter(context);
 	}
 	
 	@Test
