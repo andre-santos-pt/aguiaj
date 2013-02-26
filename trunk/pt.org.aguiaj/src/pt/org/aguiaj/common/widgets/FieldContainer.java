@@ -147,9 +147,8 @@ public class FieldContainer extends Composite {
 	}
 
 	private void updateTypeWidget(TypeWidget widget, Class<?> type, Object newVal) {
-
 		Object previous = widget.getObject();	
-
+					
 		if(needsUpdate(widget, type, newVal, previous)) {
 			isDirty = true;
 			widget.update(newVal);
@@ -162,27 +161,12 @@ public class FieldContainer extends Composite {
 		if(previous == null && newVal == null) {
 			update = false;
 		}
-		//		else if(type.isArray()) { // && type.getComponentType().isArray()) {			
-		//			if(widget != null) {
-		//				String prevValText = widget.getTextualRepresentation();
-		//				String newValText = ReflectionUtils.getTextualRepresentation(newVal, true);
-		//				if(prevValText != null && prevValText.equals(newValText)) {
-		//					update = false;
-		//				}
-		//			}	
-		//		}
-		// TODO: review
-		//		else if(type.isArray() && !type.getComponentType().isArray()) {
-		//			if(type.getComponentType().equals(int.class))
-		//				update = !Arrays.equals((int[]) previous, (int[]) newVal);
-		//			else if(type.getComponentType().equals(double.class))
-		//				update = !Arrays.equals((double[]) previous, (double[]) newVal);
-		//		}
-		//		else if(type.isArray() && !type.getComponentType().isPrimitive()) {
-		//			update = !Arrays.deepEquals((Object[]) previous, (Object[]) newVal);
-		//		}
 		else if(type.isArray()) {
-			update = !ReflectionUtils.arrayEquals(previous, newVal);
+			String prev = widget.getTextualRepresentation();
+			String neww = ReflectionUtils.getTextualRepresentation(newVal, true);
+			update = !prev.equals(neww);
+			
+//			update = !ReflectionUtils.arrayEquals(previous, newVal);
 		}
 		else if(type.isEnum() && previous != null && previous.equals(newVal)) {
 			update = false;	

@@ -42,7 +42,7 @@ import pt.org.aguiaj.standard.StandardNamePolicy;
 public class AttributeWidget extends Composite {
 
 	private boolean inherited;
-
+	
 	public AttributeWidget(
 			final Composite parent, 
 			final Field field, 
@@ -67,11 +67,15 @@ public class AttributeWidget extends Composite {
 		String prettyName = StandardNamePolicy.prettyField(field);
 		boolean referenceType = !field.getType().isPrimitive();
 
+		String toolTip = StandardNamePolicy.signature(field);
+		if(inherited)
+			toolTip += " (inherited from " + field.getDeclaringClass().getSimpleName() + ")";
+			
 		LabelWidget label = new LabelWidget.Builder()
 		.text(prettyName)
 		.medium()
 		.italicIf(inherited)
-		.toolTip(StandardNamePolicy.signature(field))
+		.toolTip(toolTip)
 		.linkIf(referenceType)
 		.create(this);
 
@@ -89,13 +93,16 @@ public class AttributeWidget extends Composite {
 			e.printStackTrace();
 		}
 
-		if(isPrivate && !(field.getType().isPrimitive() || field.getType().equals(String.class)))
-			return;
-
+//		if(isPrivate && !(field.getType().isPrimitive() || field.getType().equals(String.class)))
+//			return;
+		
 		Set<WidgetProperty> props = EnumSet.of(WidgetProperty.ATTRIBUTE);
 		if(!Modifier.isFinal(field.getModifiers()) && modifiable)
 			props.add(WidgetProperty.MODIFIABLE);
 
+		if(isPrivate)
+			props.add(WidgetProperty.NO_EXTENSION);
+		
 		Composite row = new Composite(this, SWT.NONE);
 		row.setLayout(new RowLayout(SWT.HORIZONTAL));
 		
@@ -162,4 +169,6 @@ public class AttributeWidget extends Composite {
 			}
 		});
 	}
+	
+	
 }

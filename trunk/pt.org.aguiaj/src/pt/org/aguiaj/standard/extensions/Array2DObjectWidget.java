@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
+import pt.org.aguiaj.common.Reference;
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.common.widgets.LabelWidget;
 import pt.org.aguiaj.common.widgets.LabelWidget.ObjectToHighlightProvider;
@@ -56,7 +57,7 @@ public class Array2DObjectWidget implements VisualizationWidget<Object> {
 	private void buildLines() {
 		numberOfRows = Array.getLength(object);
 		new ArrayLengthWidget(section).update(numberOfRows);
-		
+
 		for(int i = 0; i < numberOfRows; i++) {
 			Composite row = new Composite(section, SWT.NONE);
 			row.setLayout(new RowLayout(SWT.HORIZONTAL));
@@ -70,11 +71,13 @@ public class Array2DObjectWidget implements VisualizationWidget<Object> {
 
 			link.addHyperlinkAction(new Listener () {
 				public void handleEvent(Event event) {
-					String ref = ObjectModel.getFirstReference(Array2DObjectWidget.this.object).name;
-					String source = ref + "[" + iFinal + "]";					
-					Object obj = Array2DObjectWidget.this.getIndex(iFinal);
-					Class<?> type = Array2DObjectWidget.this.object.getClass().getComponentType();
-					ObjectModel.getInstance().execute(new NewReferenceCommand(type, obj, source));
+					Reference ref = ObjectModel.getFirstReference(Array2DObjectWidget.this.object);
+					if(ref != null) {
+						String source = ref.name + "[" + iFinal + "]";					
+						Object obj = Array2DObjectWidget.this.getIndex(iFinal);
+						Class<?> type = Array2DObjectWidget.this.object.getClass().getComponentType();
+						ObjectModel.getInstance().execute(new NewReferenceCommand(type, obj, source));
+					}
 				}
 			});
 
