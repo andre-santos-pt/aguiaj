@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Expressionsview
-Bundle-SymbolicName: pt.org.aguiaj.expressionsview;singleton:=true
-Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: pt.org.aguiaj.expressionsview.Activator
+Bundle-Name: Function test
+Bundle-SymbolicName: pt.iscte.dcti.expressionsview;singleton:=true
+Bundle-Version: 0.1
+Bundle-Activator: pt.iscte.dcti.expressionsview.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources;bundle-version="3.7.0",

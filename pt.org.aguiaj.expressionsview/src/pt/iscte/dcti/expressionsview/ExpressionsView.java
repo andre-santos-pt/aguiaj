@@ -1,4 +1,4 @@
-package pt.org.aguiaj.expressionsview;
+package pt.iscte.dcti.expressionsview;
 
 
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ import org.eclipselabs.javainterpreter.Context;
 import org.eclipselabs.javainterpreter.JavaInterpreter;
 import org.eclipselabs.javainterpreter.SimpleContext;
 
-import pt.org.aguiaj.expressionsview.builder.SampleNature;
+import pt.iscte.dcti.expressionsview.builder.SampleNature;
 
 public class ExpressionsView extends ViewPart implements IPartListener2 {
 
@@ -261,7 +261,7 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 				}
 				else if(e.keyCode == SWT.ARROW_DOWN) {
 					int index = viewer.getTable().getSelectionIndex();
-					if(index == viewer.getTable().getItemCount() - 1) {
+					if(index == viewer.getTable().getItemCount() - 1 && viewer.getTable().getItemCount() != 0) {
 						Expression exp = new Expression(interpreter, viewer.getTable().getItem(index).getText());
 						expressions.get(input).add(exp);
 						refresh();

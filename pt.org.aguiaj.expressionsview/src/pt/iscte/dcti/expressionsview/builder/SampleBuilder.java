@@ -1,4 +1,4 @@
-package pt.org.aguiaj.expressionsview.builder;
+package pt.iscte.dcti.expressionsview.builder;
 
 import java.util.Map;
 

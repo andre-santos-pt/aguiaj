@@ -1,4 +1,4 @@
-package pt.org.aguiaj.expressionsview.builder;
+package pt.iscte.dcti.expressionsview.builder;
 
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;

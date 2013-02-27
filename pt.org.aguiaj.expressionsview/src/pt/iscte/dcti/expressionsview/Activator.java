@@ -1,4 +1,4 @@
-package pt.org.aguiaj.expressionsview;
+package pt.iscte.dcti.expressionsview;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
