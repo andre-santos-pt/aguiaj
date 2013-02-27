@@ -5,7 +5,7 @@
          point="org.eclipse.ui.views">
       <view
             category="pt.org.aguiaj.viewCategory"
-            class="pt.org.aguiaj.expressionsview.ExpressionsView"
+            class="pt.iscte.dcti.expressionsview.ExpressionsView"
             icon="icons/watch_exp.gif"
             id="pt.org.aguiaj.expressionsview"
             name="Function test"
@@ -28,7 +28,7 @@
       id="sampleBuilder" name="Sample Project Builder" point="org.eclipse.core.resources.builders">
       <builder>
          <run 
-            class="pt.org.aguiaj.expressionsview.Builder">
+            class="pt.iscte.dcti.expressionsview.Builder">
             <parameter name="optimize" value="true" />
             <parameter name="comment" value="Builder comment" />
          </run>
@@ -41,7 +41,7 @@
          point="org.eclipse.core.resources.natures">
       <runtime>
          <run
-               class="pt.org.aguiaj.expressionsview.builder.SampleNature">
+               class="pt.iscte.dcti.expressionsview.builder.SampleNature">
          </run>
       </runtime>
       <builder
@@ -49,34 +49,5 @@
       </builder>
    </extension>
    
-   <extension
-         point="org.eclipse.ui.popupMenus">
-      <objectContribution
-            adaptable="true"
-            id="pt.org.aguiaj.expressionsview.contribution1"
-            nameFilter="*"
-            objectClass="org.eclipse.core.resources.IProject">
-         <action
-               class="pt.org.aguiaj.expressionsview.builder.ToggleNatureAction"
-               enablesFor="+"
-               id="pt.org.aguiaj.expressionsview.addRemoveNatureAction"
-               label="Add/Remove Sample Nature"
-               menubarPath="additions">
-         </action>
-      </objectContribution>
-   </extension>
-   <extension
-         point="org.eclipse.ui.propertyPages">
-      <page
-            class="pt.org.aguiaj.expressionsview.properties.SamplePropertyPage"
-            id="pt.org.aguiaj.expressionsview.properties.samplePropertyPage"
-            name="Sample Page">
-         <enabledWhen>
-            <instanceof
-                  value="org.eclipse.core.resources.IFile">
-            </instanceof>
-         </enabledWhen>
-      </page>
-   </extension>
  
 </plugin>

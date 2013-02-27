@@ -1,4 +1,4 @@
-package pt.org.aguiaj.expressionsview;
+package pt.iscte.dcti.expressionsview;
 
 import java.io.File;
 import java.io.FileInputStream;
