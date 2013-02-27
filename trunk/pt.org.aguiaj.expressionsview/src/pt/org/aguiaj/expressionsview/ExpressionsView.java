@@ -55,7 +55,7 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 
 	private static ExpressionsView _instance;
 
-	private static final Color BLACK = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+//	private static final Color BLACK = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
 	private static final Color RED = Display.getDefault().getSystemColor(SWT.COLOR_RED);
 
 	private Map<IEditorInput, List<Expression>> expressions;
@@ -69,6 +69,10 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 			
 			@Override
 			public boolean isClassAvailable(String name) {
+				for(Class<?> c : getImplicitClasses())
+					if(c.getName().equals(name))
+						return true;
+				
 				return context.isClassAvailable(name);
 			}
 			
@@ -86,6 +90,10 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 			
 			@Override
 			public Class<?> getClass(String name) {
+				for(Class<?> c : getImplicitClasses())
+					if(c.getName().equals(name))
+						return c;
+				
 				return context.getClass(name);
 			}
 			
@@ -200,7 +208,7 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 	private void createExpressionColumn() {
 		final TableViewerColumn col = new TableViewerColumn(viewer, SWT.NONE);
 		col.getColumn().setText("Function call");
-		col.getColumn().setWidth(200);
+		col.getColumn().setWidth(400);
 		col.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
@@ -254,7 +262,7 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 				else if(e.keyCode == SWT.ARROW_DOWN) {
 					int index = viewer.getTable().getSelectionIndex();
 					if(index == viewer.getTable().getItemCount() - 1) {
-						Expression exp = new Expression(interpreter, loadClass(), viewer.getTable().getItem(index).getText());
+						Expression exp = new Expression(interpreter, viewer.getTable().getItem(index).getText());
 						expressions.get(input).add(exp);
 						refresh();
 						viewer.editElement(viewer.getElementAt(viewer.getTable().getItemCount()-1), 0);
@@ -267,7 +275,7 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
 				if(input != null) {
-					expressions.get(input).add(new Expression(interpreter, loadClass(), ""));
+					expressions.get(input).add(new Expression(interpreter, ""));
 					refresh();
 					viewer.editElement(viewer.getElementAt(viewer.getTable().getItemCount()-1), 0);
 				}
@@ -304,7 +312,10 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 
 			@Override
 			public Color getForeground(Object element) {
-				return super.getForeground(element);
+				if(((Expression) element).valid())
+					return super.getForeground(element);
+				else
+					return RED;
 			}
 		});
 
