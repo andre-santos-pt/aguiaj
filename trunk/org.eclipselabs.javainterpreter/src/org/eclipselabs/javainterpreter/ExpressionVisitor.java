@@ -28,6 +28,8 @@ import org.eclipse.jdt.core.dom.LineComment;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.NullLiteral;
 import org.eclipse.jdt.core.dom.NumberLiteral;
+import org.eclipse.jdt.core.dom.ParenthesizedExpression;
+import org.eclipse.jdt.core.dom.PostfixExpression;
 import org.eclipse.jdt.core.dom.PrefixExpression;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.StringLiteral;
@@ -80,7 +82,23 @@ class ExpressionVisitor extends ASTVisitor {
 		return true;
 	}
 
-
+	public boolean visit(InfixExpression e) {
+		throw new RuntimeException("not supported: " + e);
+	}
+	
+	public boolean visit(PrefixExpression e) {
+		throw new RuntimeException("not supported: " + e);
+	}
+	
+	public boolean visit(PostfixExpression e) {
+		throw new RuntimeException("not supported: " + e);
+	}
+	
+	public boolean visit(ParenthesizedExpression e) {
+		throw new RuntimeException("not supported: " + e);
+	}
+	
+	
 	@Override
 	public void endVisit(Assignment node) {
 		result = argsTable.get(node).get(0);
@@ -95,7 +113,7 @@ class ExpressionVisitor extends ASTVisitor {
 		if(isMethodTarget(node)) {
 			methodTarget.put((MethodInvocation) node.getParent(), r);
 		}
-		else if(node.getParent() == null) {
+		else if(node.getParent() instanceof ExpressionStatement) {
 			result = r;
 		}
 		else { 
