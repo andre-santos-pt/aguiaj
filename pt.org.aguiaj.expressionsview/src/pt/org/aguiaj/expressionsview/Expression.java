@@ -11,7 +11,7 @@ public class Expression {
 	private JavaInterpreter interpreter;
 	private String value;
 	
-	public Expression(JavaInterpreter interpreter, Class<?> clazz, String value) {
+	public Expression(JavaInterpreter interpreter, String value) {
 		this.interpreter = interpreter;
 		setValue(value);
 	}
@@ -30,7 +30,7 @@ public class Expression {
 //		interpreter.addClass(clazz);
 //	}
 	
-	public boolean validSyntax() {
+	public boolean valid() {
 		try { 
 			interpreter.evaluateMethodInvocation(getValue());
 		}
@@ -45,7 +45,7 @@ public class Expression {
 	}
 
 	public String getErrorMessage() {
-		return !validSyntax() ? "Syntax error" : "";
+		return !valid() ? "Syntax error" : "";
 	}
 	
 
