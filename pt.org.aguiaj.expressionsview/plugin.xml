@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension
-         point="org.eclipse.ui.views">
+   <extension point="org.eclipse.ui.views">
       <view
             category="pt.org.aguiaj.viewCategory"
             class="pt.iscte.dcti.expressionsview.ExpressionsView"
@@ -12,42 +11,29 @@
             restorable="true">
       </view>
    </extension>
+   
    <extension
-         point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension
-            targetID="*">
-         <view
-               id="pt.org.aguiaj.expressionsview"
-               minimized="false"
-               relationship="right"
-               relative="org.eclipse.ui.console.ConsoleView">
-         </view>
-      </perspectiveExtension>
-   </extension>
-   <extension
-      id="sampleBuilder" name="Sample Project Builder" point="org.eclipse.core.resources.builders">
-      <builder>
-         <run 
-            class="pt.iscte.dcti.expressionsview.Builder">
-            <parameter name="optimize" value="true" />
-            <parameter name="comment" value="Builder comment" />
+      id="functionBuilder" name="Function Test Builder" point="org.eclipse.core.resources.builders">
+      
+      <builder hasNature="true">
+         <run class="pt.iscte.dcti.expressionsview.Builder">
          </run>
       </builder>
    </extension>
    
    <extension
-         id="sampleNature"
-         name="Sample Project Nature"
+         id="functionTestNature"
+         name="Function Test Nature"
          point="org.eclipse.core.resources.natures">
+      
       <runtime>
-         <run
-               class="pt.iscte.dcti.expressionsview.builder.SampleNature">
+         <run class="pt.iscte.dcti.expressionsview.FunctionTestNature">
+         	<parameter name="installBuilder" value="true"/>
          </run>
       </runtime>
       <builder
-            id="pt.org.aguiaj.expressionsview.sampleBuilder">
+            id="pt.iscte.dcti.expressionsview.functionBuilder">
       </builder>
    </extension>
-   
  
 </plugin>

@@ -45,7 +45,6 @@ import org.eclipselabs.javainterpreter.Context;
 import org.eclipselabs.javainterpreter.JavaInterpreter;
 import org.eclipselabs.javainterpreter.SimpleContext;
 
-import pt.iscte.dcti.expressionsview.builder.SampleNature;
 
 public class ExpressionsView extends ViewPart implements IPartListener2 {
 
@@ -391,14 +390,14 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 			String[] natures = description.getNatureIds();
 
 			for (int i = 0; i < natures.length; ++i) {
-				if (SampleNature.NATURE_ID.equals(natures[i])) 
+				if (FunctionTestNature.NATURE_ID.equals(natures[i])) 
 					return;
 			}
 
 			// Add the nature
 			String[] newNatures = new String[natures.length + 1];
 			System.arraycopy(natures, 0, newNatures, 0, natures.length);
-			newNatures[natures.length] = SampleNature.NATURE_ID;
+			newNatures[natures.length] = FunctionTestNature.NATURE_ID;
 			description.setNatureIds(newNatures);
 			project.setDescription(description, null);
 		} catch (CoreException e) {
