@@ -10,10 +10,12 @@ import org.eclipse.swt.widgets.Display;
 
 public class Builder extends IncrementalProjectBuilder {
 
+	public static final String ID = "pt.iscte.dcti.expressionsview.functionBuilder";
+
 
 	@Override
 	protected IProject[] build(int kind, Map<String, String> args, IProgressMonitor monitor) throws CoreException {
-		System.out.println("BUILD");
+		System.out.println("BUILD!");
 		
 		Display.getDefault().syncExec(new Runnable() {
 		    public void run() {

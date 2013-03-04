@@ -1,4 +1,4 @@
-package pt.iscte.dcti.expressionsview.builder;
+package pt.iscte.dcti.expressionsview;
 
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
@@ -6,12 +6,13 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 
-public class SampleNature implements IProjectNature {
+
+public class FunctionTestNature implements IProjectNature {
 
 	/**
 	 * ID of this project nature
 	 */
-	public static final String NATURE_ID = "pt.org.aguiaj.expressionsview.sampleNature";
+	public static final String NATURE_ID = "pt.iscte.dcti.expressionsview.functionTestNature";
 
 	private IProject project;
 
@@ -23,9 +24,9 @@ public class SampleNature implements IProjectNature {
 	public void configure() throws CoreException {
 		IProjectDescription desc = project.getDescription();
 		ICommand[] commands = desc.getBuildSpec();
-
+		
 		for (int i = 0; i < commands.length; ++i) {
-			if (commands[i].getBuilderName().equals(SampleBuilder.BUILDER_ID)) {
+			if (commands[i].getBuilderName().equals(Builder.ID)) {
 				return;
 			}
 		}
@@ -33,7 +34,7 @@ public class SampleNature implements IProjectNature {
 		ICommand[] newCommands = new ICommand[commands.length + 1];
 		System.arraycopy(commands, 0, newCommands, 0, commands.length);
 		ICommand command = desc.newCommand();
-		command.setBuilderName(SampleBuilder.BUILDER_ID);
+		command.setBuilderName(Builder.ID);
 		newCommands[newCommands.length - 1] = command;
 		desc.setBuildSpec(newCommands);
 		project.setDescription(desc, null);
@@ -48,7 +49,7 @@ public class SampleNature implements IProjectNature {
 		IProjectDescription description = getProject().getDescription();
 		ICommand[] commands = description.getBuildSpec();
 		for (int i = 0; i < commands.length; ++i) {
-			if (commands[i].getBuilderName().equals(SampleBuilder.BUILDER_ID)) {
+			if (commands[i].getBuilderName().equals(Builder.ID)) {
 				ICommand[] newCommands = new ICommand[commands.length - 1];
 				System.arraycopy(commands, 0, newCommands, 0, i);
 				System.arraycopy(commands, i + 1, newCommands, i,
