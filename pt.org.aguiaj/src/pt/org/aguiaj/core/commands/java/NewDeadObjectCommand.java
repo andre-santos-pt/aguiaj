@@ -26,7 +26,7 @@ public class NewDeadObjectCommand extends ObjectModelCommand {
 
 	@Override
 	protected void execute(ObjectModel model) {
-		model.addObject(object);		
+		model.addObject(object, true);		
 	}
 	
 }

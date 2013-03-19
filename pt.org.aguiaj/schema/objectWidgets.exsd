@@ -91,6 +91,16 @@
                </appinfo>
             </annotation>
          </attribute>
+         <attribute name="contractProxy" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":pt.org.aguiaj.extensibility.ContractProxy"/>
+               </appinfo>
+            </annotation>
+         </attribute>
          <attribute name="allowImport" type="boolean" use="required">
             <annotation>
                <documentation>

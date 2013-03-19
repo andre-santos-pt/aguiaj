@@ -155,7 +155,17 @@ public class ReflectionUtils {
 				Arrays.deepEquals(m1.getParameterTypes(), m2.getParameterTypes());
 	}
 
-
+	public static boolean hasEquivalentMethod(Class<?> clazz, Method method) {
+		try {
+			clazz.getMethod(method.getName(), method.getParameterTypes());
+			return true;
+		}
+		catch(NoSuchMethodException e) {
+			return false;
+		}
+	}
+	
+	
 	public static void loadClass(Class<?> clazz) {
 		loadClass(clazz.getName());		
 	}
@@ -428,6 +438,8 @@ public class ReflectionUtils {
 		}
 		return true;
 	}
+	
+	
 
 
 }

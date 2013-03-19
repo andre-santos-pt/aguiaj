@@ -12,6 +12,7 @@ package pt.org.aguiaj.common;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.UIText;
@@ -26,6 +27,10 @@ public class MethodInvocationThread2 {
 	private Exception exception;
 
 	public MethodInvocationThread2(Method method, Object object, Object[] args, String instruction) {
+		assert method != null;
+		assert object == null && Modifier.isStatic(method.getModifiers()) || 
+			   object != null && !Modifier.isStatic(method.getModifiers());
+		
 		this.method = method;
 		this.object = object;
 		this.args = args;

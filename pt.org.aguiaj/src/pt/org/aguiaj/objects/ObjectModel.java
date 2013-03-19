@@ -16,9 +16,12 @@ import static com.google.common.collect.Maps.newLinkedHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,10 +29,20 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
+import com.google.common.collect.Tables;
+
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.Reference;
+import pt.org.aguiaj.core.ReflectionUtils;
+import pt.org.aguiaj.core.commands.java.ContractAware;
 import pt.org.aguiaj.core.commands.java.JavaCommand;
 import pt.org.aguiaj.core.commands.java.JavaCommandWithReturn;
+import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
+import pt.org.aguiaj.core.exceptions.ExceptionHandler;
+import pt.org.aguiaj.extensibility.ContractProxy;
+import pt.org.aguiaj.extensibility.InvariantException;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 // singleton
 // observable
@@ -70,7 +83,7 @@ public class ObjectModel {
 
 	private Set<EventListener> listeners;
 
-	
+
 
 	private ObjectModel() {
 		referenceTable = newLinkedHashMap();
@@ -100,12 +113,19 @@ public class ObjectModel {
 		return listeners.toArray(new EventListener[listeners.size()]);
 	}
 
-	public void addObject(Object object) {
+	public void addObject(Object object, boolean notify) {
 		if(!objectSet.contains(object)) {
 			objectSet.add(object);
-			for(EventListener l : listeners())
-				l.newObjectEvent(object);
+
+			createContractProxies(object);
+
+			if(notify) {
+				for(EventListener l : listeners())
+					l.newObjectEvent(object);
+			}
 		}
+
+
 	}
 
 	public void removeObject(Object object) {
@@ -123,11 +143,11 @@ public class ObjectModel {
 
 		for(EventListener l : listeners())
 			l.removeObjectEvent(object);
-		
+
 		for(Iterator<JavaCommand> it = activeCommands.iterator(); it.hasNext(); ) {
 			JavaCommand cmd = it.next();
 			if( cmd instanceof JavaCommandWithReturn &&
-				((JavaCommandWithReturn) cmd).getResultingObject() == object) {
+					((JavaCommandWithReturn) cmd).getResultingObject() == object) {
 				it.remove();
 				for(EventListener l : listeners())
 					l.commandRemoved(cmd);
@@ -167,7 +187,7 @@ public class ObjectModel {
 
 	public void changeReference(String name, Object obj) {
 		referenceTable.put(name, obj);
-		addObject(obj);
+		addObject(obj, true);
 		for(EventListener l : listeners())
 			l.changeReferenceEvent(new Reference(name, referenceTypeTable.get(name), obj));
 	}
@@ -231,7 +251,13 @@ public class ObjectModel {
 							cmd.getReference(),
 							true);
 				}
-			}	
+			}
+
+			if(command instanceof ContractAware) {
+				Object o = ((ContractAware) command).getObjectUnderContract();
+				if(o != null)
+					verifyInvariant(o);
+			}
 		}
 	}
 
@@ -241,7 +267,8 @@ public class ObjectModel {
 		referenceTypeTable.put(name, type);
 
 		if(object != null)
-			objectSet.add(object);
+			addObject(object, false);
+		//			objectSet.add(object);
 
 		if(notify) {
 			for(EventListener l : listeners())
@@ -255,18 +282,18 @@ public class ObjectModel {
 
 	// functions------------------------------------------------------
 
-	
-//	public Object[] getObjects(Class<?> type) {
-//		assert type != null;
-//
-//		IdentityObjectSet set = new IdentityObjectSet();
-//
-//		for(Object o : objectSet.objects())
-//			if(!type.isInstance(o) && !isDeadObject(o))
-//				set.add(o);
-//
-//		return set.objects();
-//	}
+
+	//	public Object[] getObjects(Class<?> type) {
+	//		assert type != null;
+	//
+	//		IdentityObjectSet set = new IdentityObjectSet();
+	//
+	//		for(Object o : objectSet.objects())
+	//			if(!type.isInstance(o) && !isDeadObject(o))
+	//				set.add(o);
+	//
+	//		return set.objects();
+	//	}
 
 
 	private Object getObject(String reference) {
@@ -350,6 +377,9 @@ public class ObjectModel {
 
 
 	public static Reference getFirstReference(Object object) {
+		if(object instanceof ContractProxy)
+			object = ((ContractProxy<?>) object).getProxiedObject();
+
 		return instance.getFirstReferenceAux(object);
 	}
 
@@ -453,5 +483,67 @@ public class ObjectModel {
 		return null;
 	}
 
+
+
+	// ------ CONTRACTS -----------------
+
+	public static class Contract {
+		public final ContractProxy<?> proxy;
+		public final Method proxyMethod;
+
+		private Contract(ContractProxy<?> proxy, Method method) {
+			this.proxy = proxy;
+			proxyMethod = getProxyMethod(method);
+		}
+		
+		private Method getProxyMethod(Method method) {
+			try {
+				return proxy.getClass().getMethod(method.getName(), method.getParameterTypes());
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			} 
+		}
+	}
+
+	public Contract getContract(Object object, Method method) {
+		if(!hasContract(object, method))
+			throw new IllegalArgumentException("Object/method has no contract");
+		
+		return new Contract(contracts.get(object, method), method);
+	}
+
+	private Table<Object, Method, ContractProxy<?>> contracts;
+
+
+	public boolean hasContract(Object object, Method method) {
+		return contracts.contains(object, method);
+	}
+
+
+	private void createContractProxies(Object object) {
+		ClassModel model = ClassModel.getInstance();
+		List<Method> methods = model.getAllAvailableMethods(object.getClass());
+		contracts = ClassModel.getInstance().createContractProxies(object, methods);
+	}
+
+	private void verifyInvariant(Object object) {
+		for(ContractProxy<?> proxy : new HashSet<ContractProxy<?>>(contracts.row(object).values())) {
+			Method invariantMethod = null;
+			try {
+				invariantMethod = proxy.getClass().getDeclaredMethod(ContractProxy.CHECK_INVARIANT);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} 
+			MethodInvocationCommand cmd = new MethodInvocationCommand(proxy, null, invariantMethod, new Object[0], new String[0]);
+
+			try {
+				cmd.execute();
+			}
+			catch(InvariantException e) {
+				ExceptionHandler.INSTANCE.handleException(invariantMethod, new String[0], e);
+			}
+		}
+	}
 
 }
