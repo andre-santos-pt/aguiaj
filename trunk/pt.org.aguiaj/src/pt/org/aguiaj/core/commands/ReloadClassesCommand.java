@@ -11,6 +11,7 @@
 package pt.org.aguiaj.core.commands;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -32,6 +33,7 @@ import pt.org.aguiaj.core.commands.java.ConstructorInvocationCommand;
 import pt.org.aguiaj.core.commands.java.JavaCommand;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
 import pt.org.aguiaj.core.exceptions.ExceptionHandler;
+import pt.org.aguiaj.core.interpreter.Assignment;
 import pt.org.aguiaj.core.interpreter.Instruction;
 import pt.org.aguiaj.core.interpreter.Parser;
 import pt.org.aguiaj.extensibility.AguiaJContribution;
@@ -88,9 +90,10 @@ public class ReloadClassesCommand extends AbstractHandler {
 						ObjectModel.getInstance().getReferenceTable(), 
 						ClassModel.getInstance().getAllClasses());
 
+				// TODO: check Assignment
 				if(instruction != null) {
 					JavaCommand javaCommand = instruction.getCommand(); 
-
+	
 					if(javaCommand instanceof ConstructorInvocationCommand) {
 						Class<?> clazz = ((ConstructorInvocationCommand) javaCommand).getConstructor().getDeclaringClass();
 						if(blackList.contains(clazz))
@@ -98,7 +101,7 @@ public class ReloadClassesCommand extends AbstractHandler {
 					}
 					else if(javaCommand instanceof MethodInvocationCommand) {
 						Method method = ((MethodInvocationCommand) javaCommand).getMethod();
-						if(method.getReturnType().equals(void.class) || method.getReturnType().isPrimitive())
+						if(skipMethod(method))
 							continue;
 					}
 
@@ -126,6 +129,13 @@ public class ReloadClassesCommand extends AbstractHandler {
 		SWTUtils.showView(AguiaJContribution.JAVABAR_VIEW);
 
 		return null;
+	}
+	
+	private static boolean skipMethod(Method method) {
+		return 
+		!Modifier.isStatic(method.getModifiers()) ||
+		method.getReturnType().equals(void.class) || 
+		method.getReturnType().isPrimitive();
 	}
 
 	private void restoreExpanded() {

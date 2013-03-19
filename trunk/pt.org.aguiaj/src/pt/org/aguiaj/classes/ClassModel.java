@@ -13,9 +13,11 @@ package pt.org.aguiaj.classes;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
+import static com.google.common.collect.Lists.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -35,15 +38,19 @@ import pt.org.aguiaj.core.AguiaJActivator;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.InspectionPolicy;
 import pt.org.aguiaj.core.Inspector;
+import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
+import pt.org.aguiaj.extensibility.ContractProxy;
 import pt.org.aguiaj.extensibility.VisualizationWidget;
 import pt.org.aguiaj.standard.StandardInspectionPolicy;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import com.google.common.collect.Table;
 
 public class ClassModel {
 	private final Set<Class<?>> userClasses;
@@ -61,13 +68,15 @@ public class ClassModel {
 	private final Map<Class<?>, List<Method>> queryMethods;	
 	private final Map<Class<?>, Map<Class<?>, List<Method>>> commandMethodsByType;
 	private final Map<Class<?>, List<Method>> allAvailableMethods;	
-	
+
 	private final Multimap<Class<?>, ClassMemberFilter> filterMap;
 
 	private final Multimap<Class<?>, Method> promotions;
-	
+
+	private final Map<Class<?>, Class<? extends ContractProxy<?>>> contracts;
+
 	private Inspector inspector;
-	
+
 	private static ClassModel instance;
 
 	public ClassModel() {
@@ -85,20 +94,22 @@ public class ClassModel {
 		queryMethods = newHashMap();
 		commandMethodsByType = newHashMap();
 		allAvailableMethods = newHashMap();
-		
+
 		filterMap = ArrayListMultimap.create();
 		promotions = ArrayListMultimap.create();
-		
+
+		contracts = newHashMap();
+
 		inspector = new Inspector(loadInspectionPolicy()); 
 	}
-	
+
 	public static ClassModel getInstance() {
 		if(instance == null)
 			instance = new ClassModel();
-		
+
 		return instance;
 	}
-	
+
 	private InspectionPolicy loadInspectionPolicy() {
 		try {
 			Class<?> inspectionPolicyClass = Class.forName(AguiaJParam.INSPECTION_POLICY.getString());
@@ -109,20 +120,20 @@ public class ClassModel {
 			return new StandardInspectionPolicy();
 		}		
 	}
-	
+
 	public static Inspector getInspector() {
 		return getInstance().inspector;
 	}
 
 
 
-	
-	
+
+
 	void handleIconMapping() {
 		userClasses.clear();
 
 		Map<String, Image> previousMapping = new HashMap<String, Image>(iconMapping);
-//		iconMapping.clear();
+		//		iconMapping.clear();
 
 		userClasses.addAll(AguiaJActivator.getDefault().getPackagesClasses().values());		
 
@@ -135,30 +146,30 @@ public class ClassModel {
 
 		for(Class<?> c : userClasses) {
 			String key = c.getName();
-//			if(isPluginClass(c)) {
-//				final Image icon = AguiaJActivator.getDefault().getPluginTypeIcon(c);
-//				if(icon != null) {
-//					iconMapping.put(key,icon);
-//					continue;
-//				}
-//			}
-			
+			//			if(isPluginClass(c)) {
+			//				final Image icon = AguiaJActivator.getDefault().getPluginTypeIcon(c);
+			//				if(icon != null) {
+			//					iconMapping.put(key,icon);
+			//					continue;
+			//				}
+			//			}
+
 			if(hasIcon(c) && !iconMapping.containsKey(key)) {				
 				final AguiaJImage typeIcon = AguiaJImage.nextTypeIcon();
 				iconMapping.put(key, typeIcon.getImage());
 			}
 		}
 	}
-	
+
 	public boolean isClassInUse(Class<?> clazz) {
 		return classSet.contains(clazz);
 	}
-	
+
 	public boolean isUserClass(String name) {
 		for(Class<?> c : classSet)
 			if(!isPluginClass(c) && c.getName().equals(name))
 				return true;
-		
+
 		return false;
 	}
 
@@ -169,23 +180,28 @@ public class ClassModel {
 	public void addAccessorPromotion(Method method) {
 		promotions.put(method.getDeclaringClass(), method);
 	}
-	
+
 	private boolean hasIcon(Class<?> clazz) {
 		return 
-		!clazz.isEnum() &&
-		(
-		hasSubClasses(clazz) || 
-		clazz.isInterface() || 
-		Modifier.isAbstract(clazz.getModifiers())
-		);
+				!clazz.isEnum() &&
+				(
+						hasSubClasses(clazz) || 
+						clazz.isInterface() || 
+						Modifier.isAbstract(clazz.getModifiers())
+						);
 	}
 
 	public Set<Class<?>> getAllClasses() {
 		return Collections.unmodifiableSet(classSet);
 	}
 
-	public void addPluginClass(Class<?> clazz, Class<? extends VisualizationWidget<?>> view, boolean allowImport, String pluginId)
-	throws Exception {
+	public void addPluginClass(
+			Class<?> clazz, 
+			Class<? extends VisualizationWidget<?>> view,
+					Class<? extends ContractProxy<?>> contract,
+					boolean allowImport, 
+					String pluginId)
+							throws Exception {
 		if(!pluginClassSet.containsKey(clazz)) {
 			if(view != null)
 				WidgetFactory.INSTANCE.addVisualizationWidgetType(new Class<?>[] {clazz}, view);		
@@ -194,8 +210,11 @@ public class ClassModel {
 				pluginClassesForImport.add(clazz);
 
 			pluginClassSet.put(clazz, pluginId);
-			
+
 			iconMapping.put(clazz.getName(), AguiaJActivator.getDefault().getPluginTypeIcon(clazz));
+
+			if(contract != null)
+				contracts.put(clazz, contract);
 		}
 	}
 
@@ -221,7 +240,7 @@ public class ClassModel {
 			}
 		}
 	}
-	
+
 	public void deactivatePackage(String packageName) {
 		for(Iterator<Class<?>> it = activePluginClasses.iterator(); it.hasNext(); )
 			if(it.next().getPackage().getName().equals(packageName))
@@ -257,7 +276,7 @@ public class ClassModel {
 
 		Map<Class<?>,List<Method>> filteredCommandMethodsByType = filteredCommandMethods(clazz, filteredQueryMethods);
 		commandMethodsByType.put(clazz, filteredCommandMethodsByType);
-		
+
 		List<Method> all = new ArrayList<Method>();
 		all.addAll(filteredQueryMethods);
 		all.addAll(inspector.getCommandMethods(clazz));
@@ -291,16 +310,16 @@ public class ClassModel {
 		}
 		return attributes;
 	}
-	
-//	private List<Field> filteredStaticAttributes(Class<?> clazz) {
-//		for(Field field : clazz.getFields())
-//			if(inspector.getVisibleAttributes(clazz, true) 
-//					
-//					.getPolicy().isStaticFieldVisible(field) && !field.isEnumConstant()) {
-//				field.setAccessible(true);
-//				staticFields.add(field);
-//			}
-//	}
+
+	//	private List<Field> filteredStaticAttributes(Class<?> clazz) {
+	//		for(Field field : clazz.getFields())
+	//			if(inspector.getVisibleAttributes(clazz, true) 
+	//					
+	//					.getPolicy().isStaticFieldVisible(field) && !field.isEnumConstant()) {
+	//				field.setAccessible(true);
+	//				staticFields.add(field);
+	//			}
+	//	}
 
 	private List<Method> filteredAccessorMethods(Class<?> clazz) {
 		List<Method> queryMethods = Inspector.getAccessorMethods(clazz);
@@ -313,7 +332,7 @@ public class ClassModel {
 					break;
 				}
 		}
-		
+
 		if(!filters.isEmpty()) {
 			Collections.sort(queryMethods, new Comparator<Method>() {
 
@@ -336,7 +355,7 @@ public class ClassModel {
 				}
 			});
 		}
-		
+
 		return queryMethods;
 	}
 
@@ -344,7 +363,7 @@ public class ClassModel {
 	private Map<Class<?>,List<Method>> filteredCommandMethods(Class<?> clazz, List<Method> queryMethods) {					
 		Map<Class<?>,List<Method>> commandMethodsByType = inspector.getCommandMethodsByType(clazz);
 		List<ClassMemberFilter> filters = findFilters(clazz);
-		
+
 		for(List<Method> commandMethods : commandMethodsByType.values()) {
 			for(Iterator<Method> it = commandMethods.iterator(); it.hasNext(); ) {
 				Method method = it.next();
@@ -354,7 +373,7 @@ public class ClassModel {
 						break;
 					}
 				}
-				
+
 				if(toPromote(clazz, method)) {
 					queryMethods.add(method);
 					it.remove();
@@ -372,14 +391,14 @@ public class ClassModel {
 		}
 		return filters;
 	}
-	
+
 	private boolean toPromote(Class<?> clazz, Method method) {
 		for(Class<?> key : promotions.keySet())
 			if(key.isAssignableFrom(clazz))
 				for(Method m : promotions.get(key))
 					if(m.getName().equals(method.getName()))
 						return true;
-			
+
 		return false;
 	}
 
@@ -445,7 +464,7 @@ public class ClassModel {
 	public boolean isPluginTypeActive(Class<?> clazz) {
 		return activePluginClasses.contains(clazz);
 	}
-	
+
 	public Iterable<Class<?>> getPluginsTypesForImport() {
 		return pluginClassesForImport;
 	}
@@ -472,8 +491,8 @@ public class ClassModel {
 					return true;
 		return false;
 	}
-	
-	
+
+
 	public List<Constructor<?>> getVisibleConstructors(Class<?> clazz) {
 		if(!visibleConstructors.containsKey(clazz))
 			return Collections.emptyList();
@@ -502,8 +521,8 @@ public class ClassModel {
 
 
 
-	
-	
+
+
 	// query methods
 	public List<Method> getAccessorMethods(Class<?> clazz) {
 		if(queryMethods.containsKey(clazz)) {
@@ -538,8 +557,8 @@ public class ClassModel {
 			return commandMethodsByType.get(type);
 		}		
 	}
-	
-	
+
+
 
 
 	private static Class<?> getBottomMostCompatibleType(Collection<Class<?>> list, Class<?> clazz) {
@@ -550,7 +569,7 @@ public class ClassModel {
 		}
 
 		assert !compatible.isEmpty() : "There should be at least one compatible type - Object!";
-		
+
 		Collections.sort(compatible, new ClassHierarchyComparator());		
 		return compatible.get(compatible.size() - 1);
 	}
@@ -563,4 +582,67 @@ public class ClassModel {
 		else
 			return icon;
 	}
+
+	
+	public Set<Class<? extends ContractProxy<?>>> getContractTypes(Class<?> clazz) {
+		Set<Class<? extends ContractProxy<?>>> set = newHashSet();
+		for(Class<?> c : contracts.keySet())
+			if(c.isAssignableFrom(clazz))
+				set.add(contracts.get(c));
+		
+		return set;
+	}
+	
+	public boolean hasContracts(Class<?> clazz, Method method) {
+		for(Class<?> c : contracts.keySet())
+			if(c.isAssignableFrom(clazz) && ReflectionUtils.hasEquivalentMethod(clazz, method)) {
+				return true;
+			}
+
+		return false;
+	}
+
+	
+	private List<ContractProxy<?>> createContractProxies(Object object, Method method) {
+		Class<?> clazz = object.getClass();
+		List<ContractProxy<?>> list = newArrayList();
+		for(Class<?> c : contracts.keySet())
+			if(c.isAssignableFrom(clazz) && ReflectionUtils.hasEquivalentMethod(c, method)) {
+				Class<? extends ContractProxy<?>> contractClass = contracts.get(c);
+				try {
+					Constructor<? extends ContractProxy<?>> constructor = contractClass.getConstructor(c);
+					ContractProxy<?> proxy = constructor.newInstance(object);
+					list.add(proxy);
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+				}
+			}
+		return list;
+	}
+	
+	public Table<Object, Method, ContractProxy<?>> createContractProxies(Object object, Collection<Method> methods) {
+		Table<Object, Method, ContractProxy<?>> table = HashBasedTable.create();
+		Map<Class<? extends ContractProxy<?>>, ContractProxy<?>> map = newHashMap();
+		
+		for(Method m : methods) {
+			
+			if(hasContracts(object.getClass(), m)) {
+				for(ContractProxy<?> proxy : createContractProxies(object, m)) {
+					
+					if(map.containsKey(proxy.getClass())) {
+						table.put(object, m, map.get(proxy.getClass()));   
+					}
+					else {
+						table.put(object, m, proxy);
+						map.put((Class<? extends ContractProxy<?>>) proxy.getClass(), proxy);
+					}	
+				}
+			}
+			
+		}
+		
+		return table;
+	}
+	
 }

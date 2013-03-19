@@ -12,18 +12,9 @@ package pt.org.aguiaj.core.commands.java;
 
 
 public abstract class JavaCommandWithReturn extends JavaCommand {
-//	private boolean silent = false;
 	
 	public abstract String getReference();
 	public abstract Class<?> getReferenceType();
 	public abstract Object getResultingObject();
-	
-//	public final boolean isSilent() {
-//		return silent;
-//	}
-//	
-//	public final void setSilent() {
-//		silent = true;
-//	}
 	
 }

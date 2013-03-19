@@ -60,6 +60,8 @@ public interface AguiaJContribution {
 	public static final String OBJECT_WIDGET_CLASS = "class";
 	public static final String OBJECT_WIDGET_ID = "id";
 	public static final String OBJECT_WIDGET_VIEW = "viewClass";
+	public static final String OBJECT_CONTRACT_PROXY = "contractProxy";
+	
 	public static final String OBJECT_WIDGET_ALLOWIMPORT = "allowImport";
 	public static final String OBJECT_WIDGET_ICON = "icon";
 	public static final String OBJECT_WIDGET_METHOD = "method";

@@ -202,7 +202,7 @@ public class ClassWidget extends FieldContainer {
 			staticOperationsGroup.setText("Static operations");
 			staticOperationsGroup.setLayout(new GridLayout(2, false));
 			for(Method m : methods)	
-				new MethodWidget(staticOperationsGroup, clazz, null, m, this);
+				new MethodWidget(staticOperationsGroup, null, m, this);
 			return staticOperationsGroup;
 		}
 		else

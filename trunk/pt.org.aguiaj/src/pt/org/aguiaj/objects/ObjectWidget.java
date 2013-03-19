@@ -15,15 +15,14 @@ import static com.google.common.collect.Maps.newHashMap;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import org.eclipse.swt.SWT;
@@ -59,8 +58,12 @@ import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.UIText;
 import pt.org.aguiaj.core.commands.RemoveObjectCommand;
+import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
+import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
+import pt.org.aguiaj.extensibility.ContractProxy;
+import pt.org.aguiaj.extensibility.InvariantException;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 
@@ -69,7 +72,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 	public enum Section {
 		VISUAL, INTERNALS, ATTRIBUTES, PROPERTIES, OPERATIONS;
 	}
-	
+
 	private final Object object;
 	private final Class<?> objectClass;
 
@@ -77,19 +80,14 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 	private List<TypeWidget> extensions;
 
 	private Stack<Composite> sections;
-	
 	private EnumMap<Section, Composite> sectionMap;
-	
 	private Map<Method, Highlightable> methodToWidget;
-
 	private Menu menu;
 
 	private static int PADDING = 0;
 
-	public ObjectWidget(
-			final Composite parent,
-			final Object object) {		
 
+	public ObjectWidget(final Composite parent, final Object object) {		
 		super(parent, SWT.BORDER);
 
 		assert parent != null;
@@ -97,6 +95,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 
 		this.object = object;
 		this.objectClass = object.getClass();
+
 		methodToWidget = new HashMap<Method, Highlightable>();
 
 		setLayout(new FormLayout());
@@ -106,7 +105,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 
 		sections = new Stack<Composite>();
 		sectionMap = new EnumMap<ObjectWidget.Section, Composite>(Section.class);
-		
+
 		createHeader(menu);
 
 		hasExtension = WidgetFactory.INSTANCE.hasExtension(objectClass);
@@ -114,12 +113,12 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		if(hasExtension) {
 			Composite visualSection = createSection();
 			visualSection.setLayout(new RowLayout(SWT.HORIZONTAL));
-			
+
 			this.extensions = WidgetFactory.INSTANCE.createWidgets(
 					visualSection, 
 					objectClass, 
 					EnumSet.of(WidgetProperty.OBJECT_WIDGET));
-			
+
 			sectionMap.put(Section.VISUAL, visualSection);
 		}					
 
@@ -139,12 +138,12 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 
 		show(Section.INTERNALS, false);
 		show(Section.OPERATIONS, false);
-		
+
 		if(hasExtension) {
 			show(Section.ATTRIBUTES, false);
 			show(Section.PROPERTIES, false);
 		}
-		
+
 		updateFields();
 
 		addControlListener(new ControlAdapter() {
@@ -158,9 +157,9 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		return existsSection(sec) && section(sec).isVisible();
 	}
 
-	public String toString() {
-		return object.toString();
-	}
+	//	public String toString() {
+	//		return object.toString();
+	//	}
 
 	public void die() {
 		setEnabled(false);
@@ -195,20 +194,20 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		if(invisibleAttributes.size() > 0) {
 			Composite privateAttributesGroup = createSection();
 			sectionMap.put(Section.INTERNALS, privateAttributesGroup);
-			
+
 			RowLayout layout = new RowLayout(SWT.VERTICAL);
 			layout.spacing = PADDING;
 			privateAttributesGroup.setLayout(layout);
 
 			ReverseIterator<Field> it = new ReverseIterator<Field>(invisibleAttributes);
-			
+
 			Class<?> owner = null;
-			
+
 			while(it.hasNext())	 {
 				Field field = it.next();
 				if(owner == null)
 					owner = field.getDeclaringClass();
-			
+
 				if(!field.getDeclaringClass().equals(owner)) {
 					new Label(privateAttributesGroup, SWT.SEPARATOR | SWT.HORIZONTAL);
 					owner = field.getDeclaringClass();
@@ -220,16 +219,16 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 			createShowHide(UIText.SHOW_PRIVATE_ATTRIBUTES, UIText.HIDE_PRIVATE_ATTRIBUTES, privateAttributesGroup, Section.INTERNALS);
 		}
 	}
-	
+
 	static class ReverseIterator<E> implements Iterator<E> {
 		private List<E> collection;
 		private int next;		
-		
+
 		public ReverseIterator(List<E> list) {
 			this.collection = list;
 			next = list.size();
 		}
-		
+
 		@Override
 		public boolean hasNext() {
 			return next != 0;
@@ -247,14 +246,14 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 				next--;
 		}
 	}
-	
+
 
 	private void createAttributesGroup() {
 		List<Field> visibleAttributes = ClassModel.getInstance().getVisibleAttributes(objectClass);
 		if(visibleAttributes.size() > 0) {
 			Composite attributesGroup = createSection(); 
 			sectionMap.put(Section.ATTRIBUTES, attributesGroup);
-			
+
 			RowLayout layout = new RowLayout(SWT.VERTICAL);
 			layout.spacing = PADDING;
 			attributesGroup.setLayout(layout);
@@ -271,12 +270,13 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		if(queryMethods.size() > 0) {
 			Composite propertiesGroup = createSection();
 			sectionMap.put(Section.PROPERTIES, propertiesGroup);
-			
+
 			propertiesGroup.setLayout(createGridLayout());
 
-			for(final Method propertyMethod : queryMethods) {				
-				PropertyWidget widget = new PropertyWidget(propertiesGroup, object, propertyMethod, this);
-				methodToWidget.put(propertyMethod, widget);
+			for(final Method m : queryMethods) {
+//				Object target = ObjectModel.getInstance().getContractProxy(object, m);
+				PropertyWidget widget = new PropertyWidget(propertiesGroup, object, m, this);
+				methodToWidget.put(m, widget);
 			}
 
 			createShowHide(UIText.SHOW_PROPERTIES, UIText.HIDE_PROPERTIES, propertiesGroup, Section.PROPERTIES);
@@ -290,12 +290,14 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		if(commandMethodsByType.size() > 0) {
 			Composite operationsGroup = createSection();
 			sectionMap.put(Section.OPERATIONS, operationsGroup);
-			
+
 			operationsGroup.setLayout(createGridLayout());
 
 			for(Class<?> interfacce : commandMethodsByType.keySet()) {
 				for(Method m : commandMethodsByType.get(interfacce)) {
-					MethodWidget widget = new MethodWidget(operationsGroup, objectClass, getObject(), m, this);
+//					Object target = ObjectModel.getInstance().getContractProxy(object, m);
+//					Method method = ObjectModel.getInstance().getProxyMethod(object, m);
+					MethodWidget widget = new MethodWidget(operationsGroup, object, m, this);
 					methodToWidget.put(m, widget);
 				}
 			}
@@ -432,36 +434,36 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 			setVisible(section, state);
 			if(showItemsTable.containsKey(section))
 				showItemsTable.get(section).setEnabled(!state);
-			
+
 			if(hideItemsTable.containsKey(section))
 				hideItemsTable.get(section).setEnabled(state);
 		}
 	}
-	
+
 	public void expand(EnumSet<Section> set) {
 		for(Section sec : set)
 			show(sec, true);
-		
+
 	}
-	
+
 	private Composite section(Section sec) {
 		return sectionMap.get(sec);
 	}
-	
+
 	private boolean existsSection(Section sec) {
 		return sectionMap.containsKey(sec);
 	}
-	
+
 	public Collection<Section> getExpandedSections() {
 		EnumSet<Section> set = EnumSet.noneOf(Section.class);
 		for(Section sec : Section.values())
 			if(isVisible(sec))
 				set.add(sec);
-		
+
 		return set;
 	}	
-	
-	
+
+
 	private MenuItem createMenuItem(String text) {
 		MenuItem item = new MenuItem(menu, SWT.PUSH);
 		item.setText(text);
@@ -527,13 +529,12 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		ObjectsView.getInstance().updateLayout(null);
 	}
 
-	public Object getObject() {
-		return object;
-	}
 
 
 	public void updateFields() {
 		super.updateFields(object);
+
+//		verifyInvariant();
 
 		try {
 			if(extensions != null)
@@ -551,19 +552,9 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 			setUpdated();
 		}
 
-		//		}
-		//		catch(Exception e) {
-		//			String message = e.getMessage();
-		//			MessageBox messageBox = new MessageBox(Display.getDefault().getActiveShell(), SWT.ERROR);
-		//			messageBox.setText(StandardNamePolicy.prettyClassName(e.getClass()));
-		//			messageBox.setMessage(message == null ? "" : message);
-		//			messageBox.open();
-		//		}
 		layout();
 		pack();	
 	}
 
-	
 
-	
 }

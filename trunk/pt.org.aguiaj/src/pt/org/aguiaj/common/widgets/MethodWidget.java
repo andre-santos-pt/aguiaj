@@ -31,24 +31,26 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
+import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.Reference;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.DocumentationView;
 import pt.org.aguiaj.core.Highlightable;
 import pt.org.aguiaj.core.Highlighter;
 import pt.org.aguiaj.core.Inspector;
+import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
 import pt.org.aguiaj.core.typewidgets.AbstractTypeWidget;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
+import pt.org.aguiaj.extensibility.ContractProxy;
 import pt.org.aguiaj.objects.ObjectModel;
+import pt.org.aguiaj.objects.ObjectModel.Contract;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 
 public class MethodWidget implements Highlightable { 
-
-	private Map<Method, List<TypeWidget>> methodTextArgsTable;
 
 	private Object object;
 	private Method method;
@@ -58,43 +60,48 @@ public class MethodWidget implements Highlightable {
 
 	private Button invokeButton;
 	private Highlighter highlighter;
-	
-	public MethodWidget(Composite parent, Class<?> clazz, Object object, final Method method, final FieldContainer fieldContainer) {
+
+	private List<TypeWidget> paramWidgets;
+
+	public MethodWidget(Composite parent, Object object, Method method, FieldContainer fieldContainer) {
 		assert parent != null;
-		assert clazz != null;
 		assert method != null;
 		assert fieldContainer != null;
 
-		this.object = object;
-		this.method = method;
+		if(ObjectModel.getInstance().hasContract(object, method)) {
+			Contract contract = ObjectModel.getInstance().getContract(object, method);
+			this.object = contract.proxy;
+			this.method = contract.proxyMethod;
+		}
+		else {
+			this.object = object;
+			this.method = method;
+		}
 
-		inherited = Inspector.isInherited(clazz, method);
-		overriding = Inspector.isOverriding(clazz, method);
-
+		if(object != null) {
+			Class<?> clazz = object.getClass();
+			inherited = Inspector.isInherited(clazz, method);
+			overriding = Inspector.isOverriding(clazz, method);
+		}
 		createInvokeButton(parent);
 
 		Composite argsComposite = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout(method.getParameterTypes().length, false);
 		layout.horizontalSpacing = 0;
 		argsComposite.setLayout(layout);
-		List<TypeWidget> paramTexts = createParameterWidgets(fieldContainer, method, argsComposite);
-		methodTextArgsTable = new HashMap<Method, List<TypeWidget>>();
-		methodTextArgsTable.put(method, paramTexts);
+
+		paramWidgets = createParameterWidgets(fieldContainer, method, argsComposite);
 	}
 
 	private void createInvokeButton(Composite parent) {
 		Composite comp = new Composite(parent, SWT.NONE);
 		comp.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));		
-//		FillLayout layout = new FillLayout();
-//		layout.marginWidth = 2;
-//		layout.marginHeight = 2;
 		comp.setLayout(new RowLayout());
 		invokeButton = new Button(comp, SWT.PUSH);
 		invokeButton.setText(StandardNamePolicy.prettyCommandName(method));
-		//		invokeButton.setBounds(5, 5, 80, 30);
 
 		highlighter = new Highlighter(comp);
-		
+
 		String toolTip = StandardNamePolicy.getMethodToolTip(object, method);
 
 		invokeButton.setToolTipText(toolTip);
@@ -108,8 +115,6 @@ public class MethodWidget implements Highlightable {
 				AguiaJParam.MEDIUM_FONT.getInt(), inherited ? SWT.ITALIC : overriding ? SWT.BOLD : SWT.NONE);
 		Font font = new Font(Display.getDefault(), data);
 		invokeButton.setFont(font);
-//		invokeButton.setLayoutData(new RowData());
-//		((RowData) invokeButton.getLayoutData()).height = data.getHeight() + 6;
 
 		DocumentationView.getInstance().addDocumentationSupport(invokeButton, method);
 	}
@@ -154,7 +159,6 @@ public class MethodWidget implements Highlightable {
 	}
 
 	private void executeInvocation() {
-		List<TypeWidget> paramWidgets = methodTextArgsTable.get(method);
 		int nParams = paramWidgets.size();
 		Object[] args = new Object[nParams];
 		String[] argsText = new String[nParams];
@@ -163,10 +167,10 @@ public class MethodWidget implements Highlightable {
 			args[i] = paramWidgets.get(i).getObject();
 			argsText[i] = paramWidgets.get(i).getTextualRepresentation();
 		}
-		
+
 		Reference ref = ObjectModel.getFirstReference(object);
 		String objectReference = object != null && ref != null ? ref.name : null;
-		
+
 		MethodInvocationCommand cmd = new MethodInvocationCommand(object, objectReference, method, args, argsText);
 		ObjectModel.getInstance().execute(cmd);
 	}

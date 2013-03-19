@@ -19,18 +19,16 @@ import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 import pt.org.aguiaj.objects.ObjectModel;
 
 
-public class MethodInvocationCommand extends JavaCommandWithReturn {	
+public class MethodInvocationCommand extends JavaCommandWithReturn implements ContractAware {	
+	private Object object;
 	private String objectReference;
 	private Method method;
 	private String[] argsText;
 	private String reference;
 	private final MethodInvocationThread2 thread;
 
-	public MethodInvocationCommand(Object object, String objectReference, Method method, Object[] args, String[] argsText) {
-		this(object, objectReference, method, args, argsText, ObjectModel.getInstance().nextReference(method.getReturnType()));
-	}
 
-	public MethodInvocationCommand(Object object, String objectReference, Method method, Object[] args, String[] argsText, String reference) {
+	public MethodInvocationCommand(Object object, String objectReference, Method method, Object[] args, String[] argsText) {
 		assert method != null;
 		assert args != null;
 		assert argsText != null;
@@ -41,12 +39,13 @@ public class MethodInvocationCommand extends JavaCommandWithReturn {
 
 		assert ReflectionUtils.checkParamTypes(method.getParameterTypes(), args);
 
+		this.object = object;
 		this.method = method;
 		this.argsText = argsText;
-		this.reference = reference;
+		this.reference = ObjectModel.getInstance().nextReference(method.getReturnType()); // TODO: rever ref compativel
 		this.objectReference = objectReference;
 
-		thread = new MethodInvocationThread2(method, object, args, invocationInstruction());
+		thread = new MethodInvocationThread2(this.method, object, args, invocationInstruction());
 	}
 
 
@@ -109,5 +108,10 @@ public class MethodInvocationCommand extends JavaCommandWithReturn {
 	@Override
 	public boolean failed() {
 		return thread.hasFailed();
+	}
+
+	@Override
+	public Object getObjectUnderContract() {
+		return object;
 	}
 }

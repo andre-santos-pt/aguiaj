@@ -18,7 +18,7 @@ import pt.org.aguiaj.core.commands.CommandsCommon;
 import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 import pt.org.aguiaj.objects.ObjectModel;
 
-public class ConstructorInvocationCommand extends JavaCommandWithReturn {
+public class ConstructorInvocationCommand extends JavaCommandWithReturn implements ContractAware {
 
 	private Constructor<?> constructor;
 	private Object[] args;
@@ -92,5 +92,10 @@ public class ConstructorInvocationCommand extends JavaCommandWithReturn {
 	@Override
 	public boolean failed() {
 		return thread.hasFailed();
+	}
+
+	@Override
+	public Object getObjectUnderContract() {
+		return thread.getResultingObject();
 	}
 }

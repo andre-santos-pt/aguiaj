@@ -272,7 +272,7 @@ public class Inspector {
 				!method.isBridge() &&
 				!method.isSynthetic() &&
 				method.getDeclaringClass().equals(clazz) &&
-				superTypeHasMethod(clazz.getSuperclass(), method);
+				superTypeHasMethod(clazz.getSuperclass(), method); // problem?
 	}
 
 
