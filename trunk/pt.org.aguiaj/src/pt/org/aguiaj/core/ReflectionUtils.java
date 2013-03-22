@@ -20,6 +20,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -180,7 +181,7 @@ public class ReflectionUtils {
 	}
 
 
-	private static List<Class<?>> getClasses(IPath rootPath, String packageName) {		
+	private static Set<Class<?>> getClasses(IPath rootPath, String packageName) {		
 		IPath path = rootPath;
 		for(String level : packageName.split("\\."))
 			path = path.append(level);
@@ -204,11 +205,11 @@ public class ReflectionUtils {
 			}
 		}
 		else
-			return new ArrayList<Class<?>>();
+			return Collections.emptySet();
 
 		AguiaClassLoader classLoader = AguiaClassLoader.getInstance(classFiles);
 
-		ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
+		Set<Class<?>> classes = new HashSet<Class<?>>();
 
 		for(String className : classFiles.keySet()) {
 			try {
@@ -225,21 +226,24 @@ public class ReflectionUtils {
 		return classes;
 	}
 
-	private static void addInnerClasses(Class<?> clazz, List<Class<?>> classes) {
+	private static void addInnerClasses(Class<?> clazz, Collection<Class<?>> classes) {
 		for(Class<?> inner : clazz.getClasses()) {
+			if(classes.contains(inner))
+				return;
+			
 			classes.add(inner);
 			addInnerClasses(inner, classes);
 		}
 	}
 
-	public static Map<String, List<Class<?>>> readClassFiles(IPath rootPath) {
-		Map<String,List<Class<?>>> packagesClasses = new LinkedHashMap<String,List<Class<?>>>();
+	public static Map<String, Set<Class<?>>> readClassFiles(IPath rootPath) {
+		Map<String,Set<Class<?>>> packagesClasses = new LinkedHashMap<String,Set<Class<?>>>();
 		readClassFilesAux(rootPath, rootPath, "", packagesClasses);			
 		return packagesClasses;
 	}
 
-	private static void readClassFilesAux(IPath rootPath, IPath currentPath, String namespace, Map<String,List<Class<?>>> packagesClasses) {
-		List<Class<?>> classList = ReflectionUtils.getClasses(rootPath, namespace);
+	private static void readClassFilesAux(IPath rootPath, IPath currentPath, String namespace, Map<String,Set<Class<?>>> packagesClasses) {
+		Set<Class<?>> classList = ReflectionUtils.getClasses(rootPath, namespace);
 		if(classList.size() > 0)
 			packagesClasses.put(namespace, classList);
 

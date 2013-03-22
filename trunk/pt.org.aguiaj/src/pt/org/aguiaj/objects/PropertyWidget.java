@@ -44,7 +44,7 @@ public class PropertyWidget implements Highlightable {
 		boolean returnsReferenceType = !method.getReturnType().isPrimitive();
 
 		String name = StandardNamePolicy.prettyPropertyName(method);
-		String toolTip = StandardNamePolicy.getMethodToolTip(object, method);
+		String toolTip = StandardNamePolicy.getMethodToolTip(object, method, inherited, overriding);
 
 		label = new LabelWidget.Builder()
 		.text(name)

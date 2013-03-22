@@ -23,6 +23,11 @@ public abstract class Expression {
 		return text;
 	}
 	
+	@Override
+	public String toString() {
+		return getText();
+	}
+	
 	public final boolean acceptText(
 			String text, 
 			Map<String, Reference> referenceTable, 

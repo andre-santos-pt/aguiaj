@@ -108,17 +108,16 @@ public class StandardNamePolicy implements NamePolicy {
 		return constructor.getDeclaringClass().getSimpleName() + params(constructor.getParameterTypes()) + " (constructor)";
 	}
 
-	public static String getMethodToolTip(Object object, Method method) {
+	public static String getMethodToolTip(Object object, Method method, boolean inherited, boolean overriding) {
 		String toolTip = StandardNamePolicy.signature(method);
 
 		if(object != null) { 
-			Class<?> clazz = object.getClass();
-			if(Inspector.isInherited(clazz, method)) {
+			if(inherited) {
 				Class<?> from = method.getDeclaringClass();
 				toolTip += "\n(inherited method from class " + from.getSimpleName() + ")";
 			}
-			else if(Inspector.isOverriding(clazz, method)) {
-				Class<?> from = Inspector.getOverridenMethodOwner(clazz, method);
+			else if(overriding) {
+				Class<?> from = Inspector.getOverridenMethodOwner(object.getClass(), method);
 				toolTip += "\n(overriding method of class " + from.getSimpleName() + ")";
 			}
 			else {

@@ -161,7 +161,7 @@ public class Inspector {
 		return queryMethods;
 	}
 
-	public  List<Method> getCommandMethods(Class<?> clazz) {
+	public List<Method> getCommandMethods(Class<?> clazz) {
 		Collection<Method> allMethods = ReflectionUtils.getAllMethods(clazz);
 		List<Method> commandMethods = new ArrayList<Method>();
 		List<Method> queryMethods = getAccessorMethods(clazz);
@@ -175,60 +175,44 @@ public class Inspector {
 	}
 
 
-	public Map<Class<?>,List<Method>> getCommandMethodsByType(Class<?> clazz) {
-		Map<Class<?>, List<Method>> table = new LinkedHashMap<Class<?>, List<Method>>();
-
-		List<Method> noInterfaceMethods = getCommandMethods(clazz);
-
-		Set<Class<?>> interfacesAndSuperClasses = new HashSet<Class<?>>(Arrays.asList(clazz.getInterfaces()));
-		interfacesAndSuperClasses.addAll(superClasses(clazz));
-
-		for(Class<?> type : interfacesAndSuperClasses) {
-			List<Method> methods = new ArrayList<Method>();
-
-			for(Iterator<Method> it = noInterfaceMethods.iterator(); it.hasNext(); ) {
-				Method method = it.next();
-				if(belongsToInterface(type, method)) {
-					methods.add(method);
-					it.remove();
-				}
-			}
-
-			if(methods.size() > 0)
-				table.put(type, methods);
+	public Set<Method> methodsOfSupertype(Class<?> type, Class<?> superType) {
+		if(!superType.isAssignableFrom(type))
+			throw new IllegalArgumentException("second argument is not a super type of first argument");
+		
+		Set<Method> methods = new HashSet<Method>();
+		
+		List<Class<?>> types = new ArrayList<Class<?>>();
+		types.add(superType);
+		types.addAll(superType.isInterface() ? superInterfaces(superType) : superClasses(superType));
+		
+		for(Class<?> t : types) {
+//			if(t.isInterface()) {
+				for(Method m : t.getMethods())
+					try {
+						methods.add(type.getMethod(m.getName(), m.getParameterTypes()));
+					} catch (NoSuchMethodException e) {
+//						e.printStackTrace();
+					} catch (SecurityException e) {
+//						e.printStackTrace();
+					}
+//			}
+//			else {
+//				methods.addAll(getAccessorMethods(t));
+//				methods.addAll(getCommandMethods(t));
+//			}
 		}
 
-		if(noInterfaceMethods.size() > 0)
-			table.put(clazz, noInterfaceMethods);
-
-		return table;
-	}
-	
-	public static List<Method> methodsOfInterface(Class<?> clazz, Class<?> interfacce) {
-		if(!interfacce.isInterface())
-			throw new IllegalArgumentException("not an interface");
-		
-
-		if(!interfacce.isAssignableFrom(clazz))
-			throw new IllegalArgumentException("class does not implement interface");
-		
-		List<Method> methods = new ArrayList<Method>(interfacce.getMethods().length);
-		
-		for(Method publicMethod : clazz.getMethods())
-			if(belongsToInterface(interfacce, publicMethod))
-				methods.add(publicMethod);
-		
 		return methods;
 	}
 
-	private static boolean belongsToInterface(Class<?> interfacce, Method method) {
-		try {
-			interfacce.getDeclaredMethod(method.getName(), method.getParameterTypes());
-			return true;
-		} catch (NoSuchMethodException e) {
-			return false;
-		}
-	}
+//	private static boolean belongsToInterface(Class<?> interfacce, Method method) {
+//		try {
+//			interfacce.getDeclaredMethod(method.getName(), method.getParameterTypes());
+//			return true;
+//		} catch (NoSuchMethodException e) {
+//			return false;
+//		}
+//	}
 
 	// to lib
 	public static List<Class<?>> superClasses(Class<?> clazz) {
@@ -263,14 +247,72 @@ public class Inspector {
 	}
 
 	public static boolean isInherited(Class<?> clazz, Method method) {
-		return !method.getDeclaringClass().equals(clazz) || method.isBridge();
+		return 
+//		method.getDeclaringClass().equals(clazz) && method.isBridge() ||
+		!method.getDeclaringClass().equals(clazz);  //&& !method.isBridge();
+	}
+	
+	interface I {
+		Object m();
+		String t();
+	}
+	static class A implements I {
+		
+		public Object m() {
+			return "?";
+		}
+
+		public String t() {
+			return null;
+		}
+		
+		public Object z() {
+			return null;
+		}
+	}
+	static class B extends A {
+		public CharSequence m() {
+			return "";
+		}
+		
+		public List z() {
+			return null;
+		}
+	}
+	
+	static class C extends A {
+		public String m() {
+			return "!";
+		}
+		
+		@Override
+		public int hashCode() {
+			return super.hashCode();
+		}
+	}
+	
+	public static void main(String[] args) throws NoSuchMethodException, SecurityException {
+//		System.out.println(A.class.getMethod("m").isBridge());
+//		System.out.println(A.class.getMethod("t").isBridge());
+//		
+//		System.out.println(B.class.getMethod("m").isBridge());
+//		System.out.println(B.class.getMethod("z").isBridge());
+//		System.out.println(B.class.getMethod("t").isBridge());
+//		
+//		
+//		System.out.println(isInherited(B.class, B.class.getMethod("m")));
+//		System.out.println(isInherited(B.class, B.class.getMethod("z")));
+//		System.out.println(isInherited(B.class, B.class.getMethod("t")));
+		
+		System.out.println(isOverriding(A.class, A.class.getMethod("m")));
+		System.out.println(isOverriding(B.class, B.class.getMethod("m")));
 	}
 
 	public static boolean isOverriding(Class<?> clazz, Method method) {
 		return
 				!Modifier.isStatic(method.getModifiers()) && 
-				!method.isBridge() &&
-				!method.isSynthetic() &&
+//				!method.isBridge() &&
+//				!method.isSynthetic() &&
 				method.getDeclaringClass().equals(clazz) &&
 				superTypeHasMethod(clazz.getSuperclass(), method); // problem?
 	}
@@ -283,7 +325,7 @@ public class Inspector {
 		}
 		else {
 			for(Method m : clazz.getDeclaredMethods()) {
-				if(isSame(m, method))
+				if(isSame(m, method) && !Modifier.isAbstract(m.getModifiers()))
 					return true;
 			}
 			return superTypeHasMethod(clazz.getSuperclass(), method);

@@ -121,7 +121,7 @@ public class StandardInspectionPolicy implements InspectionPolicy {
 
 	public boolean isCommandMethod(Method method) {
 		return 
-				!method.isSynthetic() &&
+				(!method.isSynthetic() || method.isBridge()) &&
 				!Modifier.isStatic(method.getModifiers()) &&		
 				isVisible(method) &&
 				!method.getDeclaringClass().equals(Object.class) &&	

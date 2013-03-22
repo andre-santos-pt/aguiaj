@@ -20,6 +20,12 @@ public class MethodNameComparator implements Comparator<Method> {
 	public int compare(Method a, Method b) {
 		String prettyA = StandardNamePolicy.prettyPropertyName(a);
 		String prettyB = StandardNamePolicy.prettyPropertyName(b);
-		return prettyA.compareTo(prettyB);
+		int i = 0;
+		if(a.getDeclaringClass().isAssignableFrom(b.getDeclaringClass()))
+			i--;
+		else if(b.getDeclaringClass().isAssignableFrom(a.getDeclaringClass()))
+			i++;
+				
+		return i != 0 ? prettyA.compareTo(prettyB) : i;
 	}
 }
