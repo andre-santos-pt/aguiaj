@@ -78,7 +78,7 @@ public class Common {
 				"instanceof", "return",	"transient", "catch", "extends", "int",	
 				"short", "try", "char",	"final", "interface", "static",	"void",
 				"class", "finally",	"long",	"strictfp",	"volatile", "const", "float",
-				"native", "super",	"while");
+				"native", "super",	"while", "null");
 
 
 	public static String[] getArgsText(String text) {
@@ -264,9 +264,8 @@ public class Common {
 
 	public static void checkAssignmentTypes(Assignable assignable, Expression expression) {
 		if(!(expression instanceof Null || assignable.type().isAssignableFrom(expression.type())))
-			throw new ParseException("Incompatible types", 
-					assignable.getExpressionText() + " (type " + assignable.type().getSimpleName() + ") and " + 
-					expression.getText() + " (type " + expression.type().getSimpleName() + ")");
+			throw new ParseException("Incompatible assignment", 
+					expression.type().getSimpleName() + " to " + assignable.type().getSimpleName());
 	}
 
 

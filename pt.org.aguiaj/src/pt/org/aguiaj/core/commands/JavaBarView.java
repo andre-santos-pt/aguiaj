@@ -178,7 +178,7 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 			//			command = Parser.parse(input);
 		}	
 		catch(ParseException e) {
-			SWTUtils.showMessage("Java Bar", e.getMessage(), SWT.ERROR);
+			SWTUtils.showMessage(e.cause, e.detail, SWT.ERROR);
 		}
 		catch(Exception e) {			
 			e.printStackTrace();
@@ -188,6 +188,9 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 			ObjectModel.getInstance().execute(command);
 			try {
 				command.execute();
+			}
+			catch(ParseException e) {
+				SWTUtils.showMessage(e.cause, e.detail, SWT.ERROR);
 			}
 			catch(RuntimeException ex) {
 				SWTUtils.showMessage("Java Bar", ex.getMessage(), SWT.ERROR);
@@ -199,7 +202,7 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 	}
 
 	private Job clearJob;
-	private void setLine(final String line) {
+	public void setLine(final String line) {
 		instructionBar.setText(line);
 		if(clearJob != null)
 			clearJob.cancel();

@@ -36,6 +36,7 @@ import com.google.common.collect.Tables;
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.Reference;
 import pt.org.aguiaj.core.ReflectionUtils;
+import pt.org.aguiaj.core.commands.JavaBarView;
 import pt.org.aguiaj.core.commands.java.ContractAware;
 import pt.org.aguiaj.core.commands.java.JavaCommand;
 import pt.org.aguiaj.core.commands.java.JavaCommandWithReturn;
@@ -79,6 +80,9 @@ public class ObjectModel {
 	private Map<String, Class<?>> referenceTypeTable;
 	private IdentityObjectSet objectSet;
 
+	private Table<Object, Method, ContractProxy<?>> contracts;
+	
+	
 	private LinkedList<JavaCommand> activeCommands;
 
 	private Set<EventListener> listeners;
@@ -91,6 +95,8 @@ public class ObjectModel {
 		objectSet = new IdentityObjectSet();
 		activeCommands = newLinkedList();
 		listeners = newHashSet();
+		
+		contracts = HashBasedTable.create();
 	}
 
 	public static ObjectModel getInstance() {
@@ -236,20 +242,17 @@ public class ObjectModel {
 
 		command.execute();
 
-		if(!command.failed())
+		if(command.failed()) {
+			JavaBarView.getInstance().setLine(command.getJavaInstruction());
+		}
+		else {
 			addToStack(command);
-
-		if(!command.failed()) {
 			if(command instanceof JavaCommandWithReturn) {
 				JavaCommandWithReturn cmd = (JavaCommandWithReturn) command;
 
 				Class<?> retType = cmd.getReferenceType();
 				if(!retType.isPrimitive() && !retType.equals(void.class)) {
-					addReference(
-							retType, 
-							cmd.getResultingObject(), 
-							cmd.getReference(),
-							true);
+					addReference(retType, cmd.getResultingObject(), cmd.getReference(), true);
 				}
 			}
 
@@ -506,6 +509,10 @@ public class ObjectModel {
 		}
 	}
 
+	public boolean hasContract(Object object, Method method) {
+		return contracts.contains(object, method);
+	}
+	
 	public Contract getContract(Object object, Method method) {
 		if(!hasContract(object, method))
 			throw new IllegalArgumentException("Object/method has no contract");
@@ -513,18 +520,10 @@ public class ObjectModel {
 		return new Contract(contracts.get(object, method), method);
 	}
 
-	private Table<Object, Method, ContractProxy<?>> contracts;
-
-
-	public boolean hasContract(Object object, Method method) {
-		return contracts.contains(object, method);
-	}
-
-
 	private void createContractProxies(Object object) {
 		ClassModel model = ClassModel.getInstance();
 		List<Method> methods = model.getAllAvailableMethods(object.getClass());
-		contracts = ClassModel.getInstance().createContractProxies(object, methods);
+		ClassModel.getInstance().createContractProxies(contracts, object, methods);
 	}
 
 	private void verifyInvariant(Object object) {

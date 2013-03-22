@@ -14,7 +14,12 @@ public class ParseException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	public ParseException(String message, String token) {
-		super(message + ": " + token);
+	public final String cause;
+	public final String detail;
+	
+	public ParseException(String cause, String detail) {
+		super(cause + ": " + detail);
+		this.cause = cause;
+		this.detail = detail;
 	}
 }

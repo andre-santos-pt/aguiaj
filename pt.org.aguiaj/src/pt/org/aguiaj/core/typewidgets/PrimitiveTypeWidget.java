@@ -89,7 +89,6 @@ abstract class PrimitiveTypeWidget extends AbstractTypeWidget {
 			addEnterKeyListener(text);
 		
 		text.addFocusListener(new FocusListener() {
-
 			@Override
 			public void focusLost(FocusEvent e) {
 				if(dirty) {
@@ -101,6 +100,7 @@ abstract class PrimitiveTypeWidget extends AbstractTypeWidget {
 
 			@Override
 			public void focusGained(FocusEvent e) {
+				text.selectAll();
 			}
 		});
 	}

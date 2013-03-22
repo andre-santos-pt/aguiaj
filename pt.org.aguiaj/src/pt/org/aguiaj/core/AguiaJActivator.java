@@ -590,7 +590,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 	private static Multimap<String, Class<?>> readClasses(List<IPath> workingDirs) {
 		Multimap<String, Class<?>> ret = ArrayListMultimap.create();
 		for(IPath path : workingDirs) {
-			Map<String,List<Class<?>>> classes = ReflectionUtils.readClassFiles(path);
+			Map<String,Set<Class<?>>> classes = ReflectionUtils.readClassFiles(path);
 
 			if(ret.isEmpty()) {
 				for(String key : classes.keySet()) {

@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jface.bindings.keys.ParseException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -83,7 +84,7 @@ public class MethodWidget implements Highlightable {
 			inherited = Inspector.isInherited(clazz, method);
 			overriding = Inspector.isOverriding(clazz, method);
 		}
-		createInvokeButton(parent);
+		createInvokeButton(parent, object, method);
 
 		Composite argsComposite = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout(method.getParameterTypes().length, false);
@@ -93,7 +94,7 @@ public class MethodWidget implements Highlightable {
 		paramWidgets = createParameterWidgets(fieldContainer, method, argsComposite);
 	}
 
-	private void createInvokeButton(Composite parent) {
+	private void createInvokeButton(Composite parent, Object object, Method method) {
 		Composite comp = new Composite(parent, SWT.NONE);
 		comp.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));		
 		comp.setLayout(new RowLayout());
@@ -102,7 +103,7 @@ public class MethodWidget implements Highlightable {
 
 		highlighter = new Highlighter(comp);
 
-		String toolTip = StandardNamePolicy.getMethodToolTip(object, method);
+		String toolTip = StandardNamePolicy.getMethodToolTip(object, method, inherited, overriding);
 
 		invokeButton.setToolTipText(toolTip);
 

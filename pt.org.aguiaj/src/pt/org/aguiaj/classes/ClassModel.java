@@ -45,7 +45,6 @@ import pt.org.aguiaj.extensibility.VisualizationWidget;
 import pt.org.aguiaj.standard.StandardInspectionPolicy;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -53,6 +52,7 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 
 public class ClassModel {
+
 	private final Set<Class<?>> userClasses;
 	private final Map<String, Image> iconMapping;
 
@@ -65,8 +65,10 @@ public class ClassModel {
 	private final Map<Class<?>, ImmutableList<Constructor<?>>> visibleConstructors;
 	private final Map<Class<?>, List<Field>> invisibleAttributes;
 	private final Map<Class<?>, List<Field>> visibleAttributes;
-	private final Map<Class<?>, List<Method>> queryMethods;	
-	private final Map<Class<?>, Map<Class<?>, List<Method>>> commandMethodsByType;
+	private final Map<Class<?>, List<Method>> queryMethods;
+	private final Map<Class<?>, List<Method>> commandMethods;
+
+	//	private final Map<Class<?>, Map<Class<?>, List<Method>>> commandMethodsByType;
 	private final Map<Class<?>, List<Method>> allAvailableMethods;	
 
 	private final Multimap<Class<?>, ClassMemberFilter> filterMap;
@@ -92,7 +94,7 @@ public class ClassModel {
 		invisibleAttributes = newHashMap();
 		visibleAttributes = newHashMap();
 		queryMethods = newHashMap();
-		commandMethodsByType = newHashMap();
+		commandMethods = newHashMap();
 		allAvailableMethods = newHashMap();
 
 		filterMap = ArrayListMultimap.create();
@@ -199,9 +201,9 @@ public class ClassModel {
 			Class<?> clazz, 
 			Class<? extends VisualizationWidget<?>> view,
 					Class<? extends ContractProxy<?>> contract,
-					boolean allowImport, 
-					String pluginId)
-							throws Exception {
+							boolean allowImport, 
+							String pluginId)
+									throws Exception {
 		if(!pluginClassSet.containsKey(clazz)) {
 			if(view != null)
 				WidgetFactory.INSTANCE.addVisualizationWidgetType(new Class<?>[] {clazz}, view);		
@@ -274,8 +276,8 @@ public class ClassModel {
 		List<Method> filteredQueryMethods = filteredAccessorMethods(clazz);
 		queryMethods.put(clazz, filteredQueryMethods);	
 
-		Map<Class<?>,List<Method>> filteredCommandMethodsByType = filteredCommandMethods(clazz, filteredQueryMethods);
-		commandMethodsByType.put(clazz, filteredCommandMethodsByType);
+		List<Method> filteredCommandMethods = filteredCommandMethods(clazz, filteredQueryMethods);
+		commandMethods.put(clazz, filteredCommandMethods);	
 
 		List<Method> all = new ArrayList<Method>();
 		all.addAll(filteredQueryMethods);
@@ -333,55 +335,59 @@ public class ClassModel {
 				}
 		}
 
-		if(!filters.isEmpty()) {
-			Collections.sort(queryMethods, new Comparator<Method>() {
-
-				@Override
-				public int compare(Method m1, Method m2) {
-					int m1Index = 0;
-					int m2Index = 0;
-					for(ClassMemberFilter f : filters) {
-						if(f instanceof NameBasedFilter) {
-							String[] methodNames = ((NameBasedFilter) f).getMethodNames();							
-							for(int i = 0; i < methodNames.length; i++) {
-								if(m1.getName().equals(methodNames[i]))
-									m1Index = i;
-								else if(m2.getName().equals(methodNames[i]))
-									m2Index = i;
-							}
-						}
-					}
-					return new Integer(m1Index).compareTo(m2Index);
-				}
-			});
-		}
+		if(!filters.isEmpty())
+			Collections.sort(queryMethods, new FilterComparator(filters));
 
 		return queryMethods;
 	}
 
-
-	private Map<Class<?>,List<Method>> filteredCommandMethods(Class<?> clazz, List<Method> queryMethods) {					
-		Map<Class<?>,List<Method>> commandMethodsByType = inspector.getCommandMethodsByType(clazz);
-		List<ClassMemberFilter> filters = findFilters(clazz);
-
-		for(List<Method> commandMethods : commandMethodsByType.values()) {
-			for(Iterator<Method> it = commandMethods.iterator(); it.hasNext(); ) {
-				Method method = it.next();
-				for(ClassMemberFilter f : filters) {					
-					if(f.filter(method) && !toPromote(clazz, method)) {
-						it.remove();
-						break;
-					}
-				}
-
-				if(toPromote(clazz, method)) {
-					queryMethods.add(method);
+	private List<Method> filteredCommandMethods(Class<?> clazz, List<Method> queryMethods) {
+		List<Method> methods = inspector.getCommandMethods(clazz);
+		
+		
+		for(Iterator<Method> it = methods.iterator(); it.hasNext(); ) {
+			Method method = it.next();
+			for(ClassMemberFilter f : findFilters(clazz)) {					
+				if(f.filter(method) && !toPromote(clazz, method)) {
 					it.remove();
+					break;
 				}
 			}
+
+			if(toPromote(clazz, method)) {
+				queryMethods.add(method);
+				it.remove();
+			}
 		}
-		return commandMethodsByType;
+		
+		return methods;
 	}
+
+
+
+	//	private Map<Class<?>,List<Method>> filteredCommandMethods(Class<?> clazz, List<Method> queryMethods) {					
+	//		Map<Class<?>,List<Method>> commandMethodsByType = inspector.getCommandMethodsByType(clazz);
+	//		
+	//		List<ClassMemberFilter> filters = findFilters(clazz);
+	//
+	//		for(List<Method> commandMethods : commandMethodsByType.values()) {
+	//			for(Iterator<Method> it = commandMethods.iterator(); it.hasNext(); ) {
+	//				Method method = it.next();
+	//				for(ClassMemberFilter f : filters) {					
+	//					if(f.filter(method) && !toPromote(clazz, method)) {
+	//						it.remove();
+	//						break;
+	//					}
+	//				}
+	//
+	//				if(toPromote(clazz, method)) {
+	//					queryMethods.add(method);
+	//					it.remove();
+	//				}
+	//			}
+	//		}
+	//		return commandMethodsByType;
+	//	}
 
 	private List<ClassMemberFilter> findFilters(Class<?> clazz) {
 		List<ClassMemberFilter> filters = new ArrayList<ClassMemberFilter>();
@@ -408,7 +414,7 @@ public class ClassModel {
 		invisibleAttributes.clear();
 		visibleAttributes.clear();
 		queryMethods.clear();
-		commandMethodsByType.clear();
+		commandMethods.clear();
 
 		addDefaultClasses();
 		inspector = new Inspector(loadInspectionPolicy());
@@ -535,6 +541,17 @@ public class ClassModel {
 	}
 
 
+	public List<Method> getCommandMethods(Class<?> clazz) {
+		if(commandMethods.containsKey(clazz)) {
+			return commandMethods.get(clazz);
+		}
+		else {
+			Class<?> type = getBottomMostCompatibleType(commandMethods.keySet(), clazz);
+			return commandMethods.get(type);
+		}
+	}
+
+
 	public List<Method> getAllAvailableMethods(Class<?> clazz) {
 		if(allAvailableMethods.containsKey(clazz)) {
 			return allAvailableMethods.get(clazz);
@@ -544,21 +561,6 @@ public class ClassModel {
 			return allAvailableMethods.get(type);
 		}	
 	}
-
-
-
-	// command methods
-	public Map<Class<?>, List<Method>> getCommandMethodsByType(Class<?> clazz) {
-		if(commandMethodsByType.containsKey(clazz)) {
-			return commandMethodsByType.get(clazz);
-		}
-		else {
-			Class<?> type = getBottomMostCompatibleType(commandMethodsByType.keySet(), clazz);
-			return commandMethodsByType.get(type);
-		}		
-	}
-
-
 
 
 	private static Class<?> getBottomMostCompatibleType(Collection<Class<?>> list, Class<?> clazz) {
@@ -583,16 +585,16 @@ public class ClassModel {
 			return icon;
 	}
 
-	
+
 	public Set<Class<? extends ContractProxy<?>>> getContractTypes(Class<?> clazz) {
 		Set<Class<? extends ContractProxy<?>>> set = newHashSet();
 		for(Class<?> c : contracts.keySet())
 			if(c.isAssignableFrom(clazz))
 				set.add(contracts.get(c));
-		
+
 		return set;
 	}
-	
+
 	public boolean hasContracts(Class<?> clazz, Method method) {
 		for(Class<?> c : contracts.keySet())
 			if(c.isAssignableFrom(clazz) && ReflectionUtils.hasEquivalentMethod(clazz, method)) {
@@ -602,7 +604,7 @@ public class ClassModel {
 		return false;
 	}
 
-	
+
 	private List<ContractProxy<?>> createContractProxies(Object object, Method method) {
 		Class<?> clazz = object.getClass();
 		List<ContractProxy<?>> list = newArrayList();
@@ -620,16 +622,15 @@ public class ClassModel {
 			}
 		return list;
 	}
-	
-	public Table<Object, Method, ContractProxy<?>> createContractProxies(Object object, Collection<Method> methods) {
-		Table<Object, Method, ContractProxy<?>> table = HashBasedTable.create();
+
+	public void createContractProxies(Table<Object, Method, ContractProxy<?>> table, Object object, Collection<Method> methods) {
 		Map<Class<? extends ContractProxy<?>>, ContractProxy<?>> map = newHashMap();
-		
+
 		for(Method m : methods) {
-			
+
 			if(hasContracts(object.getClass(), m)) {
 				for(ContractProxy<?> proxy : createContractProxies(object, m)) {
-					
+
 					if(map.containsKey(proxy.getClass())) {
 						table.put(object, m, map.get(proxy.getClass()));   
 					}
@@ -639,10 +640,8 @@ public class ClassModel {
 					}	
 				}
 			}
-			
+
 		}
-		
-		return table;
 	}
-	
+
 }

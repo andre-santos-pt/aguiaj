@@ -11,6 +11,7 @@
 package pt.org.aguiaj.core.interpreter;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,13 +53,12 @@ public class ConstructorCall extends Expression implements Instruction {
 		if(argsExp == null)
 			return false;
 
-//		clazz = new ExistingClass();
-//		if(!clazz.acceptText(className, referenceTable, classSet))
-//			return false;	
-
 		clazz = Common.findClass(classSet, className);
 		if(clazz == null)
 			throw new ParseException("Class not found", className);
+		
+		if(Modifier.isAbstract(clazz.getModifiers()))
+			throw new ParseException("Type is abstract", className);
 		
 		Class<?>[] argTypes = Common.getArgTypes(argsExp);
 		

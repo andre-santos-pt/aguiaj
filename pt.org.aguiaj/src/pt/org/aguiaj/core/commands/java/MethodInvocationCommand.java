@@ -13,6 +13,7 @@ package pt.org.aguiaj.core.commands.java;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+
 import pt.org.aguiaj.common.MethodInvocationThread2;
 import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.exceptions.ExceptionHandler;
@@ -23,6 +24,7 @@ public class MethodInvocationCommand extends JavaCommandWithReturn implements Co
 	private Object object;
 	private String objectReference;
 	private Method method;
+	private Object[] args;
 	private String[] argsText;
 	private String reference;
 	private final MethodInvocationThread2 thread;
@@ -41,6 +43,7 @@ public class MethodInvocationCommand extends JavaCommandWithReturn implements Co
 
 		this.object = object;
 		this.method = method;
+		this.args = args;
 		this.argsText = argsText;
 		this.reference = ObjectModel.getInstance().nextReference(method.getReturnType()); // TODO: rever ref compativel
 		this.objectReference = objectReference;
@@ -83,6 +86,12 @@ public class MethodInvocationCommand extends JavaCommandWithReturn implements Co
 	}
 
 	public void execute() {
+//		Class<?>[] paramTypes = method.getParameterTypes();
+//		for(int i = 0; i < args.length; i++)
+//			if(paramTypes[i].equals(String.class) && args[i] == null && !argsText.equals("null"))
+//				SWTUtils.showMessage("Not a string", "In order to insert a string, write text between \" \"", SWT.ICON_ERROR);
+
+				
 		thread.executeMethod();
 		if(thread.getException() != null) {
 			Throwable t = thread.getException().getCause();

@@ -12,6 +12,16 @@ package pt.org.aguiaj.core.typewidgets;
 
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.RowData;
@@ -28,7 +38,7 @@ class CharacterWidget extends PrimitiveTypeWidget {
 
 	private Text text;
 	private static Character defaultValue = new Character(' ');
-	
+
 	public CharacterWidget(Composite parent, final WidgetProperty type, boolean modifiable) {
 		super(parent, type, modifiable);
 	}
@@ -37,21 +47,22 @@ class CharacterWidget extends PrimitiveTypeWidget {
 		public InputListener(Text text) {
 			super(text);			
 		}
-		
+
 		public boolean charOk(int code) {
 			return
-				code == SWT.BS ||
-				isValidChar(code) && text.getText().length() == 0;
+					code == SWT.BS ||
+					isValidChar(code) && text.getText().length() == 0 ||
+					text.getSelectionCount() == 1;
 		}
-		
+
 		private boolean isValidChar(int code) {
 			return 
-			Character.isLetterOrDigit(code) ||
-			code == ' ';
+					Character.isLetterOrDigit(code) ||
+					code == ' ';
 		}
 	}
-	
-	
+
+
 	private VerifyListener listener;
 
 	@Override
@@ -62,15 +73,23 @@ class CharacterWidget extends PrimitiveTypeWidget {
 		FontData data = new FontData("Courier", AguiaJParam.MEDIUM_FONT.getInt(), SWT.NONE);
 		Font font = new Font(Display.getDefault(), data);
 		text.setFont(font);
-		
+
 		text.setLayoutData(new RowData(15, data.getHeight() + 2));
-		
+
 		listener = new InputListener(text);
 		text.addListener(SWT.Verify, listener);
 		setVerifyListener(listener);
-		
+
 		if(getUsageType() != WidgetProperty.PARAMETER)
 			addFocusListener(text);
+
+		text.addModifyListener(new ModifyListener() {
+
+			@Override
+			public void modifyText(ModifyEvent e) {
+						text.selectAll();
+			}
+		});
 		
 		update(defaultValue);
 	}

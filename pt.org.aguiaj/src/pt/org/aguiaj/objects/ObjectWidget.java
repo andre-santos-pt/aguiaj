@@ -52,22 +52,41 @@ import pt.org.aguiaj.common.widgets.FieldContainer;
 import pt.org.aguiaj.common.widgets.IconWidget;
 import pt.org.aguiaj.common.widgets.LabelWidget;
 import pt.org.aguiaj.common.widgets.MethodWidget;
+import pt.org.aguiaj.common.widgets.TypeMemberMouseTrackAdapter;
 import pt.org.aguiaj.core.AguiaJActivator;
 import pt.org.aguiaj.core.Highlightable;
 import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.UIText;
 import pt.org.aguiaj.core.commands.RemoveObjectCommand;
-import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
-import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
-import pt.org.aguiaj.extensibility.ContractProxy;
-import pt.org.aguiaj.extensibility.InvariantException;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 
 public final class ObjectWidget extends FieldContainer implements Highlightable {
+
+//	private final class TypeMemberMouseTrackAdapter extends MouseTrackAdapter {
+//		private List<Method> methods;
+//
+//		private TypeMemberMouseTrackAdapter(Class<?> type) {
+//			methods = ClassModel.getInspector().methodsOfSupertype(objectClass, type);
+//		}
+//
+//		@Override
+//		public void mouseEnter(MouseEvent e) {
+//			for(Method m : methods)
+//				highlight(m);
+//		}
+//
+//		@Override
+//		public void mouseExit(MouseEvent e) {
+//			for(Method m : methods)
+//				unhighlight(m);
+//		}
+//	}
+
+
 
 	public enum Section {
 		VISUAL, INTERNALS, ATTRIBUTES, PROPERTIES, OPERATIONS;
@@ -157,6 +176,10 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		return existsSection(sec) && section(sec).isVisible();
 	}
 
+	public Object getObject() {
+		return object;
+	}
+	
 	//	public String toString() {
 	//		return object.toString();
 	//	}
@@ -175,6 +198,12 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		}
 	}
 
+	public void highlight(Method method) {
+		if(methodToWidget.containsKey(method))
+			methodToWidget.get(method).highlight();
+	}
+
+
 	public void unhighlight() {
 		if(!isDisposed()) {
 			setBackground(AguiaJColor.OBJECT.getColor());
@@ -185,7 +214,10 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		}
 	}
 
-
+	public void unhighlight(Method method) {
+		if(methodToWidget.containsKey(method))
+			methodToWidget.get(method).unhighlight();
+	}
 
 
 	private void createPrivateAttributesGroup() {
@@ -274,7 +306,6 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 			propertiesGroup.setLayout(createGridLayout());
 
 			for(final Method m : queryMethods) {
-//				Object target = ObjectModel.getInstance().getContractProxy(object, m);
 				PropertyWidget widget = new PropertyWidget(propertiesGroup, object, m, this);
 				methodToWidget.put(m, widget);
 			}
@@ -283,28 +314,45 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		}
 	}
 
-	private void createCommandMethodsGroup() {
-		Map<Class<?>,List<Method>> commandMethodsByType = 
-				ClassModel.getInstance().getCommandMethodsByType(objectClass);
+	//	private void createCommandMethodsGroup() {
+	//		Map<Class<?>,List<Method>> commandMethodsByType = 
+	//				ClassModel.getInstance().getCommandMethodsByType(objectClass);
+	//
+	//		if(commandMethodsByType.size() > 0) {
+	//			Composite operationsGroup = createSection();
+	//			sectionMap.put(Section.OPERATIONS, operationsGroup);
+	//
+	//			operationsGroup.setLayout(createGridLayout());
+	//
+	//			for(Class<?> interfacce : commandMethodsByType.keySet()) {
+	//				for(Method m : commandMethodsByType.get(interfacce)) {
+	//					MethodWidget widget = new MethodWidget(operationsGroup, object, m, this);
+	//					methodToWidget.put(m, widget);
+	//				}
+	//			}
+	//
+	//			createShowHide(UIText.SHOW_OPERATIONS, UIText.HIDE_OPERATIONS, operationsGroup, Section.OPERATIONS);
+	//		}
+	//	}
 
-		if(commandMethodsByType.size() > 0) {
+	private void createCommandMethodsGroup() {
+		List<Method> methods = ClassModel.getInstance().getCommandMethods(objectClass);
+
+		if(methods.size() > 0) {
 			Composite operationsGroup = createSection();
 			sectionMap.put(Section.OPERATIONS, operationsGroup);
 
 			operationsGroup.setLayout(createGridLayout());
 
-			for(Class<?> interfacce : commandMethodsByType.keySet()) {
-				for(Method m : commandMethodsByType.get(interfacce)) {
-//					Object target = ObjectModel.getInstance().getContractProxy(object, m);
-//					Method method = ObjectModel.getInstance().getProxyMethod(object, m);
-					MethodWidget widget = new MethodWidget(operationsGroup, object, m, this);
-					methodToWidget.put(m, widget);
-				}
+			for(Method m : methods) {
+				MethodWidget widget = new MethodWidget(operationsGroup, object, m, this);
+				methodToWidget.put(m, widget);
 			}
 
 			createShowHide(UIText.SHOW_OPERATIONS, UIText.HIDE_OPERATIONS, operationsGroup, Section.OPERATIONS);
 		}
 	}
+
 
 	private GridLayout createGridLayout() {
 		GridLayout layout = new GridLayout(2, false);
@@ -377,25 +425,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 				}
 
 				icon.setToolTipText(toolTip);
-
-				if(type.isInterface()) {
-					icon.addMouseTrackListener(new MouseTrackAdapter() {
-						@Override
-						public void mouseExit(MouseEvent e) {
-							for(Method m : Inspector.methodsOfInterface(objectClass, type)) {
-								if(methodToWidget.containsKey(m))
-									methodToWidget.get(m).unhighlight();
-							}
-						}
-
-						@Override
-						public void mouseEnter(MouseEvent e) {
-							for(Method m : Inspector.methodsOfInterface(objectClass, type))
-								if(methodToWidget.containsKey(m))
-									methodToWidget.get(m).highlight();
-						}
-					});
-				}
+				icon.addMouseTrackListener(new TypeMemberMouseTrackAdapter(this, type));
 			}
 		}
 
@@ -534,7 +564,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 	public void updateFields() {
 		super.updateFields(object);
 
-//		verifyInvariant();
+		//		verifyInvariant();
 
 		try {
 			if(extensions != null)
@@ -555,6 +585,8 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		layout();
 		pack();	
 	}
+
+
 
 
 }
