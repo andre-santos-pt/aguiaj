@@ -70,7 +70,7 @@ public class MethodCall extends Expression implements Instruction {
 		}
 
 		if(!nameOk)
-			throw new ParseException("Method name not found", methodName);
+			throw new ParseException("Method not found", targetClass.getName() + "." + methodName + "(...)");
 
 		argsText = Common.getArgsText(right);
 		if(argsText == null)

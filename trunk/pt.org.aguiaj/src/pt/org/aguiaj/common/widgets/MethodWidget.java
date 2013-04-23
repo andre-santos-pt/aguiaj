@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Display;
 
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.Reference;
+import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.DocumentationView;
 import pt.org.aguiaj.core.Highlightable;
@@ -169,9 +170,18 @@ public class MethodWidget implements Highlightable {
 			argsText[i] = paramWidgets.get(i).getTextualRepresentation();
 		}
 
-		Reference ref = ObjectModel.getFirstReference(object);
+
+//		Reference ref = ObjectModel.getFirstReference(object);
+
+		Reference ref = ObjectModel.getInstance().getCompatibleReference(object, method);
+		if(object != null && ref == null) {
+			SWTUtils.showMessage("Error", "No compatible reference available", SWT.ICON_ERROR);
+			return;
+		}
+		
 		String objectReference = object != null && ref != null ? ref.name : null;
 
+		
 		MethodInvocationCommand cmd = new MethodInvocationCommand(object, objectReference, method, args, argsText);
 		ObjectModel.getInstance().execute(cmd);
 	}
