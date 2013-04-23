@@ -81,8 +81,8 @@ public class ObjectModel {
 	private IdentityObjectSet objectSet;
 
 	private Table<Object, Method, ContractProxy<?>> contracts;
-	
-	
+
+
 	private LinkedList<JavaCommand> activeCommands;
 
 	private Set<EventListener> listeners;
@@ -95,7 +95,7 @@ public class ObjectModel {
 		objectSet = new IdentityObjectSet();
 		activeCommands = newLinkedList();
 		listeners = newHashSet();
-		
+
 		contracts = HashBasedTable.create();
 	}
 
@@ -378,6 +378,21 @@ public class ObjectModel {
 		return instance.referenceTypeTable.get(reference);
 	}
 
+	public Reference getCompatibleReference(Object object, Method method) {
+		if(object instanceof ContractProxy)
+			object = ((ContractProxy<?>) object).getProxiedObject();
+
+		Reference reference = null;
+		for(String ref : referenceTable.keySet()) {
+			if(referenceTable.get(ref) == object) {
+				for(Method m : ClassModel.getInstance().getAllAvailableMethods(referenceTypeTable.get(ref)))
+					if(ReflectionUtils.isSame(m, method))
+						reference = new Reference(ref, referenceTypeTable.get(ref), object);
+			}
+		}
+		return reference;
+	}
+
 
 	public static Reference getFirstReference(Object object) {
 		if(object instanceof ContractProxy)
@@ -498,7 +513,7 @@ public class ObjectModel {
 			this.proxy = proxy;
 			proxyMethod = getProxyMethod(method);
 		}
-		
+
 		private Method getProxyMethod(Method method) {
 			try {
 				return proxy.getClass().getMethod(method.getName(), method.getParameterTypes());
@@ -512,11 +527,11 @@ public class ObjectModel {
 	public boolean hasContract(Object object, Method method) {
 		return contracts.contains(object, method);
 	}
-	
+
 	public Contract getContract(Object object, Method method) {
 		if(!hasContract(object, method))
 			throw new IllegalArgumentException("Object/method has no contract");
-		
+
 		return new Contract(contracts.get(object, method), method);
 	}
 

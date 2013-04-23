@@ -32,6 +32,7 @@ import pt.org.aguiaj.core.DocumentationView;
 import pt.org.aguiaj.core.commands.java.ConstructorInvocationCommand;
 import pt.org.aguiaj.core.commands.java.JavaCommand;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
+import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
 import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 import pt.org.aguiaj.core.interpreter.Assignment;
 import pt.org.aguiaj.core.interpreter.Instruction;
@@ -94,27 +95,49 @@ public class ReloadClassesCommand extends AbstractHandler {
 				if(instruction != null) {
 					JavaCommand javaCommand = instruction.getCommand(); 
 	
-					if(javaCommand instanceof ConstructorInvocationCommand) {
-						Class<?> clazz = ((ConstructorInvocationCommand) javaCommand).getConstructor().getDeclaringClass();
-						if(blackList.contains(clazz))
-							continue;
-					}
-					else if(javaCommand instanceof MethodInvocationCommand) {
-						Method method = ((MethodInvocationCommand) javaCommand).getMethod();
-						if(skipMethod(method))
-							continue;
-					}
+//					if(javaCommand instanceof ConstructorInvocationCommand) {
+//						Class<?> clazz = ((ConstructorInvocationCommand) javaCommand).getConstructor().getDeclaringClass();
+//						if(blackList.contains(clazz))
+//							continue;
+//					}
+//					else if(javaCommand instanceof MethodInvocationCommand) {
+//						Method method = ((MethodInvocationCommand) javaCommand).getMethod();
+//						if(skipMethod(method))
+//							continue;
+//					}
+					 
+					if(javaCommand instanceof NewReferenceCommand) {
+						
+						Instruction inst = Parser.accept(((NewReferenceCommand) javaCommand).getSource(), 
+								ObjectModel.getInstance().getReferenceTable(), 
+								ClassModel.getInstance().getAllClasses());
+						
+						JavaCommand cmd = inst.getCommand();
+						
+						if(inst != null) {
+							if(cmd instanceof ConstructorInvocationCommand) {
+								Class<?> clazz = ((ConstructorInvocationCommand) cmd).getConstructor().getDeclaringClass();
+								if(blackList.contains(clazz))
+									continue;
+							}
+							else if(cmd instanceof MethodInvocationCommand) {
+								Method method = ((MethodInvocationCommand) cmd).getMethod();
+								if(skipMethod(method))
+									continue;
+							}
+						}
+						
+						ObjectModel.getInstance().execute(javaCommand);
 
-					ObjectModel.getInstance().execute(javaCommand);
-
-					if(javaCommand instanceof ConstructorInvocationCommand && javaCommand.failed()) {
-						blackList.add(((ConstructorInvocationCommand) javaCommand).getConstructor().getDeclaringClass());
+						if(cmd instanceof ConstructorInvocationCommand && javaCommand.failed()) {
+							blackList.add(((ConstructorInvocationCommand) cmd).getConstructor().getDeclaringClass());
+						}
 					}
 				}
 
 			} catch (Exception e) {
-				//				System.err.println(e.getMessage() + " -- " + command);
-				//				e.printStackTrace();
+								System.err.println(e.getMessage() + " -- " + command);
+								e.printStackTrace();
 				//StackTraceElement element = e.getStackTrace()[0];
 				//				System.err.println(e.getMessage() + " - " + element.getClassName() + " (line " + element + ")");
 			}

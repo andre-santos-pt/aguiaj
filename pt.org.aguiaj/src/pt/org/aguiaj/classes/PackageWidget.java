@@ -44,7 +44,7 @@ import pt.org.aguiaj.core.ReflectionUtils;
 
 import com.google.common.collect.Sets;
 
-public class PackageWidget extends Composite {
+class PackageWidget extends Composite {
 	private static final int SPACING = 30;
 	private static final int MARGIN = 10;
 
@@ -88,21 +88,15 @@ public class PackageWidget extends Composite {
 		if(isPluginPackage())
 			addPluginHeader();
 
-		for(final Class<?> clazz : classes)
-			if(clazz.isInterface() || 
-					Modifier.isAbstract(clazz.getModifiers()) && !clazz.isEnum())
-				new AbstractClassWidget(area, clazz);
-
 		for(final Class<?> clazz : classes) {
-			if(!clazz.isInterface() && 
-					(!Modifier.isAbstract(clazz.getModifiers()) || clazz.isEnum())) {
-				if(ReflectionUtils.tryClass(clazz)) {
-					classWidgets.add(new ClassWidget(area, clazz));
-				}
-				else {
-					new ErrorWidget(area, clazz);
-				}
-			}		
+			if(clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()) && !clazz.isEnum())
+				new AbstractClassWidget(area, clazz);
+			else if(ReflectionUtils.tryClass(clazz)) {
+				classWidgets.add(new ClassWidget(area, clazz));
+			}
+			else {
+				new ErrorWidget(area, clazz);
+			}
 		}
 
 		addControlListener(new ControlAdapter() {
@@ -115,6 +109,7 @@ public class PackageWidget extends Composite {
 		layout();
 	}
 
+	
 	public void refreshSize() {
 		if(!scrl.isDisposed() && !area.isDisposed()) {
 			scrl.setMinSize(area.computeSize(SWT.DEFAULT, SWT.DEFAULT));

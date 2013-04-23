@@ -57,4 +57,8 @@ public class NewReferenceCommand extends JavaCommandWithReturn {
 	public Class<?> getReferenceType() {
 		return refType;
 	}
+	
+	public String getSource() {
+		return source;
+	}
 }

@@ -43,18 +43,17 @@ import pt.org.aguiaj.standard.StandardNamePolicy;
 
 public class ConstructorWidget {
 
-	private Map<Constructor<?>, List<TypeWidget>> constructorArgsTable;
-
 	private Class<?> clazz;
 	private Constructor<?> constructor;
 
+	private List<TypeWidget> paramWidgets;
+
+	
 	public ConstructorWidget(Composite parent, final Class<?> clazz, final Constructor<?> constructor, FieldContainer fieldContainer) {
 		this.clazz = clazz;
 		this.constructor = constructor;
 		
-		constructorArgsTable = new HashMap<Constructor<?>, List<TypeWidget>>();
-
-		//setLayout(new GridLayout(2, false));
+		paramWidgets = new ArrayList<TypeWidget>();
 
 		List<TypeWidget> paramTexts = new ArrayList<TypeWidget>();
 
@@ -106,20 +105,20 @@ public class ConstructorWidget {
 				});
 			}
 		}
-
-		constructorArgsTable.put(constructor, paramTexts);
 	}
 
 	private void invokeConstructor() {
-		List<TypeWidget> params = constructorArgsTable.get(constructor);
-		
 		Object[] args = new Object[constructor.getParameterTypes().length];
 		for(int i = 0; i < args.length; i++)
-			args[i] = params.get(i).getObject();
+			args[i] = paramWidgets.get(i).getObject();
 		
 		ConstructorInvocationCommand command = new ConstructorInvocationCommand(constructor, args, ObjectModel.getInstance().nextReference(clazz), clazz);
 		ObjectModel.getInstance().execute(command);
 	}
 	
+//	void setArgs(Object[] args) {
+//		for(int i = 0; i < paramWidgets.size(); i++)
+//			paramWidgets.get(i).getControl()
+//	}
 	
 }

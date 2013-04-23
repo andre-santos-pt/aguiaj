@@ -10,9 +10,11 @@
  ******************************************************************************/
 package pt.org.aguiaj.classes;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +51,26 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 public class ClassesView extends ViewPart implements ISizeProvider {
+
+	private final class ClassComparator implements Comparator<Class<?>> {
+		@Override
+		public int compare(Class<?> a, Class<?> b) {
+			if(a.isInterface() && !b.isInterface())
+				return -1;
+			else if(!a.isInterface() && b.isInterface())
+				return 1;
+			else if(Modifier.isAbstract(a.getModifiers()) && !Modifier.isAbstract(b.getModifiers()))
+				return -1;
+			else if(!Modifier.isAbstract(a.getModifiers()) && Modifier.isAbstract(b.getModifiers()))
+				return 1;
+			else if(a.isAssignableFrom(b))
+				return -1;
+			else if(b.isAssignableFrom(a))
+				return 1;
+			else
+				return a.getSimpleName().compareTo(b.getSimpleName());
+		}
+	}
 
 	private static ClassesView instance;
 
@@ -222,8 +244,10 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 				classArea.dispose();
 			}
 			
-			Collection<Class<?>> classList = packagesClasses.get(packageName);
+			List<Class<?>> classList = new ArrayList<Class<?>>(packagesClasses.get(packageName));
 
+			Collections.sort(classList, new ClassComparator());
+			
 			PackageWidget packageArea = new PackageWidget(packageTabs, packageName, classList);
 			
 			if(tab == null)

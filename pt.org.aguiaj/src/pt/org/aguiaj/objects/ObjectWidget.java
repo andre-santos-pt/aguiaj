@@ -371,8 +371,8 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 				StandardNamePolicy.prettyClassName(objectClass.getSuperclass()) :
 					StandardNamePolicy.prettyClassName(objectClass);
 
-				if(ClassModel.getInstance().ambiguousClassName(objectClass)) 
-					className = objectClass.getName();
+//				if(ClassModel.getInstance().ambiguousClassName(objectClass)) 
+//					className = objectClass.getName();
 
 				return ": " + className;
 	}
@@ -386,7 +386,8 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		LabelWidget nameLabel = new LabelWidget.Builder()
 		.text(headerText())
 		.big()
-		.toolTip(UIText.OBJECT_OF_TYPE.get(objectClass.getSimpleName()))
+		.toolTip(objectClass.getName())
+//		.toolTip(UIText.OBJECT_OF_TYPE.get(objectClass.getSimpleName()))
 		.create(classHeader);
 
 		nameLabel.getControl().addMouseListener(new MouseAdapter() {
