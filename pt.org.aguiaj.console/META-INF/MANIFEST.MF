@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Console
+Bundle-SymbolicName: pt.org.aguiaj.console;singleton:=true
+Bundle-Version: 0.0.1
+Bundle-Activator: pt.org.aguiaj.console.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ pt.org.aguiaj;bundle-version="0.9.8"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Export-Package: aguiaj.console
