@@ -12,6 +12,7 @@ package pt.org.aguiaj.extensibility;
 
 import org.eclipse.swt.graphics.Image;
 
+
 import pt.org.aguiaj.classes.ClassesView;
 import pt.org.aguiaj.common.AguiaJImage;
 import pt.org.aguiaj.core.AguiaJActivator;
@@ -79,15 +80,40 @@ public class AguiaJHelper {
 		}
 	}
 	
-	
-	
-	public static void addObject(Object object) {
-		if(object == null)
-			throw new NullPointerException("Object cannot be null");
-		
-		Class<?> clazz = object.getClass();
-		NewReferenceCommand cmd = new NewReferenceCommand(clazz, object, null);
-		cmd.execute();
+	public static boolean existsObject(Object object) {
+		return ObjectModel.getInstance().existsObject(object);
 	}
+	
+	public static boolean existsReference(String name) {
+		return ObjectModel.getInstance().existsReference(name);
+	}
+	
+	public static void removeReference(String name) {
+		if(name == null)
+			throw new NullPointerException("Reference name cannot be null");
+		
+		ObjectModel.getInstance().removeReference(name);
+	}
+	
+	public static void addObjectModelListener(ObjectEventListener listener) {
+		ObjectModel.getInstance().addEventListener(listener);
+	}
+
+	public static void show(String objectReference) {
+		ObjectsView.getInstance().show(objectReference);
+	}
+	
+	public static void hide(String objectReference) {
+		ObjectsView.getInstance().hide(objectReference);
+	}
+	
+//	public static void addObject(Object object) {
+//		if(object == null)
+//			throw new NullPointerException("Object cannot be null");
+//		
+//		Class<?> clazz = object.getClass();
+//		NewReferenceCommand cmd = new NewReferenceCommand(clazz, object, null);
+//		ObjectModel.getInstance().execute(cmd);
+//	}
 	
 }

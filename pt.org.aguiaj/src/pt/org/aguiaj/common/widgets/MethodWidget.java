@@ -13,11 +13,8 @@ package pt.org.aguiaj.common.widgets;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.eclipse.jface.bindings.keys.ParseException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -32,21 +29,18 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
-import pt.org.aguiaj.classes.ClassModel;
-import pt.org.aguiaj.common.Reference;
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.DocumentationView;
 import pt.org.aguiaj.core.Highlightable;
 import pt.org.aguiaj.core.Highlighter;
 import pt.org.aguiaj.core.Inspector;
-import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
 import pt.org.aguiaj.core.typewidgets.AbstractTypeWidget;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
-import pt.org.aguiaj.extensibility.ContractProxy;
+import pt.org.aguiaj.extensibility.Reference;
 import pt.org.aguiaj.objects.ObjectModel;
 import pt.org.aguiaj.objects.ObjectModel.Contract;
 import pt.org.aguiaj.standard.StandardNamePolicy;
@@ -194,5 +188,13 @@ public class MethodWidget implements Highlightable {
 	@Override
 	public void unhighlight() {
 		highlighter.unhighlight();
+	}
+
+	public void setArgs(Object[] args) {
+		if(args.length != paramWidgets.size())
+			return;
+		
+		for(int i = 0; i < paramWidgets.size(); i++)
+			paramWidgets.get(i).update(args[i]);
 	}
 }

@@ -14,9 +14,9 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Set;
 
-import pt.org.aguiaj.common.Reference;
-import pt.org.aguiaj.core.commands.java.JavaCommand;
 import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
+import pt.org.aguiaj.extensibility.JavaCommand;
+import pt.org.aguiaj.extensibility.Reference;
 
 public class EnumConstant extends Expression implements Instruction {
 

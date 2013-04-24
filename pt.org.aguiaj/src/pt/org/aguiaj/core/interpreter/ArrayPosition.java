@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import pt.org.aguiaj.common.Reference;
+import pt.org.aguiaj.extensibility.Reference;
 
 
 public class ArrayPosition extends Expression implements Assignable {

@@ -12,6 +12,8 @@ package pt.org.aguiaj.core.commands.java;
 
 import java.lang.reflect.Array;
 
+import pt.org.aguiaj.extensibility.JavaCommand;
+
 public class ArrayPositionAssignmentCommand extends JavaCommand {
 
 	private Object arrayObject;

@@ -16,10 +16,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import pt.org.aguiaj.common.Reference;
 import pt.org.aguiaj.core.commands.java.ArrayObjectCreationCommand;
 import pt.org.aguiaj.core.commands.java.ConstructorInvocationCommand;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
+import pt.org.aguiaj.extensibility.Reference;
 
 public class Common {
 	public final static String integerRegex = "\\-?\\d+";

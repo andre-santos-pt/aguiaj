@@ -10,6 +10,8 @@
  ******************************************************************************/
 package pt.org.aguiaj.core.commands.java;
 
+import pt.org.aguiaj.extensibility.JavaCommand;
+
 
 public abstract class JavaCommandWithReturn extends JavaCommand {
 	

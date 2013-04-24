@@ -30,7 +30,7 @@ public class ConstructorCall extends Expression implements Instruction {
 	@Override
 	public boolean accept(
 			String text, 
-			Map<String, pt.org.aguiaj.common.Reference> referenceTable, 
+			Map<String, pt.org.aguiaj.extensibility.Reference> referenceTable, 
 			Set<Class<?>> classSet) throws ParseException {
 
 		if(!text.startsWith("new"))

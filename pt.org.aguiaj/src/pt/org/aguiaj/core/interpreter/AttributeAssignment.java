@@ -13,9 +13,9 @@ package pt.org.aguiaj.core.interpreter;
 import java.util.Map;
 import java.util.Set;
 
-import pt.org.aguiaj.common.Reference;
 import pt.org.aguiaj.core.commands.java.AttributeAssignmentCommand;
-import pt.org.aguiaj.core.commands.java.JavaCommand;
+import pt.org.aguiaj.extensibility.JavaCommand;
+import pt.org.aguiaj.extensibility.Reference;
 
 public class AttributeAssignment extends Assignment {
 	private Attribute attribute;

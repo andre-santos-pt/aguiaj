@@ -8,7 +8,7 @@
  * Contributors:
  *     Andre L. Santos - initial API and implementation
  ******************************************************************************/
-package pt.org.aguiaj.common;
+package pt.org.aguiaj.extensibility;
 
 import java.lang.reflect.Field;
 

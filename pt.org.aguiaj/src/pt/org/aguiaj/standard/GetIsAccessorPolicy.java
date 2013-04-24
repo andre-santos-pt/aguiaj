@@ -11,6 +11,7 @@
 package pt.org.aguiaj.standard;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import pt.org.aguiaj.extensibility.AccessorMethodDetectionPolicy;
 
@@ -18,7 +19,7 @@ public class GetIsAccessorPolicy implements AccessorMethodDetectionPolicy {
 
 	@Override
 	public boolean isAccessorMethod(Method method) {
-		return isGetter(method) || isBooleanProperty(method);
+		return !Modifier.isStatic(method.getModifiers()) && (isGetter(method) || isBooleanProperty(method));
 	}
 	
 	private static final String CAPITAL_LETTER =

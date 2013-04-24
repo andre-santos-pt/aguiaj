@@ -22,11 +22,11 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import pt.org.aguiaj.common.Reference;
-import pt.org.aguiaj.core.commands.java.JavaCommand;
 import pt.org.aguiaj.core.commands.java.JavaCommandWithReturn;
 import pt.org.aguiaj.core.interpreter.Instruction;
 import pt.org.aguiaj.core.interpreter.Parser;
+import pt.org.aguiaj.extensibility.JavaCommand;
+import pt.org.aguiaj.extensibility.Reference;
 
 public class InterpreterTests {
 

@@ -13,7 +13,9 @@ package pt.org.aguiaj.classes;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;
@@ -33,7 +35,6 @@ import pt.org.aguiaj.common.widgets.LabelWidget;
 import pt.org.aguiaj.common.widgets.LabelWidget.ObjectToHighlightProvider;
 import pt.org.aguiaj.common.widgets.MethodWidget;
 import pt.org.aguiaj.core.DocumentationView;
-import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
 import pt.org.aguiaj.objects.ObjectModel;
 import pt.org.aguiaj.standard.StandardNamePolicy;
@@ -42,16 +43,15 @@ import pt.org.aguiaj.standard.StandardNamePolicy;
 public class ClassWidget extends FieldContainer {
 
 	private List<Field> staticFields;
-	private List<Constructor<?>> constructors;
-
-	private Inspector inspector;
+	private Map<Constructor<?>, ConstructorWidget> constructorMap;
+	private Map<Method, MethodWidget> methodMap;
 	
 	public ClassWidget(Composite parent, final Class<?> clazz) {
 		super(parent, SWT.BORDER);
 		
-		inspector = ClassModel.getInspector();
-		constructors = inspector.getVisibleConstructors(clazz);
-
+		constructorMap = new HashMap<Constructor<?>, ConstructorWidget>();
+		methodMap = new HashMap<Method, MethodWidget>();
+		
 		FormLayout layout = new FormLayout();
 		layout.marginBottom = 5;
 		setLayout(layout);
@@ -69,7 +69,7 @@ public class ClassWidget extends FieldContainer {
 		
 		DocumentationView.getInstance().addDocumentationSupport(classNameLabel.getControl(), clazz);
 		
-		if(inspector.isStaticClass(clazz))
+		if(ClassModel.getInspector().isStaticClass(clazz))
 			new LabelWidget.Builder()
 				.text("(static)")
 				.small()
@@ -81,7 +81,7 @@ public class ClassWidget extends FieldContainer {
 		labelData.right = new FormAttachment(100, -5);
 		classHeader.setLayoutData(labelData);
 		
-		staticFields = inspector.getVisibleStaticAttributes(clazz);
+		staticFields = ClassModel.getInspector().getVisibleStaticAttributes(clazz);
 			
 		Composite constructorsOrContantsGroup = null;
 		if(clazz.isEnum())
@@ -181,13 +181,16 @@ public class ClassWidget extends FieldContainer {
 	}
 
 	private Composite createConstructorsGroup(Composite parent, final Class<?> clazz) {
+		List<Constructor<?>> constructors = ClassModel.getInspector().getVisibleConstructors(clazz);
 		if(constructors.size() > 0) {
 			Composite constructorsGroup = new Composite(parent, SWT.NONE);
 			
 			GridLayout layout = new GridLayout(2, false);			
 			constructorsGroup.setLayout(layout);
-			for(Constructor<?> constructor : constructors)
-				new ConstructorWidget(constructorsGroup, clazz, constructor, this);
+			for(Constructor<?> constructor : constructors) {
+				ConstructorWidget widget = new ConstructorWidget(constructorsGroup, clazz, constructor, this);
+				constructorMap.put(constructor, widget);
+			}
 			return constructorsGroup;
 		}
 		else
@@ -195,14 +198,16 @@ public class ClassWidget extends FieldContainer {
 	}
 
 	private Group createStaticMethodsGroup(Composite parent, final Class<?> clazz) {
-		List<Method> methods = inspector.getVisibleStaticMethods(clazz);
+		List<Method> methods = ClassModel.getInspector().getVisibleStaticMethods(clazz);
 
 		if(methods.size() > 0) {
 			Group staticOperationsGroup = new Group(parent, SWT.NONE);
 			staticOperationsGroup.setText("Static operations");
 			staticOperationsGroup.setLayout(new GridLayout(2, false));
-			for(Method m : methods)	
-				new MethodWidget(staticOperationsGroup, null, m, this);
+			for(Method m : methods)	{
+				MethodWidget widget = new MethodWidget(staticOperationsGroup, null, m, this);
+				methodMap.put(m, widget);
+			}
 			return staticOperationsGroup;
 		}
 		else
@@ -213,6 +218,15 @@ public class ClassWidget extends FieldContainer {
 		updateFields(null);
 	}
 
+	void updateConstructorArgs(Map<Constructor<?>, Object[]> constructors) {
+		for(Constructor<?> c : constructorMap.keySet())
+			if(constructors.containsKey(c))
+				constructorMap.get(c).setArgs(constructors.get(c));
+	}
 	
-	
+	void updateMethodArgs(Map<Method, Object[]> methods) {
+		for(Method m : methodMap.keySet())
+			if(methods.containsKey(m))
+				methodMap.get(m).setArgs(methods.get(m));
+	}
 }

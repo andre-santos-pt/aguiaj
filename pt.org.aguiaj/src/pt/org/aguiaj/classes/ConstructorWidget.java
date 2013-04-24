@@ -13,9 +13,7 @@ package pt.org.aguiaj.classes;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -55,8 +53,6 @@ public class ConstructorWidget {
 		
 		paramWidgets = new ArrayList<TypeWidget>();
 
-		List<TypeWidget> paramTexts = new ArrayList<TypeWidget>();
-
 		final Button newButton = new Button(parent, SWT.PUSH);
 		newButton.setText("new");
 		FontData data = new FontData(AguiaJParam.FONT.getString(), AguiaJParam.MEDIUM_FONT.getInt(), SWT.NONE);
@@ -86,14 +82,14 @@ public class ConstructorWidget {
 					paramType, 
 					EnumSet.of(WidgetProperty.PARAMETER, WidgetProperty.MODIFIABLE));
 
+			paramWidgets.add(widget);
+			
 			if(widget instanceof AbstractTypeWidget) {
 				AbstractTypeWidget aWidget = (AbstractTypeWidget) widget;
 				aWidget.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_CENTER));
 				aWidget.update(widget.defaultValue());						
 			}
 			
-			paramTexts.add(widget);
-
 			// in last param, ENTER triggers constructor invocation
 			if(widget.getControl() != null && i == paramTypes.length - 1) {
 				widget.getControl().addKeyListener(new KeyAdapter() {
@@ -116,9 +112,11 @@ public class ConstructorWidget {
 		ObjectModel.getInstance().execute(command);
 	}
 	
-//	void setArgs(Object[] args) {
-//		for(int i = 0; i < paramWidgets.size(); i++)
-//			paramWidgets.get(i).getControl()
-//	}
-	
+	void setArgs(Object[] args) {
+		if(args.length != paramWidgets.size())
+			return;
+		
+		for(int i = 0; i < paramWidgets.size(); i++)
+			paramWidgets.get(i).update(args[i]);
+	}
 }

@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import pt.org.aguiaj.common.Reference;
 import pt.org.aguiaj.core.commands.java.ArrayObjectCreationCommand;
 import pt.org.aguiaj.core.commands.java.JavaCommandWithReturn;
+import pt.org.aguiaj.extensibility.Reference;
 
 public class ArrayCreation extends Expression implements Instruction {
 	private Class<?> type;
