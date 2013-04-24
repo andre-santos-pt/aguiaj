@@ -247,7 +247,7 @@
                id="java.lang.Math">
          </class>
          <class
-               allowImport="true"
+               allowImport="false"
                id="java.util.Random">
          </class>
       </group>

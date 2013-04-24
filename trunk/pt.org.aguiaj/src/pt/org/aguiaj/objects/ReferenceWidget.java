@@ -10,20 +10,11 @@
  ******************************************************************************/
 package pt.org.aguiaj.objects;
 
-import java.lang.reflect.Method;
-
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -35,10 +26,7 @@ import pt.org.aguiaj.common.AguiaJImage;
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.common.widgets.IconWidget;
 import pt.org.aguiaj.common.widgets.LabelWidget;
-import pt.org.aguiaj.common.widgets.LabelWidget.ObjectToHighlightProvider;
 import pt.org.aguiaj.common.widgets.TypeMemberMouseTrackAdapter;
-import pt.org.aguiaj.core.AguiaJParam;
-import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.commands.RemoveReferenceCommand;
 
 

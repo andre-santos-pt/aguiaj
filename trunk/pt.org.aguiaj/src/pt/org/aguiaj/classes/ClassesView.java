@@ -10,6 +10,8 @@
  ******************************************************************************/
 package pt.org.aguiaj.classes;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -201,6 +203,7 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 		filterPluginPackages(packageNames); // no point to redo the UI		
 		
 		createTabClassAreas(packageNames);
+		
 		refreshLayout();
 	}
 
@@ -233,6 +236,13 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 			widget.updateClassWidgets();
 	}
 
+	public void setArgs(Map<Constructor<?>, Object[]> constructors, Map<Method, Object[]> methods) {
+		for(PackageWidget packageWidget : classAreaWidgets)
+			for(ClassWidget classWidget : packageWidget.getClassWidgets()) {
+				classWidget.updateConstructorArgs(constructors);
+				classWidget.updateMethodArgs(methods);
+			}
+	}
 	
 	private void createTabClassAreas(List<String> packageNames) {
 		for(String packageName : packageNames) {

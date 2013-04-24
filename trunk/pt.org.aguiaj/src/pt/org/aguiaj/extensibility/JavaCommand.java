@@ -8,7 +8,7 @@
  * Contributors:
  *     Andre L. Santos - initial API and implementation
  ******************************************************************************/
-package pt.org.aguiaj.core.commands.java;
+package pt.org.aguiaj.extensibility;
 
 import pt.org.aguiaj.core.commands.Command;
 

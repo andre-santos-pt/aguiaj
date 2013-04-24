@@ -10,6 +10,7 @@
  ******************************************************************************/
 package pt.org.aguiaj.core.commands.java;
 
+import pt.org.aguiaj.extensibility.JavaCommand;
 import pt.org.aguiaj.objects.ObjectModel;
 
 

@@ -13,7 +13,6 @@ package pt.org.aguiaj.core.commands.java;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-
 import pt.org.aguiaj.common.MethodInvocationThread2;
 import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.exceptions.ExceptionHandler;
@@ -122,5 +121,10 @@ public class MethodInvocationCommand extends JavaCommandWithReturn implements Co
 	@Override
 	public Object getObjectUnderContract() {
 		return object;
+	}
+
+
+	public Object[] getArgs() {
+		return args;
 	}
 }

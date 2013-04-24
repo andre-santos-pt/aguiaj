@@ -32,13 +32,12 @@ import pt.org.aguiaj.common.AguiaJColor;
 import pt.org.aguiaj.common.widgets.FieldContainer;
 import pt.org.aguiaj.common.widgets.LabelWidget;
 import pt.org.aguiaj.common.widgets.LabelWidget.ObjectToHighlightProvider;
-import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.TypeWidget;
-import pt.org.aguiaj.core.commands.java.JavaCommand;
 import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
 import pt.org.aguiaj.core.typewidgets.AbstractTypeWidget;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
+import pt.org.aguiaj.extensibility.JavaCommand;
 import pt.org.aguiaj.objects.ObjectModel;
 
 class ArrayRowWidget extends Composite {

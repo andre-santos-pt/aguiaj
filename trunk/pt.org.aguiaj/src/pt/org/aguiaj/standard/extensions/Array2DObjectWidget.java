@@ -22,7 +22,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-import pt.org.aguiaj.common.Reference;
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.common.widgets.LabelWidget;
 import pt.org.aguiaj.common.widgets.LabelWidget.ObjectToHighlightProvider;
@@ -30,6 +29,7 @@ import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
+import pt.org.aguiaj.extensibility.Reference;
 import pt.org.aguiaj.extensibility.VisualizationWidget;
 import pt.org.aguiaj.objects.ObjectModel;
 

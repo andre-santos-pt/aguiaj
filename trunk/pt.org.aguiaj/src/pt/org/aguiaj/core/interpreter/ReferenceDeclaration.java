@@ -14,9 +14,9 @@ import java.lang.reflect.Array;
 import java.util.Map;
 import java.util.Set;
 
-import pt.org.aguiaj.common.Reference;
-import pt.org.aguiaj.core.commands.java.JavaCommand;
 import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
+import pt.org.aguiaj.extensibility.JavaCommand;
+import pt.org.aguiaj.extensibility.Reference;
 
 public class ReferenceDeclaration implements Instruction, Assignable {
 	private ExistingReference existingReference;

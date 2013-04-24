@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.Control;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.ArrayPositionAssignmentCommand;
 import pt.org.aguiaj.core.commands.java.AttributeAssignmentCommand;
-import pt.org.aguiaj.core.commands.java.JavaCommand;
+import pt.org.aguiaj.extensibility.JavaCommand;
 import pt.org.aguiaj.objects.ObjectModel;
 
 

@@ -13,7 +13,8 @@ package pt.org.aguiaj.core.commands.java;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import pt.org.aguiaj.common.Reference;
+import pt.org.aguiaj.extensibility.JavaCommand;
+import pt.org.aguiaj.extensibility.Reference;
 import pt.org.aguiaj.objects.ObjectModel;
 
 public class AttributeAssignmentCommand extends JavaCommand {	

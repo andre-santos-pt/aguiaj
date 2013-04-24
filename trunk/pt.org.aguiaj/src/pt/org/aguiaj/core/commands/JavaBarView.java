@@ -32,12 +32,13 @@ import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.UIText;
-import pt.org.aguiaj.core.commands.java.JavaCommand;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
 import pt.org.aguiaj.core.interpreter.Instruction;
 import pt.org.aguiaj.core.interpreter.ParseException;
 import pt.org.aguiaj.core.interpreter.Parser;
 import pt.org.aguiaj.extensibility.AguiaJContribution;
+import pt.org.aguiaj.extensibility.JavaCommand;
+import pt.org.aguiaj.extensibility.ObjectEventListenerAdapter;
 import pt.org.aguiaj.objects.ObjectModel;
 
 
@@ -55,7 +56,7 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 		bar = new Composite(parent, SWT.BORDER);
 		bar.setLayout(new FillLayout());		
 		createInstructionBar();
-		model.addEventListener(new ObjectModel.EventListenerAdapter() {
+		model.addEventListener(new ObjectEventListenerAdapter() {
 			@Override
 			public void commandExecuted(JavaCommand cmd) {
 				setLine(cmd.getJavaInstruction());

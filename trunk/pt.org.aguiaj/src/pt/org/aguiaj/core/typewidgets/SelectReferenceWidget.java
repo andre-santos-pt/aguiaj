@@ -30,9 +30,10 @@ import org.eclipse.swt.widgets.Control;
 
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.AguiaJColor;
-import pt.org.aguiaj.common.Reference;
-import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.common.widgets.IconWidget;
+import pt.org.aguiaj.extensibility.ObjectEventListener;
+import pt.org.aguiaj.extensibility.ObjectEventListenerAdapter;
+import pt.org.aguiaj.extensibility.Reference;
 import pt.org.aguiaj.objects.ObjectModel;
 
 public class SelectReferenceWidget extends ReferenceTypeWidget {
@@ -49,7 +50,7 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 
 	private Composite border;
 
-	private ObjectModel.EventListener listener;
+	private ObjectEventListener listener;
 
 	public SelectReferenceWidget(final Composite parent, Class<?> clazz, final WidgetProperty type) {
 		super(parent, SWT.NONE, clazz, type, true);
@@ -134,7 +135,7 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 
 		setObjects(ObjectModel.getInstance().getCompatibleReferences(getType()));
 
-		listener = new ObjectModel.EventListenerAdapter() {
+		listener = new ObjectEventListenerAdapter() {
 			@Override
 			public void newReferenceEvent(Reference ref) {
 				if(getType().isAssignableFrom(ref.type)) {

@@ -14,6 +14,7 @@ import static pt.org.aguiaj.extensibility.AguiaJContribution.ACCESSOR_POLICY_DES
 import static pt.org.aguiaj.extensibility.AguiaJContribution.ACCESSOR_POLICY_ID;
 import static pt.org.aguiaj.extensibility.AguiaJContribution.EXTENSION_ACCESSOR_POLICY;
 import static pt.org.aguiaj.extensibility.AguiaJContribution.EXTENSION_OBJECT_WIDGET;
+import static pt.org.aguiaj.extensibility.AguiaJContribution.OBJECT_CONTRACT_PROXY;
 import static pt.org.aguiaj.extensibility.AguiaJContribution.OBJECT_WIDGET_ALLOWIMPORT;
 import static pt.org.aguiaj.extensibility.AguiaJContribution.OBJECT_WIDGET_EXCLUDE;
 import static pt.org.aguiaj.extensibility.AguiaJContribution.OBJECT_WIDGET_GROUP;
@@ -24,7 +25,6 @@ import static pt.org.aguiaj.extensibility.AguiaJContribution.OBJECT_WIDGET_METHO
 import static pt.org.aguiaj.extensibility.AguiaJContribution.OBJECT_WIDGET_METHOD_ID;
 import static pt.org.aguiaj.extensibility.AguiaJContribution.OBJECT_WIDGET_PROMOTE;
 import static pt.org.aguiaj.extensibility.AguiaJContribution.OBJECT_WIDGET_VIEW;
-import static pt.org.aguiaj.extensibility.AguiaJContribution.OBJECT_CONTRACT_PROXY;
 
 import java.io.File;
 import java.io.IOException;

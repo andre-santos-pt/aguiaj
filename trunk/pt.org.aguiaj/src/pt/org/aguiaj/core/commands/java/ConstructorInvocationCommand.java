@@ -98,4 +98,8 @@ public class ConstructorInvocationCommand extends JavaCommandWithReturn implemen
 	public Object getObjectUnderContract() {
 		return thread.getResultingObject();
 	}
+
+	public Object[] getArgs() {
+		return args;
+	}
 }

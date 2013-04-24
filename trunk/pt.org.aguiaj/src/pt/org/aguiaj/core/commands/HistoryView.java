@@ -31,8 +31,9 @@ import org.eclipse.ui.part.ViewPart;
 
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.core.AguiaJParam;
-import pt.org.aguiaj.core.commands.java.JavaCommand;
 import pt.org.aguiaj.extensibility.AguiaJContribution;
+import pt.org.aguiaj.extensibility.JavaCommand;
+import pt.org.aguiaj.extensibility.ObjectEventListenerAdapter;
 import pt.org.aguiaj.objects.ObjectModel;
 
 
@@ -70,7 +71,7 @@ public class HistoryView extends ViewPart {
 		list.setFont(new Font(Display.getDefault(), data));		
 		Menu menu = buildMenu(parent);		
 		list.setMenu(menu);
-		ObjectModel.getInstance().addEventListener(new ObjectModel.EventListenerAdapter() {
+		ObjectModel.getInstance().addEventListener(new ObjectEventListenerAdapter() {
 			public void commandExecuted(JavaCommand cmd) {
 				if(!cmd.failed())
 					add(cmd);

@@ -27,6 +27,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -35,15 +36,16 @@ import org.eclipse.ui.part.ViewPart;
 import pt.org.aguiaj.common.AguiaJColor;
 import pt.org.aguiaj.common.AguiaJImage;
 import pt.org.aguiaj.common.DragNDrop;
-import pt.org.aguiaj.common.Reference;
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.common.widgets.NullReferenceWidget;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.commands.ReloadClassesCommand;
 import pt.org.aguiaj.core.commands.RemoveAllObjectsCommand;
 import pt.org.aguiaj.core.commands.RemoveDeadObjectsCommand;
-import pt.org.aguiaj.core.commands.java.JavaCommand;
 import pt.org.aguiaj.extensibility.AguiaJContribution;
+import pt.org.aguiaj.extensibility.JavaCommand;
+import pt.org.aguiaj.extensibility.ObjectEventListenerAdapter;
+import pt.org.aguiaj.extensibility.Reference;
 
 public class ObjectsView extends ViewPart {
 
@@ -62,7 +64,7 @@ public class ObjectsView extends ViewPart {
 	private ReferenceStackWidget<NullReferenceWidget> nullStack;
 
 
-	private class ObjectListener extends ObjectModel.EventListenerAdapter {
+	private class ObjectListener extends ObjectEventListenerAdapter {
 
 		@Override
 		public void newObjectEvent(Object obj) {
@@ -129,6 +131,7 @@ public class ObjectsView extends ViewPart {
 		scrl = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);		
 		area = new Composite(scrl, SWT.NONE);
 
+//		GridLayout layout = new org.eclipse.swt.layout.GridLayout(1, true);
 		RowLayout layout = new RowLayout(SWT.HORIZONTAL);
 		layout.spacing = padding;
 		layout.marginTop = padding;
@@ -270,8 +273,9 @@ public class ObjectsView extends ViewPart {
 			ReferenceStackWidget<ObjectWidget> pair =  ReferenceStackWidget.newObject(area, object);
 			widgetsTable.put(object, pair.getWidget());
 			refStackTable.put(object, pair);	
+			pair.moveAbove(null);
 		}
-
+		
 		addReference(referenceType, reference, object);
 		updateLayout(reference);
 	}
@@ -340,58 +344,6 @@ public class ObjectsView extends ViewPart {
 		return map;
 	}
 	
-//	public List<String> getReferencesForExpandedOperationsObjects() {
-//		List<String> refs = new ArrayList<String>();
-//
-//		for(ReferenceStackWidget<ObjectWidget> w : refStackTable.values()) {
-//			String ref = w.getFirstReference();
-//			if(ref != null && w.getWidget().isOperationsVisible()) {
-//				refs.add(ref);
-//			}
-//		}
-//
-//		return refs;
-//	}
-//
-//	public List<String> getReferencesForExpandedPrivatesObjects() {
-//		List<String> refs = new ArrayList<String>();
-//
-//		for(ReferenceStackWidget<ObjectWidget> widget : refStackTable.values()) {
-//			String ref = widget.getFirstReference();
-//			if(ref != null && widget.getWidget().isPrivateAttributesVisible()) {
-//				refs.add(ref);
-//			}
-//		}
-//
-//		return refs;
-//	}
-//
-//
-//	public List<String> getReferencesForExpandedPropertiesObjects() {
-//		List<String> refs = new ArrayList<String>();
-//
-//		for(ReferenceStackWidget<ObjectWidget> widget : refStackTable.values()) {
-//			String ref = widget.getFirstReference();
-//			if(ref != null && widget.getWidget().isPropertiesVisible()) {
-//				refs.add(ref);
-//			}
-//		}
-//
-//		return refs;
-//	}
-//	
-//	public List<String> getReferencesForExpandedAttributesObjects() {
-//		List<String> refs = new ArrayList<String>();
-//
-//		for(ReferenceStackWidget<ObjectWidget> widget : refStackTable.values()) {
-//			String ref = widget.getFirstReference();
-//			if(ref != null && widget.getWidget().isPropertiesVisible()) {
-//				refs.add(ref);
-//			}
-//		}
-//
-//		return refs;
-//	}
 	
 	private ReferenceStackWidget<ObjectWidget> getRefAndObjectPairWidget(String refId) {
 		for(ReferenceStackWidget<ObjectWidget> widget : refStackTable.values())
@@ -449,6 +401,24 @@ public class ObjectsView extends ViewPart {
 		highlighted = null;
 	}
 
+	public void hide(String objectReference) {
+		assert objectReference != null;
+
+		ReferenceStackWidget<?> widget = getRefAndObjectPairWidget(objectReference);
+		
+		if(widget != null)
+			widget.setVisible(false);
+	}
+	
+	public void show(String objectReference) {
+		assert objectReference != null;
+
+		ReferenceStackWidget<?> widget = getRefAndObjectPairWidget(objectReference);
+		
+		if(widget != null)
+			widget.setVisible(true);
+	}
+	
 	private void updateObjectWidgets() {
 		for(ObjectWidget widget : widgetsTable.values())
 			widget.updateFields();

@@ -20,7 +20,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -29,47 +28,51 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
-import com.google.common.collect.Tables;
+import javax.jws.Oneway;
 
 import pt.org.aguiaj.classes.ClassModel;
-import pt.org.aguiaj.common.Reference;
 import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.commands.JavaBarView;
 import pt.org.aguiaj.core.commands.java.ContractAware;
-import pt.org.aguiaj.core.commands.java.JavaCommand;
 import pt.org.aguiaj.core.commands.java.JavaCommandWithReturn;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
 import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 import pt.org.aguiaj.extensibility.ContractProxy;
 import pt.org.aguiaj.extensibility.InvariantException;
+import pt.org.aguiaj.extensibility.JavaCommand;
+import pt.org.aguiaj.extensibility.ObjectEventListener;
+import pt.org.aguiaj.extensibility.Reference;
 import pt.org.aguiaj.standard.StandardNamePolicy;
+
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 // singleton
 // observable
 public class ObjectModel {
 
-	public interface EventListener {
-		void newObjectEvent(Object obj);
-		void removeObjectEvent(Object obj);
-		void newReferenceEvent(Reference ref);
-		void changeReferenceEvent(Reference ref);
-		void removeReferenceEvent(Reference ref);
-		void commandExecuted(JavaCommand cmd);
-		void commandRemoved(JavaCommand cmd);
-		void clearAll();
-	}
-
-	public static abstract class EventListenerAdapter implements EventListener {
-		public void newObjectEvent(Object obj) { }
-		public void removeObjectEvent(Object obj) { }
-		public void newReferenceEvent(Reference ref) { }
-		public void changeReferenceEvent(Reference ref) { }
-		public void removeReferenceEvent(Reference ref) { }
-		public void commandExecuted(JavaCommand cmd) { }
-		public void commandRemoved(JavaCommand cmd) { }
-		public void clearAll() { }
-	}
+//	public interface ObjectEventListener {
+//		void init();
+//		void newObjectEvent(Object obj);
+//		void removeObjectEvent(Object obj);
+//		void newReferenceEvent(Reference ref);
+//		void changeReferenceEvent(Reference ref);
+//		void removeReferenceEvent(Reference ref);
+//		void commandExecuted(JavaCommand cmd);
+//		void commandRemoved(JavaCommand cmd);
+//		void clearAll();
+//	}
+//
+//	public static abstract class EventListenerAdapter implements ObjectEventListener {
+//		public void init() { }
+//		public void newObjectEvent(Object obj) { }
+//		public void removeObjectEvent(Object obj) { }
+//		public void newReferenceEvent(Reference ref) { }
+//		public void changeReferenceEvent(Reference ref) { }
+//		public void removeReferenceEvent(Reference ref) { }
+//		public void commandExecuted(JavaCommand cmd) { }
+//		public void commandRemoved(JavaCommand cmd) { }
+//		public void clearAll() { }
+//	}
 
 	private static ObjectModel instance;
 
@@ -85,7 +88,7 @@ public class ObjectModel {
 
 	private LinkedList<JavaCommand> activeCommands;
 
-	private Set<EventListener> listeners;
+	private Set<ObjectEventListener> listeners;
 
 
 
@@ -97,6 +100,9 @@ public class ObjectModel {
 		listeners = newHashSet();
 
 		contracts = HashBasedTable.create();
+		
+		for(ObjectEventListener l : listeners)
+			l.init();
 	}
 
 	public static ObjectModel getInstance() {
@@ -107,31 +113,30 @@ public class ObjectModel {
 	}	
 
 
-	public void addEventListener(EventListener listener) {
+	public void addEventListener(ObjectEventListener listener) {
 		listeners.add(listener);
 	}
 
-	public void removeEventListener(EventListener listener) {
+	public void removeEventListener(ObjectEventListener listener) {
 		listeners.remove(listener);
 	}
 
-	private EventListener[] listeners() {
-		return listeners.toArray(new EventListener[listeners.size()]);
+	private ObjectEventListener[] listeners() {
+		return listeners.toArray(new ObjectEventListener[listeners.size()]);
 	}
 
 	public void addObject(Object object, boolean notify) {
 		if(!objectSet.contains(object)) {
 			objectSet.add(object);
 
-			createContractProxies(object);
+			if(object != null)
+				createContractProxies(object);
 
 			if(notify) {
-				for(EventListener l : listeners())
+				for(ObjectEventListener l : listeners())
 					l.newObjectEvent(object);
 			}
 		}
-
-
 	}
 
 	public void removeObject(Object object) {
@@ -147,7 +152,7 @@ public class ObjectModel {
 			}
 		}
 
-		for(EventListener l : listeners())
+		for(ObjectEventListener l : listeners())
 			l.removeObjectEvent(object);
 
 		for(Iterator<JavaCommand> it = activeCommands.iterator(); it.hasNext(); ) {
@@ -155,7 +160,7 @@ public class ObjectModel {
 			if( cmd instanceof JavaCommandWithReturn &&
 					((JavaCommandWithReturn) cmd).getResultingObject() == object) {
 				it.remove();
-				for(EventListener l : listeners())
+				for(ObjectEventListener l : listeners())
 					l.commandRemoved(cmd);
 			}
 		}
@@ -166,7 +171,7 @@ public class ObjectModel {
 		for(Object o : objectSet.objects()) {
 			if(isDeadObject(o)) {
 				objectSet.remove(o);
-				for(EventListener l : listeners())
+				for(ObjectEventListener l : listeners())
 					l.removeObjectEvent(o);
 			}
 		}
@@ -194,7 +199,7 @@ public class ObjectModel {
 	public void changeReference(String name, Object obj) {
 		referenceTable.put(name, obj);
 		addObject(obj, true);
-		for(EventListener l : listeners())
+		for(ObjectEventListener l : listeners())
 			l.changeReferenceEvent(new Reference(name, referenceTypeTable.get(name), obj));
 	}
 
@@ -209,14 +214,14 @@ public class ObjectModel {
 		referenceTable.remove(name);
 		referenceTypeTable.remove(name);
 
-		for(EventListener l : listeners())
+		for(ObjectEventListener l : listeners())
 			l.removeReferenceEvent(ref);
 
 		for(Iterator<JavaCommand> it = activeCommands.iterator(); it.hasNext(); ) {
 			JavaCommand cmd = it.next();
 			if(cmd.getReference().equals(name)) {
 				it.remove();
-				for(EventListener l : listeners())
+				for(ObjectEventListener l : listeners())
 					l.commandRemoved(cmd);
 			}
 		}
@@ -229,8 +234,12 @@ public class ObjectModel {
 		objectSet.clear();
 		activeCommands.clear();
 		System.gc();
-		for(EventListener l : listeners())
+		ObjectEventListener[] listenersArray = listeners();
+		for(ObjectEventListener l : listenersArray)
 			l.clearAll();
+		
+		for(ObjectEventListener l : listenersArray)
+			l.init();
 	}
 
 
@@ -274,7 +283,7 @@ public class ObjectModel {
 		//			objectSet.add(object);
 
 		if(notify) {
-			for(EventListener l : listeners())
+			for(ObjectEventListener l : listeners())
 				l.newReferenceEvent(new Reference(name, type, object));
 		}
 	}
@@ -349,6 +358,15 @@ public class ObjectModel {
 		return refs;
 	}
 
+	public boolean existsObject(Object object) {
+		return objectSet.contains(object);
+	}
+	
+	public boolean existsReference(String name) {
+		return referenceTable.containsKey(name);
+	}
+	
+	
 	public List<Reference> getReferences(Object object) {
 		List<Reference> refs = new ArrayList<Reference>();
 		for(String r : referenceTable.keySet()) {
@@ -462,7 +480,7 @@ public class ObjectModel {
 
 	private void addToStack(JavaCommand command) {
 		activeCommands.add(command);
-		for(EventListener l : listeners)
+		for(ObjectEventListener l : listeners)
 			l.commandExecuted(command);
 	}
 
@@ -559,5 +577,7 @@ public class ObjectModel {
 			}
 		}
 	}
+
+	
 
 }
