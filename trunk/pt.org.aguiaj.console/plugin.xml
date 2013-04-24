@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         name="Console"
+         point="pt.org.aguiaj.objectWidgets">
+      <group
+            id="Console">
+         <class
+               allowImport="true"
+               icon="icons/console_view.gif"
+               id="aguiaj.console.Console"
+               viewClass="pt.org.aguiaj.console.ConsoleView">
+         </class>
+      </group>
+   </extension>
+   <extension
+         point="org.eclipse.ui.viewActions">
+      <viewContribution
+            id="pt.org.aguiaj.console.viewContribution"
+            targetID="pt.org.aguiaj.objectsView">
+         <action
+               class="pt.org.aguiaj.console.ShowConsoleAction"
+               icon="icons/console_view.gif"
+               id="pt.org.aguiaj.console.action1"
+               label="Show Console object"
+               style="push"
+               toolbarPath="additions">
+         </action>
+      </viewContribution>
+   </extension>
+
+</plugin>
