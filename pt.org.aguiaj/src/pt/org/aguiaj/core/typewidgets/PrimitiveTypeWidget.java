@@ -15,55 +15,64 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
+import pt.org.aguiaj.common.AguiaJColor;
+import pt.org.aguiaj.core.AguiaJParam;
+
 
 
 abstract class PrimitiveTypeWidget extends AbstractTypeWidget {
-	private VerifyListener verifyListener;
-	private boolean dirty;
-	private String last;
-	
-	public abstract class VerifyListener implements Listener {
-		private boolean ignore;
-		private Text text;
-		
-		public VerifyListener(Text text) {
-			this.text = text;
-		}
-		
-		public boolean ignore() {
-			return ignore;
-		}
-		
-		public void setIgnore() {
-			ignore = true;
-		}
-		
-		public void unsetIgnore() {
-			ignore = false;
-		}
-		
-		@Override
-		public void handleEvent(Event event) {
-			if(ignore())
-				return;
-			
-			if(charOk(event.character)) {
-				if(!dirty) {
-					last = text.getText();
-					dirty = true;
-				}
-			}
-			else
-				event.doit = false;
-		}
-		
-		public abstract boolean charOk(int code);
-	}
+//	private VerifyListener verifyListener;
+//	private boolean dirty;
+//	private String last;
+//	
+//	public abstract class VerifyListener implements Listener {
+//		private boolean ignore;
+//		protected Text text;
+//		
+//		public VerifyListener(Text text) {
+//			this.text = text;
+//		}
+//		
+//		public boolean ignore() {
+//			return ignore;
+//		}
+//		
+//		public void setIgnore() {
+//			ignore = true;
+//		}
+//		
+//		public void unsetIgnore() {
+//			ignore = false;
+//		}
+//		
+//		@Override
+//		public void handleEvent(Event event) {
+//			if(ignore())
+//				return;
+//			
+//			if(charOk(event.character)) {
+//				if(!dirty) {
+//					last = text.getText();
+//					dirty = true;
+//				}
+//			}
+//			else
+//				event.doit = false;
+//		}
+//		
+//		public abstract boolean charOk(int code);
+//	}
 	
 	public PrimitiveTypeWidget(Composite parent, WidgetProperty type, boolean modifiable) {
 		super(parent, SWT.NONE, type, modifiable);		
@@ -73,36 +82,61 @@ abstract class PrimitiveTypeWidget extends AbstractTypeWidget {
 		return getObject().toString();
 	}
 	
-	protected void setVerifyListener(VerifyListener verifyListener) {
-		this.verifyListener = verifyListener;
-		verifyListener.text.addKeyListener(new KeyAdapter() {			
-			public void keyPressed(KeyEvent event) {
-				if(event.keyCode == SWT.CR) {
-					dirty = false;
-				}
-			}
-		});
-	}
+//	protected void setVerifyListener(VerifyListener verifyListener) {
+//		this.verifyListener = verifyListener;
+//		verifyListener.text.addKeyListener(new KeyAdapter() {			
+//			public void keyPressed(KeyEvent event) {
+//				if(event.keyCode == SWT.CR) {
+//					dirty = false;
+//				}
+//			}
+//		});
+//	}
 	
-	protected void addFocusListener(final Text text) {
-		if(isModifiable())
-			addEnterKeyListener(text);
-		
-		text.addFocusListener(new FocusListener() {
-			@Override
-			public void focusLost(FocusEvent e) {
-				if(dirty) {
-					verifyListener.setIgnore();
-					text.setText(last);
-					verifyListener.unsetIgnore();
-				}
-			}
-
-			@Override
-			public void focusGained(FocusEvent e) {
-				text.selectAll();
-			}
-		});
-	}
+//	protected void addFocusListener(final Text text) {
+//		if(isModifiable())
+//			addEnterKeyListener(text);
+//		
+//		text.addFocusListener(new FocusListener() {
+//			@Override
+//			public void focusLost(FocusEvent e) {
+//				if(dirty) {
+//					verifyListener.setIgnore();
+//					text.setText(last);
+//					verifyListener.unsetIgnore();
+//				}
+//			}
+//
+//			@Override
+//			public void focusGained(FocusEvent e) {
+//				text.selectAll();
+//			}
+//		});
+//	}
 	
+//	protected Text createTextWidget(Composite parent) {
+//		final Text text = new Text(parent, SWT.BORDER |
+//				(getUsageType() == WidgetProperty.PROPERTY || !isModifiable() ? SWT.READ_ONLY : SWT.BORDER));
+//		
+//		if(!isModifiable())
+//			text.setBackground(parent.getBackground());
+//		
+//		FontData data = new FontData("Courier", AguiaJParam.MEDIUM_FONT.getInt(), SWT.NONE);
+//		Font font = new Font(Display.getDefault(), data);
+//		text.setFont(font);
+//			
+//		if(getUsageType() != WidgetProperty.PARAMETER)
+//			addFocusListener(text);
+//		
+//		text.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseDown(MouseEvent e) {
+//				text.selectAll();	
+//			}
+//		});
+//		
+//		return text;
+//	}
+	
+//	protected abstract VerifyListener createVerifyListener(Text text);
 }

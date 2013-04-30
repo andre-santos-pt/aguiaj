@@ -28,9 +28,8 @@ public enum ActiveTypeWidget {
 	public static void loadTypeWidgets() {
 		for(ActiveTypeWidget w : values()) {
 			PluggableWidget ann = w.clazz.getAnnotation(PluggableWidget.class);
-			WidgetFactory.INSTANCE.addWidgetType(ann.value(), w.clazz);
+			for(Class<?> c : ann.value())
+				WidgetFactory.INSTANCE.addWidgetType(c, w.clazz);
 		}
 	}
-	
-	
 }

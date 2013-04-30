@@ -13,36 +13,23 @@ package pt.org.aguiaj.core.typewidgets;
 import java.math.BigDecimal;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
 import pt.org.aguiaj.common.PluggableWidget;
-import pt.org.aguiaj.core.AguiaJParam;
 
 @PluggableWidget(double.class)
-class DoubleWidget extends PrimitiveTypeWidget {
+class DoubleWidget extends TextTypeWidget {
 
-	private Text text;
 	private static Double defaultValue = new Double(0.0);
-//	private static DecimalFormat df = new DecimalFormat("0.00");
 	
 	public DoubleWidget(Composite parent, final WidgetProperty type, boolean modifiable) {
 		super(parent, type, modifiable);
 	}
 
-	private VerifyListener listener;
-	
 	private class InputListener extends VerifyListener {		
-		public InputListener(Text text) {
-			super(text);			
-		}
-		
 		public boolean charOk(int code) {
+			Text text = getText();
 			switch(code) {
 			case SWT.BS:
 			case SWT.DEL:
@@ -68,46 +55,8 @@ class DoubleWidget extends PrimitiveTypeWidget {
 		}
 	}
 	
-	@Override
-	protected void createContents(Composite parent) {
-//		text = new Text(parent, SWT.BORDER |
-//				(getUsageType() == WidgetProperty.PROPERTY || !isModifiable() ? SWT.READ_ONLY : SWT.NONE)); 
-//		
-//		if(getUsageType() == WidgetProperty.PARAMETER)
-//			text.setLayoutData(new RowData(35, 15));
-//		
-//		listener = new InputListener(text);
-//		text.addListener(SWT.Verify, listener);
-//		setVerifyListener(listener);
-//		
-//		if(getUsageType() != WidgetProperty.PARAMETER)
-//			addFocusListener(text);
-//		
-//		update(defaultValue);
-		
-		text = new Text(parent, SWT.BORDER |
-				(getUsageType() == WidgetProperty.PROPERTY || !isModifiable() ? SWT.READ_ONLY : SWT.NONE));
-		
-		FontData data = new FontData("Courier", AguiaJParam.MEDIUM_FONT.getInt(), SWT.NONE);
-		Font font = new Font(Display.getDefault(), data);
-		text.setFont(font);
-		
-		if(getUsageType() == WidgetProperty.PARAMETER) {
-			text.setLayoutData(new RowData());
-			((RowData) text.getLayoutData()).width = 60;
-		}
-			
-		listener = new InputListener(text);
-		text.addListener(SWT.Verify, listener);
-		setVerifyListener(listener);
-		
-		if(getUsageType() != WidgetProperty.PARAMETER)
-			addFocusListener(text);
-		
-		update(defaultValue);
-	}
-	
 	public Double getObject() {	
+		Text text = getText();
 		if(text == null || text.isDisposed())
 			return defaultValue;
 		
@@ -119,30 +68,18 @@ class DoubleWidget extends PrimitiveTypeWidget {
 		}
 	}
 
-	
-	public void update(Object object) {
-		if(!text.isDisposed() && object != null) {
-			listener.setIgnore();
-			text.setText(object.toString());
-			listener.unsetIgnore();
-			layout();
-			getParent().layout();
-			getParent().pack();
-		}
-	}
-
-	
 	public Double defaultValue() {
 		return defaultValue;
 	}
 
-	
-	public String toString() {
-		return getObject().toString();
+	@Override
+	protected VerifyListener createVerifyListener() {
+		return new InputListener();
 	}
 
-	
-	public Control getControl() {
-		return text;
+	@Override
+	protected int getWidth() {
+		return 35;
 	}
+
 }

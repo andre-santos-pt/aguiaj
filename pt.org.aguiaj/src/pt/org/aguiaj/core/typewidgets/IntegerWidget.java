@@ -12,32 +12,20 @@ package pt.org.aguiaj.core.typewidgets;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
 import pt.org.aguiaj.common.PluggableWidget;
-import pt.org.aguiaj.core.AguiaJParam;
 
 
-@PluggableWidget(int.class)
-class IntegerWidget extends PrimitiveTypeWidget {
+@PluggableWidget({int.class, long.class})
+class IntegerWidget extends TextTypeWidget {
 
-	private Text text;
 	private static final Integer defaultValue = new Integer(0);
 	
 	private class InputListener extends VerifyListener {		
-		public InputListener(Text text) {
-			super(text);			
-		}
-		
 		public boolean charOk(int code) {
+			Text text = getText();
 			switch(code) {
 			case SWT.BS:
 			case SWT.DEL:
@@ -63,79 +51,30 @@ class IntegerWidget extends PrimitiveTypeWidget {
 		super(parent, type, modifiable);
 	}
 
-	private VerifyListener listener;
-	
-	@Override
-	protected void createContents(Composite parent) {
-		text = new Text(parent, SWT.BORDER |
-				(getUsageType() == WidgetProperty.PROPERTY || !isModifiable() ? SWT.READ_ONLY : SWT.NONE));
-		
-		FontData data = new FontData("Courier", AguiaJParam.MEDIUM_FONT.getInt(), SWT.NONE);
-		Font font = new Font(Display.getDefault(), data);
-		text.setFont(font);
-		
-		if(getUsageType() == WidgetProperty.PARAMETER) {
-			text.setLayoutData(new RowData());
-			((RowData) text.getLayoutData()).width = 35;
-		}
-			
-		listener = new InputListener(text);
-		text.addListener(SWT.Verify, listener);
-		setVerifyListener(listener);
-		
-		if(getUsageType() != WidgetProperty.PARAMETER)
-			addFocusListener(text);
-		
-		text.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDown(MouseEvent e) {
-				text.selectAll();	
-			}
-		});
-		
-		update(defaultValue);
-	}
-	
-	
 	public Integer getObject() {
+		Text text = getText();
 		if(text == null || text.isDisposed())
 			return defaultValue;
 		
 		try {
-			Integer i = new Integer(text.getText());
-			return i;
+			return new Integer(text.getText());
 		}
 		catch(NumberFormatException e) {
 			return defaultValue;
 		}
 	}
 
-
-	
-	public void update(Object object) {
-		if(!text.isDisposed() && object != null) {
-			listener.setIgnore();
-			text.setText(object.toString());
-			listener.unsetIgnore();
-			layout();
-			getParent().layout();
-			getParent().pack();
-		}
-	}
-
-
-	
 	public Integer defaultValue() {
 		return defaultValue;
 	}
 
-	
-	public String toString() {
-		return getObject().toString();
+	@Override
+	protected VerifyListener createVerifyListener() {
+		return new InputListener();
 	}
 
-	
-	public Control getControl() {
-		return text;
+	@Override
+	protected int getWidth() {
+		return 35;
 	}
 }
