@@ -12,23 +12,14 @@ package pt.org.aguiaj.core.typewidgets;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
 import pt.org.aguiaj.common.PluggableWidget;
-import pt.org.aguiaj.core.AguiaJParam;
 
 @PluggableWidget(char.class)
-class CharacterWidget extends PrimitiveTypeWidget {
+class CharacterWidget extends TextTypeWidget {
 
-	private Text text;
 	private static Character defaultValue = new Character(' ');
 
 	public CharacterWidget(Composite parent, final WidgetProperty type, boolean modifiable) {
@@ -36,11 +27,9 @@ class CharacterWidget extends PrimitiveTypeWidget {
 	}
 
 	private class InputListener extends VerifyListener {		
-		public InputListener(Text text) {
-			super(text);			
-		}
 
 		public boolean charOk(int code) {
+			Text text = getText();
 			return
 					code == SWT.BS ||
 					isValidChar(code) && text.getText().length() == 0 ||
@@ -54,44 +43,13 @@ class CharacterWidget extends PrimitiveTypeWidget {
 		}
 	}
 
-
-	private VerifyListener listener;
-
-	@Override
-	protected void createContents(Composite parent) {
-		text = new Text(parent, SWT.BORDER |
-				(getUsageType() == WidgetProperty.PROPERTY || !isModifiable() ? SWT.READ_ONLY : SWT.NONE));
-
-		FontData data = new FontData("Courier", AguiaJParam.MEDIUM_FONT.getInt(), SWT.NONE);
-		Font font = new Font(Display.getDefault(), data);
-		text.setFont(font);
-
-		text.setLayoutData(new RowData(15, data.getHeight() + 2));
-
-		listener = new InputListener(text);
-		text.addListener(SWT.Verify, listener);
-		setVerifyListener(listener);
-
-		if(getUsageType() != WidgetProperty.PARAMETER)
-			addFocusListener(text);
-
-		text.addModifyListener(new ModifyListener() {
-
-			@Override
-			public void modifyText(ModifyEvent e) {
-						text.selectAll();
-			}
-		});
-		
-		update(defaultValue);
-	}
-
 	public String getTextualRepresentation() {
 		return "'" + getObject().toString() + "'";
 	}
 
 	@Override
 	public Object getObject() {
+		Text text = getText();
 		if(text == null || text.isDisposed())
 			return defaultValue;
 
@@ -100,27 +58,26 @@ class CharacterWidget extends PrimitiveTypeWidget {
 	}
 
 
-	public void update(Object object) {
-		if(!text.isDisposed() && object != null) {			
-			listener.setIgnore();
-			text.setText(object.toString());			
-			listener.unsetIgnore();
-			layout();
-			getParent().layout();
-		}
-	}
-
+	
 	public Character defaultValue() {
 		return defaultValue;
 	}
 
 
 	public String toString() {
+		Text text = getText();
 		return "'" + (text != null ? text.getText() : "") + "'";
 	}
 
-
-	public Control getControl() {
-		return text;
+	@Override
+	protected VerifyListener createVerifyListener() {
+		return new InputListener();
 	}
+
+	@Override
+	protected int getWidth() {
+		return 15;
+	}
+
+
 }

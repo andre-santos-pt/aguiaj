@@ -25,7 +25,8 @@ public enum AguiaJColor {
 	PRIVATES(140, 140, 140),
 	WHITE(255, 255, 255),
 	BLACK(0, 0, 0),
-	GRAY(120, 120, 120);
+	GRAY(120, 120, 120),
+	LIGHTGRAY(220, 220, 220);
 	
 	
 	private Color color;	

@@ -96,7 +96,7 @@ public class StandardNamePolicy implements NamePolicy {
 	}
 
 	public static String signature(Field field) {
-		return field.getType().getSimpleName() + " " + field.getName();
+		return "Field " + field.getType().getSimpleName() + " " + field.getName();
 	}
 
 	public static String signature(Method method) {

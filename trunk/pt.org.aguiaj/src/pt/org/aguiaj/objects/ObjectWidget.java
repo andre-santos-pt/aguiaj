@@ -36,6 +36,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -142,7 +143,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		createPrivateAttributesGroup();
 		createAttributesGroup();
 		createPropertiesGroup();
-		createCommandMethodsGroup();
+		createOperationsGroup();
 
 		for(Composite section : sections)
 			section.setMenu(menu);
@@ -298,7 +299,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 	private void createPropertiesGroup() {
 		List<Method> queryMethods = ClassModel.getInstance().getAccessorMethods(objectClass);
 		if(queryMethods.size() > 0) {
-			Composite propertiesGroup = createSection();
+			Composite propertiesGroup = createSection("Properties");
 			sectionMap.put(Section.PROPERTIES, propertiesGroup);
 
 			propertiesGroup.setLayout(createGridLayout());
@@ -312,32 +313,12 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		}
 	}
 
-	//	private void createCommandMethodsGroup() {
-	//		Map<Class<?>,List<Method>> commandMethodsByType = 
-	//				ClassModel.getInstance().getCommandMethodsByType(objectClass);
-	//
-	//		if(commandMethodsByType.size() > 0) {
-	//			Composite operationsGroup = createSection();
-	//			sectionMap.put(Section.OPERATIONS, operationsGroup);
-	//
-	//			operationsGroup.setLayout(createGridLayout());
-	//
-	//			for(Class<?> interfacce : commandMethodsByType.keySet()) {
-	//				for(Method m : commandMethodsByType.get(interfacce)) {
-	//					MethodWidget widget = new MethodWidget(operationsGroup, object, m, this);
-	//					methodToWidget.put(m, widget);
-	//				}
-	//			}
-	//
-	//			createShowHide(UIText.SHOW_OPERATIONS, UIText.HIDE_OPERATIONS, operationsGroup, Section.OPERATIONS);
-	//		}
-	//	}
 
-	private void createCommandMethodsGroup() {
+	private void createOperationsGroup() {
 		List<Method> methods = ClassModel.getInstance().getCommandMethods(objectClass);
 
 		if(methods.size() > 0) {
-			Composite operationsGroup = createSection();
+			Composite operationsGroup = createSection("Operations");
 			sectionMap.put(Section.OPERATIONS, operationsGroup);
 
 			operationsGroup.setLayout(createGridLayout());
@@ -523,9 +504,14 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		hideItemsTable.put(section, hideItem);
 	}
 
-
 	private Composite createSection() {
-		Composite section = new Composite(this, SWT.NONE);
+		return createSection(null);
+	}
+	private Composite createSection(String group) {
+		Composite section = group != null ? new Group(this, SWT.BORDER) : new Composite(this, SWT.NONE);
+		if(group != null)
+			((Group) section).setText(group);
+		
 		FormData groupData = new FormData();
 
 		if(sections.isEmpty()) {
