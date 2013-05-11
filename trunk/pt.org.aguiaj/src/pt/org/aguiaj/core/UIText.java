@@ -16,8 +16,8 @@ import java.util.regex.Matcher;
 public enum UIText {
 	SHOW_OPERATIONS,
 	HIDE_OPERATIONS,
-	SHOW_PRIVATE_ATTRIBUTES,
-	HIDE_PRIVATE_ATTRIBUTES,
+	SHOW_PRIVATE_FIELDS,
+	HIDE_PRIVATE_FIELDS,
 	OBJECT_OF_TYPE("Object of type %1"),
 	IS_A("%1 is a %2"),
 	GENERATE_PLUGIN, 
@@ -38,7 +38,9 @@ public enum UIText {
 	COMPILATION_ERRORS,
 	CHECK_METHOD_RECURSION("Check method %1 for recursive method calls."),
 	CHECK_METHOD_MEMORY("Check method %1 for excessive memory usage."), 
-	CHECK_CLASS_AT("Check class %1 on line %2. %3"), SHOW_PROPERTIES, HIDE_PROPERTIES, SHOW_ATTRIBUTES, HIDE_ATTRIBUTES;
+	CHECK_CLASS_AT("Check class %1 on line %2. %3"), 
+	SHOW_PROPERTIES, HIDE_PROPERTIES, SHOW_ATTRIBUTES, HIDE_ATTRIBUTES,
+	STATIC_METHODS, STATIC_FIELDS, ENUM_CONSTANTS;
 	
 	private String defaultValue;
 	private String value;
