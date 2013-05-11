@@ -65,28 +65,6 @@ import pt.org.aguiaj.standard.StandardNamePolicy;
 
 public final class ObjectWidget extends FieldContainer implements Highlightable {
 
-//	private final class TypeMemberMouseTrackAdapter extends MouseTrackAdapter {
-//		private List<Method> methods;
-//
-//		private TypeMemberMouseTrackAdapter(Class<?> type) {
-//			methods = ClassModel.getInspector().methodsOfSupertype(objectClass, type);
-//		}
-//
-//		@Override
-//		public void mouseEnter(MouseEvent e) {
-//			for(Method m : methods)
-//				highlight(m);
-//		}
-//
-//		@Override
-//		public void mouseExit(MouseEvent e) {
-//			for(Method m : methods)
-//				unhighlight(m);
-//		}
-//	}
-
-
-
 	public enum Section {
 		VISUAL, INTERNALS, ATTRIBUTES, PROPERTIES, OPERATIONS;
 	}
@@ -247,7 +225,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 			}
 			SWTUtils.setColorRecursively(privateAttributesGroup, AguiaJColor.PRIVATES.getColor());
 
-			createShowHide(UIText.SHOW_PRIVATE_ATTRIBUTES, UIText.HIDE_PRIVATE_ATTRIBUTES, privateAttributesGroup, Section.INTERNALS);
+			createShowHide(UIText.SHOW_PRIVATE_FIELDS, UIText.HIDE_PRIVATE_FIELDS, privateAttributesGroup, Section.INTERNALS);
 		}
 	}
 

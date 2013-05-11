@@ -35,6 +35,7 @@ import pt.org.aguiaj.common.widgets.LabelWidget;
 import pt.org.aguiaj.common.widgets.LabelWidget.ObjectToHighlightProvider;
 import pt.org.aguiaj.common.widgets.MethodWidget;
 import pt.org.aguiaj.core.DocumentationView;
+import pt.org.aguiaj.core.UIText;
 import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
 import pt.org.aguiaj.objects.ObjectModel;
 import pt.org.aguiaj.standard.StandardNamePolicy;
@@ -120,7 +121,7 @@ public class ClassWidget extends FieldContainer {
 
 	private Group createConstantsGroup(Composite parent, final Class<?> clazz) {
 		Group constantsGroup = new Group(parent, SWT.NONE);
-		constantsGroup.setText("Enum constants");
+		constantsGroup.setText(UIText.ENUM_CONSTANTS.get());
 		constantsGroup.setLayout(new RowLayout(SWT.VERTICAL));
 		for(final Field field : clazz.getFields()) {
 			if(field.isEnumConstant()) {
@@ -168,7 +169,7 @@ public class ClassWidget extends FieldContainer {
 	private Group createStaticFieldsGroup(Composite parent, final Class<?> clazz) {	
 		if(!staticFields.isEmpty()) {
 			Group staticAttributesGroup = new Group(parent, SWT.NONE);
-			staticAttributesGroup.setText("Static attributes");
+			staticAttributesGroup.setText(UIText.STATIC_FIELDS.get());
 			RowLayout layout = new RowLayout(SWT.VERTICAL);
 			staticAttributesGroup.setLayout(layout);			
 			
@@ -201,14 +202,14 @@ public class ClassWidget extends FieldContainer {
 		List<Method> methods = ClassModel.getInspector().getVisibleStaticMethods(clazz);
 
 		if(methods.size() > 0) {
-			Group staticOperationsGroup = new Group(parent, SWT.NONE);
-			staticOperationsGroup.setText("Static operations");
-			staticOperationsGroup.setLayout(new GridLayout(2, false));
+			Group staticMethodsGroup = new Group(parent, SWT.NONE);
+			staticMethodsGroup.setText(UIText.STATIC_METHODS.get());
+			staticMethodsGroup.setLayout(new GridLayout(2, false));
 			for(Method m : methods)	{
-				MethodWidget widget = new MethodWidget(staticOperationsGroup, null, m, this);
+				MethodWidget widget = new MethodWidget(staticMethodsGroup, null, m, this);
 				methodMap.put(m, widget);
 			}
-			return staticOperationsGroup;
+			return staticMethodsGroup;
 		}
 		else
 			return null;
