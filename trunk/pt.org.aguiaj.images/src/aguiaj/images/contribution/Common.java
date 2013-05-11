@@ -24,9 +24,13 @@ import aguiaj.images.ImageWithTransparency;
 public class Common {
 
 	public static void drawImage(Image image, GC gc, int destX, int destY, int zoom) {
+		drawImage(image, gc, destX, destY, Integer.MAX_VALUE, Integer.MAX_VALUE, zoom);
+	}
+	
+	public static void drawImage(Image image, GC gc, int destX, int destY, int maxWidth, int maxHeight, int zoom) {
 		PaletteData palette = new PaletteData(0xFF0000, 0x00FF00, 0x0000FF);
-		int height = image.getHeight();
-		int width = image.getWidth();
+		int height = Math.min(image.getHeight(), maxHeight);
+		int width = Math.min(image.getWidth(), maxWidth);
 		ImageData data = new ImageData(width, height, 24, palette);
 		data.alpha = -1;
 		byte[] alpha = new byte[width*height];

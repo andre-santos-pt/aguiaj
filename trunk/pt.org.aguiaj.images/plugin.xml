@@ -8,6 +8,7 @@
             id="Image">
          <class
                allowImport="true"
+               contractProxy="aguiaj.images.ImageContract"
                icon="images/photoicon.png"
                id="aguiaj.images.Image"
                viewClass="aguiaj.images.view.ImageWidget">
@@ -27,6 +28,10 @@
          <class
                allowImport="false"
                id="aguiaj.images.ImageUtils">
+         </class>
+         <class
+               allowImport="true"
+               id="aguiaj.images.ImageWithTransparency">
          </class>
       </group>
       <group
