@@ -122,6 +122,9 @@ public class BinaryImage implements Image {
 	 * @return <code>true</code> if yes, <code>false</code> otherwise
 	 */
 	public boolean isBlack(int x, int y) {
+		if(!ImageCommon.isValidPoint(x, y, this))
+			throw new IllegalArgumentException("Invalid point - (" + x + ", " + y + ")");
+		
 		return pixels[y][x];
 	}
 }
