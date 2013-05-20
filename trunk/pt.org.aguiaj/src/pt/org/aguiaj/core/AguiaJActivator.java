@@ -137,7 +137,6 @@ public class AguiaJActivator extends AbstractUIPlugin {
 				} catch (ExecutionException e) {					
 					e.printStackTrace();
 				}
-				JavaBarView.getInstance().updateFont();
 			}
 		});
 		loadObjectWidgetPlugins();

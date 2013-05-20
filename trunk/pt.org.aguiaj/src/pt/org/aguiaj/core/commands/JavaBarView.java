@@ -12,11 +12,18 @@ package pt.org.aguiaj.core.commands;
 
 import java.math.BigDecimal;
 
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Font;
@@ -30,6 +37,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.SWTUtils;
+import pt.org.aguiaj.core.AguiaJActivator;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.UIText;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
@@ -38,64 +46,84 @@ import pt.org.aguiaj.core.interpreter.ParseException;
 import pt.org.aguiaj.core.interpreter.Parser;
 import pt.org.aguiaj.extensibility.AguiaJContribution;
 import pt.org.aguiaj.extensibility.JavaCommand;
+import pt.org.aguiaj.extensibility.ObjectEventListener;
 import pt.org.aguiaj.extensibility.ObjectEventListenerAdapter;
 import pt.org.aguiaj.objects.ObjectModel;
 
 
 public class JavaBarView extends ViewPart implements ISizeProvider {
+	
+	public static class Open extends AbstractHandler {
+		@Override
+		public Object execute(ExecutionEvent event) throws ExecutionException {
+			SWTUtils.showView(AguiaJContribution.JAVABAR_VIEW);
+			return null;
+		}	
+	}
+	
 	private Composite bar;	
-
-	private static JavaBarView instance;
 	private Text instructionBar;
 	private JavaCommand lastCommand;
 	private ObjectModel model;
+	private Job clearJob;
 
 	public void createPartControl(Composite parent) {
-		instance = this;
 		model = ObjectModel.getInstance();
 		bar = new Composite(parent, SWT.BORDER);
 		bar.setLayout(new FillLayout());		
 		createInstructionBar();
-		model.addEventListener(new ObjectEventListenerAdapter() {
+
+
+		final ObjectEventListener listener = new ObjectEventListenerAdapter() {
 			@Override
 			public void commandExecuted(JavaCommand cmd) {
 				setLine(cmd.getJavaInstruction());
-				if(cmd instanceof MethodInvocationCommand) {
-					Class<?> returnType = ((MethodInvocationCommand) cmd).getMethod().getReturnType();
-					Object result = ((MethodInvocationCommand) cmd).getResultingObject();
-					if(result instanceof Double) {
-						try {
-							result = new BigDecimal((Double) result).doubleValue();
+				if(!cmd.failed()) {
+					if(cmd instanceof MethodInvocationCommand) {
+						Class<?> returnType = ((MethodInvocationCommand) cmd).getMethod().getReturnType();
+						Object result = ((MethodInvocationCommand) cmd).getResultingObject();
+						if(result instanceof Double) {
+							try {
+								result = new BigDecimal((Double) result).doubleValue();
+							}
+							catch(NumberFormatException e) {
+								result = 0.0;
+							}
 						}
-						catch(NumberFormatException e) {
-							result = 0.0;
-						}
+						if(result != null && returnType.isPrimitive() && !returnType.equals(void.class)) {	
+							SWTUtils.showMessage(UIText.RETURN_VALUE.get(), result + "", SWT.ICON_WORKING);
+							clear();
+						}	
 					}
-					if(result != null && returnType.isPrimitive() && !returnType.equals(void.class)) {	
-						SWTUtils.showMessage(UIText.RETURN_VALUE.get(), result + "", SWT.ICON_WORKING);
-						clear();
-					}	
 				}
 			}
+		};
+		model.addEventListener(listener);
+
+
+		final IPropertyChangeListener propertyListener = new IPropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent event) {
+				updateFont();
+			}
+		}; 
+		AguiaJActivator.getDefault().getPreferenceStore().addPropertyChangeListener(propertyListener);
+
+		bar.addDisposeListener(new DisposeListener() {
+
+			@Override
+			public void widgetDisposed(DisposeEvent e) {
+				model.removeEventListener(listener);
+				AguiaJActivator.getDefault().getPreferenceStore().removePropertyChangeListener(propertyListener);	
+			}
 		});
+
+
 	}
 
 
 	public void setFocus() {
 		bar.setFocus();
-	}
-
-	@Override
-	public void dispose() {
-		super.dispose();
-		instance = null;
-	}
-
-	public static JavaBarView getInstance() {
-		if(instance == null)
-			SWTUtils.showView(AguiaJContribution.JAVABAR_VIEW);
-
-		return instance;
 	}
 
 	private void createInstructionBar() {
@@ -107,10 +135,9 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 			public void keyPressed(KeyEvent event) {
 				if(clearJob != null)
 					clearJob.cancel();
-				
+
 				if(event.keyCode == SWT.CR && !instructionBar.getText().equals("")) {
 					executeCommand();
-//					clear();
 				}
 				else if(event.keyCode == SWT.ARROW_UP) {
 					if(lastCommand != null && model.isFirstCommand(lastCommand))
@@ -175,8 +202,6 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 			}
 			else
 				SWTUtils.showMessage("Java Bar", UIText.SYNTAX_ERROR.get(), SWT.ERROR);
-
-			//			command = Parser.parse(input);
 		}	
 		catch(ParseException e) {
 			SWTUtils.showMessage(e.cause, e.detail, SWT.ERROR);
@@ -202,20 +227,24 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 		}
 	}
 
-	private Job clearJob;
-	public void setLine(final String line) {
+
+
+	private void setLine(final String line) {
 		instructionBar.setText(line);
+
 		if(clearJob != null)
 			clearJob.cancel();
+
 		clearJob = new Job("javabar") {
-			
+
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				Display.getDefault().syncExec(new Runnable() {
-					
+
 					@Override
 					public void run() {
-						instructionBar.setText("");
+						if(!instructionBar.isDisposed())
+							instructionBar.setText("");
 					}
 				});
 				return Status.OK_STATUS;

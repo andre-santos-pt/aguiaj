@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import pt.org.aguiaj.common.widgets.IconWidget;
 import pt.org.aguiaj.common.widgets.LabelWidget;
-import pt.org.aguiaj.core.DocumentationView;
+import pt.org.aguiaj.core.documentation.DocumentationLinking;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 public class AbstractClassWidget extends Composite {
@@ -31,7 +31,6 @@ public class AbstractClassWidget extends Composite {
 			.italic()
 			.create(this);
 		
-		DocumentationView.getInstance().addDocumentationSupport(classNameLabel.getControl(), clazz);
-//		ClassModel.getInstance().addClass(clazz);
+		DocumentationLinking.add(classNameLabel.getControl(), clazz);
 	}
 }

@@ -50,29 +50,29 @@ import com.google.common.collect.Table;
 // observable
 public class ObjectModel {
 
-//	public interface ObjectEventListener {
-//		void init();
-//		void newObjectEvent(Object obj);
-//		void removeObjectEvent(Object obj);
-//		void newReferenceEvent(Reference ref);
-//		void changeReferenceEvent(Reference ref);
-//		void removeReferenceEvent(Reference ref);
-//		void commandExecuted(JavaCommand cmd);
-//		void commandRemoved(JavaCommand cmd);
-//		void clearAll();
-//	}
-//
-//	public static abstract class EventListenerAdapter implements ObjectEventListener {
-//		public void init() { }
-//		public void newObjectEvent(Object obj) { }
-//		public void removeObjectEvent(Object obj) { }
-//		public void newReferenceEvent(Reference ref) { }
-//		public void changeReferenceEvent(Reference ref) { }
-//		public void removeReferenceEvent(Reference ref) { }
-//		public void commandExecuted(JavaCommand cmd) { }
-//		public void commandRemoved(JavaCommand cmd) { }
-//		public void clearAll() { }
-//	}
+	//	public interface ObjectEventListener {
+	//		void init();
+	//		void newObjectEvent(Object obj);
+	//		void removeObjectEvent(Object obj);
+	//		void newReferenceEvent(Reference ref);
+	//		void changeReferenceEvent(Reference ref);
+	//		void removeReferenceEvent(Reference ref);
+	//		void commandExecuted(JavaCommand cmd);
+	//		void commandRemoved(JavaCommand cmd);
+	//		void clearAll();
+	//	}
+	//
+	//	public static abstract class EventListenerAdapter implements ObjectEventListener {
+	//		public void init() { }
+	//		public void newObjectEvent(Object obj) { }
+	//		public void removeObjectEvent(Object obj) { }
+	//		public void newReferenceEvent(Reference ref) { }
+	//		public void changeReferenceEvent(Reference ref) { }
+	//		public void removeReferenceEvent(Reference ref) { }
+	//		public void commandExecuted(JavaCommand cmd) { }
+	//		public void commandRemoved(JavaCommand cmd) { }
+	//		public void clearAll() { }
+	//	}
 
 	private static ObjectModel instance;
 
@@ -100,7 +100,7 @@ public class ObjectModel {
 		listeners = newHashSet();
 
 		contracts = HashBasedTable.create();
-		
+
 		for(ObjectEventListener l : listeners)
 			l.init();
 	}
@@ -237,7 +237,7 @@ public class ObjectModel {
 		ObjectEventListener[] listenersArray = listeners();
 		for(ObjectEventListener l : listenersArray)
 			l.clearAll();
-		
+
 		for(ObjectEventListener l : listenersArray)
 			l.init();
 	}
@@ -251,10 +251,7 @@ public class ObjectModel {
 
 		command.execute();
 
-		if(command.failed()) {
-			JavaBarView.getInstance().setLine(command.getJavaInstruction());
-		}
-		else {
+		if(!command.failed()) {
 			addToStack(command);
 			if(command instanceof JavaCommandWithReturn) {
 				JavaCommandWithReturn cmd = (JavaCommandWithReturn) command;
@@ -361,12 +358,12 @@ public class ObjectModel {
 	public boolean existsObject(Object object) {
 		return objectSet.contains(object);
 	}
-	
+
 	public boolean existsReference(String name) {
 		return referenceTable.containsKey(name);
 	}
-	
-	
+
+
 	public List<Reference> getReferences(Object object) {
 		List<Reference> refs = new ArrayList<Reference>();
 		for(String r : referenceTable.keySet()) {
@@ -578,6 +575,6 @@ public class ObjectModel {
 		}
 	}
 
-	
+
 
 }

@@ -44,9 +44,6 @@ public class AguiaJPerspective implements IPerspectiveFactory {
 		
 		block(layout, OBJECTS_VIEW);
 		block(layout, CLASSES_VIEW);
-		block(layout, JAVABAR_VIEW);
-		
-		
 	}
 
 	

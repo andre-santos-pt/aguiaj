@@ -8,7 +8,7 @@
  * Contributors:
  *     Andre L. Santos - initial API and implementation
  ******************************************************************************/
-package pt.org.aguiaj.core;
+package pt.org.aguiaj.core.documentation;
 
 
 import java.io.File;
@@ -27,14 +27,20 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.part.ViewPart;
 
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.SWTUtils;
+import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.extensibility.AguiaJContribution;
 
 public class DocumentationView extends ViewPart {
@@ -73,7 +79,30 @@ public class DocumentationView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		browser = new Browser(parent, SWT.NONE);	
+		browser = new Browser(parent, SWT.NONE);
+				
+		final Listener listener = new Listener() {
+			public void handleEvent(Event e) {
+				Object data = e.widget.getData();
+				if(data instanceof ControlAnchor)
+					load(((ControlAnchor) data).clazz, ((ControlAnchor) data).anchor, (Control) e.widget);
+			}
+		};
+		
+		Display.getDefault().addFilter(SWT.MouseEnter, listener);
+		
+		browser.addDisposeListener(new DisposeListener() {
+			
+			@Override
+			public void widgetDisposed(DisposeEvent e) {
+				Display.getDefault().removeFilter(SWT.MouseEnter, listener);
+			}
+		});
+	}
+
+	@Override
+	public void setFocus() {
+		browser.setFocus();
 	}
 
 	public void load(String file) {
@@ -98,7 +127,7 @@ public class DocumentationView extends ViewPart {
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-			
+
 			if(fileurl != null) {
 				String fileWithlabel = fileurl.getFile();
 
@@ -114,107 +143,4 @@ public class DocumentationView extends ViewPart {
 		}
 	}
 
-	private static String anchor(Method method) {
-		return method.getName() + 
-		"(" + concatParams(method.getParameterTypes()) + ")";
-	}
-
-	private static String anchor(Field field) {
-		return field.getName();
-	}
-
-	private static String anchor(Constructor<?> constructor) {
-		return constructor.getDeclaringClass().getSimpleName() + 
-		"(" + concatParams(constructor.getParameterTypes()) + ")";
-	}
-
-	private static String concatParams(Class<?>[] params) {
-		String list = "";
-		for(int i = 0; i < params.length; i++) {
-			if(i != 0)
-				list += ", ";
-
-			if(params[i].isPrimitive())
-				list += params[i].getSimpleName();
-			else if(params[i].isArray())
-				list += componentType(params[i]) + arrayBrackets(params[i]);
-			else
-				list += params[i].getName();
-		}
-		return list;
-	}
-
-	private static String componentType(Class<?> type) {
-		if(!type.isArray())
-			return type.getName();
-		else
-			return componentType(type.getComponentType());
-	}
-
-	private static String arrayBrackets(Class<?> type) {
-		if(type.isArray() && !type.getComponentType().isArray())
-			return "[]";
-		else
-			return "[]" + arrayBrackets(type.getComponentType());
-	}
-
-	public void addDocumentationSupport(Control control, Class<?> clazz) {				
-		addSupport(control, clazz, "");
-	}
-
-	public void addDocumentationSupport(Control control, Field field) {				
-		addSupport(control, field.getDeclaringClass(), anchor(field));
-	}
-
-	public void addDocumentationSupport(Control control, Constructor<?> constructor) {
-		addSupport(control, 
-				constructor.getDeclaringClass(), 
-				anchor(constructor));
-
-	}
-
-	public void addDocumentationSupport(Control control, Method method) {
-		final Class<?> clazz = method.getDeclaringClass();
-		if(isPluginWithDocumentation(clazz))
-			addSupport(control, clazz, anchor(method));
-	}
-
-	private void addSupport(Control control, final Class<?> clazz, final String anchor) {
-		addHover(control, clazz, anchor);
-	}
-
-	private static boolean isPluginWithDocumentation(Class<?> clazz) {
-		if(!ClassModel.getInstance().isPluginClass(clazz))
-			return false;
-
-		String pluginId = ClassModel.getInstance().getPluginId(clazz);
-		return Platform.getBundle(pluginId).getEntry(AguiaJParam.DOC_ROOT.getString()) != null;
-	}
-
-
-	private void addHover(final Control control, final Class<?> clazz, final String anchor) {
-		if(isPluginWithDocumentation(clazz)) {
-			control.addMouseTrackListener(new MouseTrackListener() {
-				@Override
-				public void mouseHover(MouseEvent e) {
-					DocumentationView.getInstance().load(clazz, anchor, control);					
-				}
-
-				@Override
-				public void mouseExit(MouseEvent e) {
-
-				}
-
-				@Override
-				public void mouseEnter(MouseEvent e) {
-
-				}
-			});
-		}
-	}
-
-	@Override
-	public void setFocus() {
-		browser.setFocus();
-	}
 }

@@ -23,11 +23,12 @@ import org.eclipse.swt.widgets.Listener;
 import pt.org.aguiaj.common.widgets.FieldContainer;
 import pt.org.aguiaj.common.widgets.LabelWidget;
 import pt.org.aguiaj.common.widgets.LabelWidget.ObjectToHighlightProvider;
-import pt.org.aguiaj.core.DocumentationView;
 import pt.org.aguiaj.core.Highlightable;
 import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
+import pt.org.aguiaj.core.documentation.DocumentationLinking;
+import pt.org.aguiaj.core.documentation.DocumentationView;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
 import pt.org.aguiaj.extensibility.Reference;
@@ -55,7 +56,7 @@ public class PropertyWidget implements Highlightable {
 		.linkIf(returnsReferenceType)
 		.create(parent);
 
-		DocumentationView.getInstance().addDocumentationSupport(label.getControl(), method);
+		DocumentationLinking.add(label.getControl(), method);
 
 		boolean hasContract = ObjectModel.getInstance().hasContract(object, method);
 		Contract contract = hasContract ? ObjectModel.getInstance().getContract(object, method) : null;

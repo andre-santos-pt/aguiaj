@@ -22,7 +22,8 @@
             class="pt.org.aguiaj.objects.ObjectsView"
             icon="images/elements_obj.gif"
             id="pt.org.aguiaj.objectsView"
-            name="Objects">
+            name="Objects"
+            restorable="true">
       </view>
       <view
             allowMultiple="false"
@@ -52,8 +53,9 @@
             restorable="true">
       </view>
       <view
+            allowMultiple="false"
             category="pt.org.aguiaj.viewCategory"
-            class="pt.org.aguiaj.core.DocumentationView"
+            class="pt.org.aguiaj.core.documentation.DocumentationView"
             icon="images/javadoc.gif"
             id="pt.org.aguiaj.documentationView"
             name="Documentation"
@@ -77,7 +79,7 @@
             name="Open History view">
       </command>
       <command
-            defaultHandler="pt.org.aguiaj.core.DocumentationView$Open"
+            defaultHandler="pt.org.aguiaj.core.documentation.DocumentationView$Open"
             id="AguiaJ.openDocumentation"
             name="Open Documentation view">
       </command>
@@ -95,6 +97,11 @@
             defaultHandler="pt.org.aguiaj.core.commands.CopyObjectImageCommand"
             id="pt.org.aguiaj.copyimage"
             name="Copy object image">
+      </command>
+      <command
+            defaultHandler="pt.org.aguiaj.core.commands.JavaBarView$Open"
+            id="AguiaJ.openJavaBar"
+            name="Open Java Bar">
       </command>
    </extension>
    <extension
@@ -145,9 +152,15 @@
                   style="push">
             </command>
             <command
-                  commandId="AguiaJ.openDocumentation"
-                  icon="images/javadoc.gif"
-                  label="Show Documentation view"
+                  commandId="AguiaJ.openPreferences"
+                  icon="images/props.gif"
+                  label="Open preferences"
+                  style="push">
+            </command>
+            <command
+                  commandId="AguiaJ.openJavaBar"
+                  icon="images/java.gif"
+                  label="Show Java Bar"
                   style="push">
             </command>
             <command
@@ -157,9 +170,9 @@
                   style="push">
             </command>
             <command
-                  commandId="AguiaJ.openPreferences"
-                  icon="images/props.gif"
-                  label="Open preferences"
+                  commandId="AguiaJ.openDocumentation"
+                  icon="images/javadoc.gif"
+                  label="Show Documentation view"
                   style="push">
             </command>
          </menu>
