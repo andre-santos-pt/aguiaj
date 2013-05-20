@@ -30,9 +30,10 @@ import org.eclipse.swt.widgets.Display;
 
 import pt.org.aguiaj.common.widgets.FieldContainer;
 import pt.org.aguiaj.core.AguiaJParam;
-import pt.org.aguiaj.core.DocumentationView;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.ConstructorInvocationCommand;
+import pt.org.aguiaj.core.documentation.DocumentationLinking;
+import pt.org.aguiaj.core.documentation.DocumentationView;
 import pt.org.aguiaj.core.typewidgets.AbstractTypeWidget;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
@@ -64,8 +65,8 @@ public class ConstructorWidget {
 			}
 		});
 		newButton.setToolTipText(StandardNamePolicy.signature(constructor));
-		DocumentationView.getInstance().addDocumentationSupport(newButton, constructor);
-		
+
+		DocumentationLinking.add(newButton, constructor);
 		
 		final Composite argsComposite = new Composite(parent, SWT.NONE);
 		//GridLayout layout = new GridLayout(constructor.getParameterTypes().length * 2, false);

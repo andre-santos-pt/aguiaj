@@ -17,6 +17,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.FillLayout;
@@ -33,6 +35,7 @@ import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.extensibility.AguiaJContribution;
 import pt.org.aguiaj.extensibility.JavaCommand;
+import pt.org.aguiaj.extensibility.ObjectEventListener;
 import pt.org.aguiaj.extensibility.ObjectEventListenerAdapter;
 import pt.org.aguiaj.objects.ObjectModel;
 
@@ -48,18 +51,6 @@ public class HistoryView extends ViewPart {
 	}
 	
 	private List list;
-	private static HistoryView instance;
-
-	public HistoryView() {
-		instance = this;
-	}
-
-	public static HistoryView getInstance() {
-		if(instance == null)
-			SWTUtils.showView(AguiaJContribution.HISTORY_VIEW);
-		
-		return instance;
-	}
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -71,7 +62,12 @@ public class HistoryView extends ViewPart {
 		list.setFont(new Font(Display.getDefault(), data));		
 		Menu menu = buildMenu(parent);		
 		list.setMenu(menu);
-		ObjectModel.getInstance().addEventListener(new ObjectEventListenerAdapter() {
+		
+		for(JavaCommand cmd : ObjectModel.getInstance().getActiveCommands()) {
+			add(cmd);
+		}
+		
+		final ObjectEventListener listener = new ObjectEventListenerAdapter() {
 			public void commandExecuted(JavaCommand cmd) {
 				if(!cmd.failed())
 					add(cmd);
@@ -87,6 +83,15 @@ public class HistoryView extends ViewPart {
 				for(String item : list.getItems())
 					if(item.equals(statement(cmd)))
 						list.remove(item);
+			}
+		};
+		ObjectModel.getInstance().addEventListener(listener);
+		
+		list.addDisposeListener(new DisposeListener() {
+			
+			@Override
+			public void widgetDisposed(DisposeEvent e) {
+				ObjectModel.getInstance().removeEventListener(listener);
 			}
 		});
 	}
@@ -110,14 +115,14 @@ public class HistoryView extends ViewPart {
 			}
 		});
 
-		MenuItem clearItem = new MenuItem(menu, SWT.PUSH);
-		clearItem.setText("Clear");
-		clearItem.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event e) {
-				clear();
-			}
-		});
-
+//		MenuItem clearItem = new MenuItem(menu, SWT.PUSH);
+//		clearItem.setText("Clear");
+//		clearItem.addListener(SWT.Selection, new Listener() {
+//			public void handleEvent(Event e) {
+//				clear();
+//			}
+//		});
+		
 		return menu;
 	}
 
@@ -135,14 +140,8 @@ public class HistoryView extends ViewPart {
 	}
 
 	@Override
-	public void dispose() {
-		super.dispose();
-		instance = null;
-	}
-	
-	@Override
 	public void setFocus() {
-
+		list.setFocus();
 	}
 
 	private static final String newline = System.getProperty("line.separator");

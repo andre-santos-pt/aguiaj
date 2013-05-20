@@ -25,12 +25,13 @@ import org.eclipse.swt.widgets.Listener;
 
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.widgets.LabelWidget.ObjectToHighlightProvider;
-import pt.org.aguiaj.core.DocumentationView;
 import pt.org.aguiaj.core.InspectionPolicy;
 import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.NewDeadObjectCommand;
 import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
+import pt.org.aguiaj.core.documentation.DocumentationLinking;
+import pt.org.aguiaj.core.documentation.DocumentationView;
 import pt.org.aguiaj.core.typewidgets.AbstractTypeWidget;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
@@ -79,7 +80,7 @@ public class AttributeWidget extends Composite {
 		.linkIf(referenceType)
 		.create(this);
 
-		DocumentationView.getInstance().addDocumentationSupport(label.getControl(), field);
+		DocumentationLinking.add(label.getControl(), field);
 
 		if(referenceType)
 			addLinking(field, object, label);
@@ -93,9 +94,6 @@ public class AttributeWidget extends Composite {
 			e.printStackTrace();
 		}
 
-//		if(isPrivate && !(field.getType().isPrimitive() || field.getType().equals(String.class)))
-//			return;
-		
 		Set<WidgetProperty> props = EnumSet.of(WidgetProperty.ATTRIBUTE);
 		if(!Modifier.isFinal(field.getModifiers()) && modifiable)
 			props.add(WidgetProperty.MODIFIABLE);

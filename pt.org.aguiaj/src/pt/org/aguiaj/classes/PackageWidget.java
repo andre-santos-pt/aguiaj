@@ -40,8 +40,8 @@ import pt.org.aguiaj.common.widgets.IconWidget;
 import pt.org.aguiaj.common.widgets.LabelWidget;
 import pt.org.aguiaj.core.AguiaJActivator;
 import pt.org.aguiaj.core.AguiaJParam;
-import pt.org.aguiaj.core.DocumentationView;
 import pt.org.aguiaj.core.ReflectionUtils;
+import pt.org.aguiaj.core.documentation.DocumentationView;
 
 import com.google.common.collect.Sets;
 

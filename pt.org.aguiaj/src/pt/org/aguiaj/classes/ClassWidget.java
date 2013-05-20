@@ -34,9 +34,10 @@ import pt.org.aguiaj.common.widgets.IconWidget;
 import pt.org.aguiaj.common.widgets.LabelWidget;
 import pt.org.aguiaj.common.widgets.LabelWidget.ObjectToHighlightProvider;
 import pt.org.aguiaj.common.widgets.MethodWidget;
-import pt.org.aguiaj.core.DocumentationView;
 import pt.org.aguiaj.core.UIText;
 import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
+import pt.org.aguiaj.core.documentation.DocumentationLinking;
+import pt.org.aguiaj.core.documentation.DocumentationView;
 import pt.org.aguiaj.objects.ObjectModel;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
@@ -68,7 +69,7 @@ public class ClassWidget extends FieldContainer {
 			.big()
 			.create(classHeader);
 		
-		DocumentationView.getInstance().addDocumentationSupport(classNameLabel.getControl(), clazz);
+		DocumentationLinking.add(classNameLabel.getControl(), clazz);
 		
 		if(ClassModel.getInspector().isStaticClass(clazz))
 			new LabelWidget.Builder()
@@ -133,7 +134,7 @@ public class ClassWidget extends FieldContainer {
 					.link()
 					.create(constantsGroup);
 				
-				DocumentationView.getInstance().addDocumentationSupport(label.getControl(), field);
+				DocumentationLinking.add(label.getControl(), field);
 				
 				label.addHyperlinkAction(new Listener () {
 					public void handleEvent(Event event) {

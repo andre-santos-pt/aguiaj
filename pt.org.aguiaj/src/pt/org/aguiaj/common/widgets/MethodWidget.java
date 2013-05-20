@@ -31,12 +31,13 @@ import org.eclipse.swt.widgets.Display;
 
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.core.AguiaJParam;
-import pt.org.aguiaj.core.DocumentationView;
 import pt.org.aguiaj.core.Highlightable;
 import pt.org.aguiaj.core.Highlighter;
 import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
+import pt.org.aguiaj.core.documentation.DocumentationLinking;
+import pt.org.aguiaj.core.documentation.DocumentationView;
 import pt.org.aguiaj.core.typewidgets.AbstractTypeWidget;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
@@ -112,7 +113,7 @@ public class MethodWidget implements Highlightable {
 		Font font = new Font(Display.getDefault(), data);
 		invokeButton.setFont(font);
 
-		DocumentationView.getInstance().addDocumentationSupport(invokeButton, method);
+		DocumentationLinking.add(invokeButton, method);
 	}
 
 
