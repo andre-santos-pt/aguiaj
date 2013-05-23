@@ -1,4 +1,4 @@
-package pt.org.aguiaj.extensibility;
+package pt.org.aguiaj.extensibility.contracts;
 
 public class InvariantException extends RuntimeException {
 

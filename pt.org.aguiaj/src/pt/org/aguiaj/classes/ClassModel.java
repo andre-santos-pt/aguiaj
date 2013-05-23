@@ -37,8 +37,8 @@ import pt.org.aguiaj.core.InspectionPolicy;
 import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
-import pt.org.aguiaj.extensibility.ContractProxy;
 import pt.org.aguiaj.extensibility.VisualizationWidget;
+import pt.org.aguiaj.extensibility.contracts.ContractDecorator;
 import pt.org.aguiaj.standard.StandardInspectionPolicy;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -72,7 +72,7 @@ public class ClassModel {
 
 	private final Multimap<Class<?>, Method> promotions;
 
-	private final Map<Class<?>, Class<? extends ContractProxy<?>>> contracts;
+	private final Map<Class<?>, Class<? extends ContractDecorator<?>>> contracts;
 
 	private Inspector inspector;
 
@@ -197,7 +197,7 @@ public class ClassModel {
 	public void addPluginClass(
 			Class<?> clazz, 
 			Class<? extends VisualizationWidget<?>> view,
-					Class<? extends ContractProxy<?>> contract,
+					Class<? extends ContractDecorator<?>> contract,
 							boolean allowImport, 
 							String pluginId)
 									throws Exception {
@@ -583,8 +583,8 @@ public class ClassModel {
 	}
 
 
-	public Set<Class<? extends ContractProxy<?>>> getContractTypes(Class<?> clazz) {
-		Set<Class<? extends ContractProxy<?>>> set = newHashSet();
+	public Set<Class<? extends ContractDecorator<?>>> getContractTypes(Class<?> clazz) {
+		Set<Class<? extends ContractDecorator<?>>> set = newHashSet();
 		for(Class<?> c : contracts.keySet())
 			if(c.isAssignableFrom(clazz))
 				set.add(contracts.get(c));
@@ -602,15 +602,15 @@ public class ClassModel {
 	}
 
 
-	private List<ContractProxy<?>> createContractProxies(Object object, Method method) {
+	private List<ContractDecorator<?>> createContractProxies(Object object, Method method) {
 		Class<?> clazz = object.getClass();
-		List<ContractProxy<?>> list = newArrayList();
+		List<ContractDecorator<?>> list = newArrayList();
 		for(Class<?> c : contracts.keySet())
 			if(c.isAssignableFrom(clazz) && ReflectionUtils.hasEquivalentMethod(c, method)) {
-				Class<? extends ContractProxy<?>> contractClass = contracts.get(c);
+				Class<? extends ContractDecorator<?>> contractClass = contracts.get(c);
 				try {
-					Constructor<? extends ContractProxy<?>> constructor = contractClass.getConstructor(c);
-					ContractProxy<?> proxy = constructor.newInstance(object);
+					Constructor<? extends ContractDecorator<?>> constructor = contractClass.getConstructor(c);
+					ContractDecorator<?> proxy = constructor.newInstance(object);
 					list.add(proxy);
 				}
 				catch(Exception e) {
@@ -620,20 +620,20 @@ public class ClassModel {
 		return list;
 	}
 
-	public void createContractProxies(Table<Object, Method, ContractProxy<?>> table, Object object, Collection<Method> methods) {
-		Map<Class<? extends ContractProxy<?>>, ContractProxy<?>> map = newHashMap();
+	public void createContractProxies(Table<Object, Method, ContractDecorator<?>> table, Object object, Collection<Method> methods) {
+		Map<Class<? extends ContractDecorator<?>>, ContractDecorator<?>> map = newHashMap();
 
 		for(Method m : methods) {
 
 			if(hasContracts(object.getClass(), m)) {
-				for(ContractProxy<?> proxy : createContractProxies(object, m)) {
+				for(ContractDecorator<?> proxy : createContractProxies(object, m)) {
 
 					if(map.containsKey(proxy.getClass())) {
 						table.put(object, m, map.get(proxy.getClass()));   
 					}
 					else {
 						table.put(object, m, proxy);
-						map.put((Class<? extends ContractProxy<?>>) proxy.getClass(), proxy);
+						map.put((Class<? extends ContractDecorator<?>>) proxy.getClass(), proxy);
 					}	
 				}
 			}

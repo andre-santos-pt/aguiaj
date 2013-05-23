@@ -8,19 +8,29 @@
  * Contributors:
  *     Andre L. Santos - initial API and implementation
  ******************************************************************************/
-package pt.org.aguiaj.extensibility;
+package pt.org.aguiaj.extensibility.canvas;
 
 import java.util.List;
 
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
+
+import pt.org.aguiaj.extensibility.CustomWidget;
 
 
 public interface CanvasVisualizationWidget<T> extends CustomWidget<T> {	
+	// argument not null
 	void initialize(Canvas canvas);
+	
+	// positive
 	int canvasWidth();
+	
+	// positive
 	int canvasHeight();
-	void drawObject(GC gc);
-	List<Rectangle> toRedraw();
+	
+	// not null
+	List<DrawItem> drawItems();
+	
+//	void drawObject(GC gc);
+//	List<Rectangle> toRedraw();	
+	
 }

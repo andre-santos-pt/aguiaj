@@ -19,6 +19,7 @@ import java.util.Set;
 import pt.org.aguiaj.core.commands.java.ArrayObjectCreationCommand;
 import pt.org.aguiaj.core.commands.java.ConstructorInvocationCommand;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
+import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 import pt.org.aguiaj.extensibility.Reference;
 
 public class Common {
@@ -164,7 +165,8 @@ public class Common {
 
 			if(argExp instanceof MethodCall) {
 				MethodInvocationCommand cmd = ((MethodCall) argExp).getCommand();
-				cmd.execute();
+				ExceptionHandler.INSTANCE.execute(cmd);
+//				cmd.execute();
 				args[i] = cmd.getResultingObject();
 			}
 			else if(argExp instanceof ConstructorCall) {

@@ -15,6 +15,7 @@ import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Maps.newLinkedHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -28,20 +29,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.jws.Oneway;
 
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.core.ReflectionUtils;
-import pt.org.aguiaj.core.commands.JavaBarView;
 import pt.org.aguiaj.core.commands.java.ContractAware;
+import pt.org.aguiaj.core.commands.java.JavaCommandWithArgs;
 import pt.org.aguiaj.core.commands.java.JavaCommandWithReturn;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
 import pt.org.aguiaj.core.exceptions.ExceptionHandler;
-import pt.org.aguiaj.extensibility.ContractProxy;
-import pt.org.aguiaj.extensibility.InvariantException;
 import pt.org.aguiaj.extensibility.JavaCommand;
 import pt.org.aguiaj.extensibility.ObjectEventListener;
 import pt.org.aguiaj.extensibility.Reference;
+import pt.org.aguiaj.extensibility.contracts.ContractDecorator;
+import pt.org.aguiaj.extensibility.contracts.InvariantException;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 import com.google.common.collect.HashBasedTable;
@@ -50,29 +50,6 @@ import com.google.common.collect.Table;
 // observable
 public class ObjectModel {
 
-	//	public interface ObjectEventListener {
-	//		void init();
-	//		void newObjectEvent(Object obj);
-	//		void removeObjectEvent(Object obj);
-	//		void newReferenceEvent(Reference ref);
-	//		void changeReferenceEvent(Reference ref);
-	//		void removeReferenceEvent(Reference ref);
-	//		void commandExecuted(JavaCommand cmd);
-	//		void commandRemoved(JavaCommand cmd);
-	//		void clearAll();
-	//	}
-	//
-	//	public static abstract class EventListenerAdapter implements ObjectEventListener {
-	//		public void init() { }
-	//		public void newObjectEvent(Object obj) { }
-	//		public void removeObjectEvent(Object obj) { }
-	//		public void newReferenceEvent(Reference ref) { }
-	//		public void changeReferenceEvent(Reference ref) { }
-	//		public void removeReferenceEvent(Reference ref) { }
-	//		public void commandExecuted(JavaCommand cmd) { }
-	//		public void commandRemoved(JavaCommand cmd) { }
-	//		public void clearAll() { }
-	//	}
 
 	private static ObjectModel instance;
 
@@ -83,13 +60,12 @@ public class ObjectModel {
 	private Map<String, Class<?>> referenceTypeTable;
 	private IdentityObjectSet objectSet;
 
-	private Table<Object, Method, ContractProxy<?>> contracts;
+	private Table<Object, Method, ContractDecorator<?>> contracts;
 
 
 	private LinkedList<JavaCommand> activeCommands;
 
 	private Set<ObjectEventListener> listeners;
-
 
 
 	private ObjectModel() {
@@ -249,21 +225,31 @@ public class ObjectModel {
 	public void execute(JavaCommand command) {
 		assert command != null;
 
-		command.execute();
-
+		if(command instanceof JavaCommandWithArgs)
+			ExceptionHandler.INSTANCE.execute((JavaCommandWithArgs) command);
+		else
+			command.execute();
+			
 		if(!command.failed()) {
 			addToStack(command);
+			
 			if(command instanceof JavaCommandWithReturn) {
 				JavaCommandWithReturn cmd = (JavaCommandWithReturn) command;
 
 				Class<?> retType = cmd.getReferenceType();
+				
 				if(!retType.isPrimitive() && !retType.equals(void.class)) {
-					addReference(retType, cmd.getResultingObject(), cmd.getReference(), true);
+					Object object = cmd.getResultingObject();
+					if(object != null && !verifyInvariantOnCreation(object))
+						return;
+					
+					addReference(retType, object , cmd.getReference(), true);
 				}
 			}
-
+			
 			if(command instanceof ContractAware) {
 				Object o = ((ContractAware) command).getObjectUnderContract();
+				
 				if(o != null)
 					verifyInvariant(o);
 			}
@@ -394,8 +380,8 @@ public class ObjectModel {
 	}
 
 	public Reference getCompatibleReference(Object object, Method method) {
-		if(object instanceof ContractProxy)
-			object = ((ContractProxy<?>) object).getProxiedObject();
+		if(object instanceof ContractDecorator)
+			object = ((ContractDecorator<?>) object).getWrappedObject();
 
 		Reference reference = null;
 		for(String ref : referenceTable.keySet()) {
@@ -410,8 +396,8 @@ public class ObjectModel {
 
 
 	public static Reference getFirstReference(Object object) {
-		if(object instanceof ContractProxy)
-			object = ((ContractProxy<?>) object).getProxiedObject();
+		if(object instanceof ContractDecorator)
+			object = ((ContractDecorator<?>) object).getWrappedObject();
 
 		return instance.getFirstReferenceAux(object);
 	}
@@ -516,22 +502,24 @@ public class ObjectModel {
 		return null;
 	}
 
+	
+	
 
 
 	// ------ CONTRACTS -----------------
 
 	public static class Contract {
-		public final ContractProxy<?> proxy;
-		public final Method proxyMethod;
+		public final ContractDecorator<?> decorator;
+		public final Method wrappedMethod;
 
-		private Contract(ContractProxy<?> proxy, Method method) {
-			this.proxy = proxy;
-			proxyMethod = getProxyMethod(method);
+		private Contract(ContractDecorator<?> proxy, Method method) {
+			this.decorator = proxy;
+			wrappedMethod = getProxyMethod(method);
 		}
 
 		private Method getProxyMethod(Method method) {
 			try {
-				return proxy.getClass().getMethod(method.getName(), method.getParameterTypes());
+				return decorator.getClass().getMethod(method.getName(), method.getParameterTypes());
 			} catch (Exception e) {
 				e.printStackTrace();
 				return null;
@@ -556,23 +544,48 @@ public class ObjectModel {
 		ClassModel.getInstance().createContractProxies(contracts, object, methods);
 	}
 
-	private void verifyInvariant(Object object) {
-		for(ContractProxy<?> proxy : new HashSet<ContractProxy<?>>(contracts.row(object).values())) {
-			Method invariantMethod = null;
+	private boolean verifyInvariantOnCreation(Object object) {
+		boolean ok = true;
+		Set<Class<? extends ContractDecorator<?>>> contracts = ClassModel.getInstance().getContractTypes(object.getClass());
+		for(Class<? extends ContractDecorator<?>> clazz : contracts) {
+			ContractDecorator<?> contract = null;
 			try {
-				invariantMethod = proxy.getClass().getDeclaredMethod(ContractProxy.CHECK_INVARIANT);
+				for(Constructor<?> constructor : clazz.getConstructors()) {
+					Class<?>[] paramTypes = constructor.getParameterTypes();
+					if(paramTypes.length == 1 && paramTypes[0].isInstance(object))
+						contract = (ContractDecorator<?>) constructor.newInstance(object);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
-			} 
-			MethodInvocationCommand cmd = new MethodInvocationCommand(proxy, null, invariantMethod, new Object[0], new String[0]);
-
-			try {
-				cmd.execute();
+				return false;
 			}
-			catch(InvariantException e) {
-				ExceptionHandler.INSTANCE.handleException(invariantMethod, new String[0], e);
-			}
+			Method invariantMethod = getInvariantMethod(contract);
+			MethodInvocationCommand cmd = new MethodInvocationCommand(contract, invariantMethod);
+			if(ok)
+				ok = ExceptionHandler.INSTANCE.execute(cmd);
 		}
+		return ok;
+	}
+	
+	private boolean verifyInvariant(Object object) {
+		boolean ok = true;
+		for(ContractDecorator<?> proxy : new HashSet<ContractDecorator<?>>(contracts.row(object).values())) {
+			Method invariantMethod = getInvariantMethod(proxy); 
+			MethodInvocationCommand cmd = new MethodInvocationCommand(proxy, invariantMethod);
+			if(ok)
+				ok = ExceptionHandler.INSTANCE.execute(cmd);
+		}
+		return ok;
+	}
+
+	private Method getInvariantMethod(ContractDecorator<?> proxy) {
+		Method invariantMethod = null;
+		try {
+			invariantMethod = proxy.getClass().getDeclaredMethod(ContractDecorator.CHECK_INVARIANT);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return invariantMethod;
 	}
 
 

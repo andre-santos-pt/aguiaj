@@ -24,8 +24,8 @@ import org.eclipse.swt.widgets.Composite;
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.TypeWidget;
-import pt.org.aguiaj.extensibility.CanvasVisualizationWidget;
 import pt.org.aguiaj.extensibility.VisualizationWidget;
+import pt.org.aguiaj.extensibility.canvas.CanvasVisualizationWidget;
 import pt.org.aguiaj.standard.extensions.StringObjectWidget;
 import pt.org.aguiaj.standard.extensions.TableArrayObjectWidget;
 

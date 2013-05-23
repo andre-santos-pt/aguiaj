@@ -13,7 +13,10 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.6.0",
  com.google.guava;bundle-version="11.0.0"
 Bundle-ActivationPolicy: lazy
 Export-Package: pt.org.aguiaj.core.commands,
- pt.org.aguiaj.extensibility
+ pt.org.aguiaj.core.commands.java,
+ pt.org.aguiaj.extensibility,
+ pt.org.aguiaj.extensibility.canvas,
+ pt.org.aguiaj.extensibility.contracts
 Bundle-Vendor: aguiaj.org.pt
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 
