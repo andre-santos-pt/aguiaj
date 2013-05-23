@@ -527,8 +527,6 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 	public void updateFields() {
 		super.updateFields(object);
 
-		//		verifyInvariant();
-
 		try {
 			if(extensions != null)
 				for(TypeWidget extension : extensions)

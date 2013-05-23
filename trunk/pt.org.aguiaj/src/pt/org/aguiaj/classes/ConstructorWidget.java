@@ -33,7 +33,6 @@ import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.ConstructorInvocationCommand;
 import pt.org.aguiaj.core.documentation.DocumentationLinking;
-import pt.org.aguiaj.core.documentation.DocumentationView;
 import pt.org.aguiaj.core.typewidgets.AbstractTypeWidget;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
@@ -105,11 +104,16 @@ public class ConstructorWidget {
 	}
 
 	private void invokeConstructor() {
-		Object[] args = new Object[constructor.getParameterTypes().length];
-		for(int i = 0; i < args.length; i++)
-			args[i] = paramWidgets.get(i).getObject();
+		int nParams = paramWidgets.size();
+		Object[] args = new Object[nParams];
+		String[] argsText = new String[nParams];
 		
-		ConstructorInvocationCommand command = new ConstructorInvocationCommand(constructor, args, ObjectModel.getInstance().nextReference(clazz), clazz);
+		for(int i = 0; i < args.length; i++) {
+			args[i] = paramWidgets.get(i).getObject();
+			argsText[i] = paramWidgets.get(i).getTextualRepresentation();
+		}
+		
+		ConstructorInvocationCommand command = new ConstructorInvocationCommand(constructor, args, argsText, ObjectModel.getInstance().nextReference(clazz), clazz);
 		ObjectModel.getInstance().execute(command);
 	}
 	

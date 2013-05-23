@@ -67,8 +67,8 @@ public class MethodWidget implements Highlightable {
 
 		if(ObjectModel.getInstance().hasContract(object, method)) {
 			Contract contract = ObjectModel.getInstance().getContract(object, method);
-			this.object = contract.proxy;
-			this.method = contract.proxyMethod;
+			this.object = contract.decorator;
+			this.method = contract.wrappedMethod;
 		}
 		else {
 			this.object = object;

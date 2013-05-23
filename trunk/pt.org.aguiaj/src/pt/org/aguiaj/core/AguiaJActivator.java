@@ -72,8 +72,8 @@ import pt.org.aguiaj.core.exceptions.ActiveExceptionHandler;
 import pt.org.aguiaj.core.typewidgets.ActiveTypeWidget;
 import pt.org.aguiaj.extensibility.AccessorMethodDetectionPolicy;
 import pt.org.aguiaj.extensibility.AguiaJContribution;
-import pt.org.aguiaj.extensibility.ContractProxy;
 import pt.org.aguiaj.extensibility.VisualizationWidget;
+import pt.org.aguiaj.extensibility.contracts.ContractDecorator;
 import pt.org.aguiaj.standard.GetIsAccessorPolicy;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -400,9 +400,9 @@ public class AguiaJActivator extends AbstractUIPlugin {
 						view = (Class<? extends VisualizationWidget<?>>) bundle.loadClass(objWidget.getAttribute(OBJECT_WIDGET_VIEW));
 					}
 
-					Class<? extends ContractProxy<?>> contractClass = null;
+					Class<? extends ContractDecorator<?>> contractClass = null;
 					if(objWidget.getAttribute(OBJECT_CONTRACT_PROXY) != null) {
-						contractClass = (Class<? extends ContractProxy<?>>) bundle.loadClass(objWidget.getAttribute(OBJECT_CONTRACT_PROXY));
+						contractClass = (Class<? extends ContractDecorator<?>>) bundle.loadClass(objWidget.getAttribute(OBJECT_CONTRACT_PROXY));
 						if(!clazz.isAssignableFrom(contractClass)) {
 							AguiaJActivator.handlePluginError("contract proxy must be type-compatible with " + clazz.getName());
 						}

@@ -25,13 +25,12 @@ public class DocumentationLinking {
 	}
 
 	public static void add(Control control, Method method) {
-		final Class<?> clazz = method.getDeclaringClass();
-		if(isPluginWithDocumentation(clazz))
-			addSupport(control, clazz, anchor(method));
+		addSupport(control, method.getDeclaringClass(), anchor(method));
 	}
 
 	private static void addSupport(Control control, final Class<?> clazz, final String anchor) {
-		addHover(control, clazz, anchor);
+		if(isPluginWithDocumentation(clazz))
+			control.setData(new ControlAnchor(clazz, anchor));
 	}
 
 	private static boolean isPluginWithDocumentation(Class<?> clazz) {
@@ -43,11 +42,6 @@ public class DocumentationLinking {
 	}
 
 
-
-
-	private static void addHover(final Control control, final Class<?> clazz, final String anchor) {
-		control.setData(new ControlAnchor(clazz, anchor));
-	}
 
 	private static String anchor(Method method) {
 		return method.getName() + 

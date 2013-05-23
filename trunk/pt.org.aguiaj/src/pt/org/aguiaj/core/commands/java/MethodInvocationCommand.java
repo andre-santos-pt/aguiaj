@@ -10,29 +10,38 @@
  ******************************************************************************/
 package pt.org.aguiaj.core.commands.java;
 
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import pt.org.aguiaj.common.MethodInvocationThread2;
 import pt.org.aguiaj.core.ReflectionUtils;
-import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 import pt.org.aguiaj.objects.ObjectModel;
 
 
-public class MethodInvocationCommand extends JavaCommandWithReturn implements ContractAware {	
+public class MethodInvocationCommand extends JavaCommandWithArgs implements ContractAware {	
 	private Object object;
 	private String objectReference;
 	private Method method;
-	private Object[] args;
-	private String[] argsText;
 	private String reference;
 	private final MethodInvocationThread2 thread;
 
+	private static final Object[] ZERO_LENGTH_OBJECT_ARRAY = new Object[0];
+	private static final String[] ZERO_LENGTH_STRING_ARRAY = new String[0];
+	
+	public MethodInvocationCommand(Object object, Method method) {
+		this(object, null, method);
+	}
+	
+	public MethodInvocationCommand(Object object, String objectReference, Method method) {
+		this(object, objectReference, method, ZERO_LENGTH_OBJECT_ARRAY, ZERO_LENGTH_STRING_ARRAY);
+	}
 
+	
 	public MethodInvocationCommand(Object object, String objectReference, Method method, Object[] args, String[] argsText) {
+		super(args, argsText);
+		
 		assert method != null;
-		assert args != null;
-		assert argsText != null;
 
 		assert 
 		Modifier.isStatic(method.getModifiers()) && object == null || 
@@ -42,14 +51,25 @@ public class MethodInvocationCommand extends JavaCommandWithReturn implements Co
 
 		this.object = object;
 		this.method = method;
-		this.args = args;
-		this.argsText = argsText;
 		this.reference = ObjectModel.getInstance().nextReference(method.getReturnType()); // TODO: rever ref compativel
 		this.objectReference = objectReference;
 
 		thread = new MethodInvocationThread2(this.method, object, args, invocationInstruction());
 	}
 
+	public static MethodInvocationCommand instanceInvocation(Object object, String methodName) {
+		if(object == null)
+			throw new NullPointerException("object cannot be null");
+		
+		Method method;
+		try {
+			method = object.getClass().getDeclaredMethod(methodName);
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		
+		return new MethodInvocationCommand(object, null, method);
+	}
 
 	public Method getMethod() {
 		return method;
@@ -74,27 +94,15 @@ public class MethodInvocationCommand extends JavaCommandWithReturn implements Co
 		return method.getName() + params();
 	}
 
-	private String params() {
-		String ret = "(";
-		for(int i = 0; i < argsText.length; i++) {
-			if(i != 0)
-				ret += ", ";
-			ret += argsText[i];
-		}
-		return ret + ")";
-	}
-
-	public void execute() {
-//		Class<?>[] paramTypes = method.getParameterTypes();
-//		for(int i = 0; i < args.length; i++)
-//			if(paramTypes[i].equals(String.class) && args[i] == null && !argsText.equals("null"))
-//				SWTUtils.showMessage("Not a string", "In order to insert a string, write text between \" \"", SWT.ICON_ERROR);
-
-				
+	
+	public void execute() throws RuntimeException {
+		
 		thread.executeMethod();
 		if(thread.getException() != null) {
 			Throwable t = thread.getException().getCause();
-			ExceptionHandler.INSTANCE.handleException(method, argsText, t != null ? t : thread.getException());
+			throw new RuntimeException(t != null ? t : thread.getException());
+//			throw t != null ? t : thread.getException();
+//			ExceptionHandler.INSTANCE.handleException(method, argsText, t != null ? t : thread.getException());
 		}
 	}
 
@@ -123,8 +131,8 @@ public class MethodInvocationCommand extends JavaCommandWithReturn implements Co
 		return object;
 	}
 
-
-	public Object[] getArgs() {
-		return args;
+	@Override
+	public Member getMember() {
+		return method;
 	}
 }

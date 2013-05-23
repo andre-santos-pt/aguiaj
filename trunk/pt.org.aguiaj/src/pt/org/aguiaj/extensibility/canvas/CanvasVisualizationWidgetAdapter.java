@@ -8,10 +8,9 @@
  * Contributors:
  *     Andre L. Santos - initial API and implementation
  ******************************************************************************/
-package pt.org.aguiaj.extensibility;
+package pt.org.aguiaj.extensibility.canvas;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
@@ -36,11 +35,11 @@ implements CanvasVisualizationWidget<T> {
 		
 	}
 
-	@Override
-	public List<Rectangle> toRedraw() {
-		Rectangle r = area.get(0);
-		r.width = canvasWidth();
-		r.height = canvasHeight();
-		return area;
-	}
+//	@Override
+//	public List<Rectangle> toRedraw() {
+//		Rectangle r = area.get(0);
+//		r.width = canvasWidth();
+//		r.height = canvasHeight();
+//		return area;
+//	}
 }

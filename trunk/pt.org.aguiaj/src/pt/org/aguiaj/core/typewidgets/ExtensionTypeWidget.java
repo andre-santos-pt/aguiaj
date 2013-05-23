@@ -22,6 +22,8 @@ import pt.org.aguiaj.common.widgets.NullReferenceWidget;
 import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.extensibility.VisualizationWidget;
 
+
+// TODO: fail-proof
 public class ExtensionTypeWidget extends AbstractTypeWidget {
 
 	private VisualizationWidget extension;

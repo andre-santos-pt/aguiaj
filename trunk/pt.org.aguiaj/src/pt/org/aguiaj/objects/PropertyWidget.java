@@ -29,6 +29,7 @@ import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
 import pt.org.aguiaj.core.documentation.DocumentationLinking;
 import pt.org.aguiaj.core.documentation.DocumentationView;
+import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
 import pt.org.aguiaj.extensibility.Reference;
@@ -61,8 +62,8 @@ public class PropertyWidget implements Highlightable {
 		boolean hasContract = ObjectModel.getInstance().hasContract(object, method);
 		Contract contract = hasContract ? ObjectModel.getInstance().getContract(object, method) : null;
 		
-		final Object target = hasContract ? contract.proxy : object;
-		final Method targetMethod = hasContract ? contract.proxyMethod : method;
+		final Object target = hasContract ? contract.decorator : object;
+		final Method targetMethod = hasContract ? contract.wrappedMethod : method;
 		
 		if(returnsReferenceType) {		
 			label.addHyperlinkAction(new Listener () {
@@ -79,9 +80,11 @@ public class PropertyWidget implements Highlightable {
 					Reference ref = ObjectModel.getFirstReference(target);
 					Object obj = null;
 					if(ref != null) {
-						MethodInvocationCommand command = new MethodInvocationCommand(target, ref.name, targetMethod, new Object[0], new String[0]);
-						command.execute();
-						obj = command.getResultingObject();
+						MethodInvocationCommand cmd = new MethodInvocationCommand(target, ref.name, targetMethod);
+						ExceptionHandler.INSTANCE.execute(cmd);
+
+//						cmd.execute();
+						obj = cmd.getResultingObject();
 					}
 					return obj;	
 				}

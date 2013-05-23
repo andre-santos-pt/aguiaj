@@ -10,12 +10,21 @@
  ******************************************************************************/
 package pt.org.aguiaj.core.typewidgets;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
@@ -29,9 +38,12 @@ import org.eclipse.swt.widgets.MenuItem;
 
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.common.widgets.NullReferenceWidget;
-import pt.org.aguiaj.extensibility.CanvasVisualizationWidget;
+import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
+import pt.org.aguiaj.core.exceptions.ExceptionHandler;
+import pt.org.aguiaj.extensibility.canvas.CanvasVisualizationWidget;
+import pt.org.aguiaj.extensibility.canvas.DrawItem;
 
-// TODO : safe execute
+// TODO : safe execute -- missing initialize
 class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintListener {
 
 
@@ -43,13 +55,26 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 
 	private Object object;
 
-	private CanvasVisualizationWidget extension;
+	private final CanvasVisualizationWidget<?> extension;
+
+	//	private MethodInvocationCommand toRedrawCommand;
+
+	private MethodInvocationCommand canvasWidthCommand;
+	private MethodInvocationCommand canvasHeightCommand;
+
+	private MethodInvocationCommand drawItemsCommand;
 
 	private RowLayout layout;
 
 	public CanvasObjectWidgetExtension(Composite parent, CanvasVisualizationWidget<?> extension, WidgetProperty type) {
-		super(parent, SWT.NONE, type, false);		
+		super(parent, SWT.NONE, type, false);	
+		assert extension != null;
 		this.extension = extension;
+		//		toRedrawCommand = MethodInvocationCommand.instanceInvocation(extension, "toRedraw");
+		canvasWidthCommand = MethodInvocationCommand.instanceInvocation(extension, "canvasWidth");
+		canvasHeightCommand = MethodInvocationCommand.instanceInvocation(extension, "canvasHeight");
+		drawItemsCommand = MethodInvocationCommand.instanceInvocation(extension, "drawItems");
+
 		update(getObject());
 	}
 
@@ -90,23 +115,29 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 
 		if(object == null) {
 			if(stack.topControl != nullWidget) {
-				nullWidget.update(Math.min(extension.canvasWidth(), extension.canvasHeight()));
+				nullWidget.update(Math.min(canvasWidth(), canvasHeight()));
 				stack.topControl = nullWidget;
 			}
 		}
 		else {
-			extension.update(object);	
-			List<Rectangle> redraw = extension.toRedraw();
-			for(Rectangle r : redraw)		
-				canvas.redraw(r.x, r.y, r.width, r.height, false);
+			if(updateObject(object)) {
 
-			canvas.setLayoutData(new RowData(extension.canvasWidth(), extension.canvasHeight()));
-			canvas.update();
-			canvas.layout();
-			canvas.getParent().pack();
+				//			List<Rectangle> redraw = toRedraw();
+				//			for(Rectangle r : redraw)		
+				//				canvas.redraw(r.x, r.y, r.width, r.height, false);
 
-			if(stack.topControl != extensionWidget) {
-				stack.topControl = extensionWidget;
+				canvas.redraw();
+				canvas.setLayoutData(new RowData(canvasWidth(), canvasHeight()));
+				canvas.update();
+				canvas.layout();
+				canvas.getParent().pack();
+
+				if(stack.topControl != extensionWidget) {
+					stack.topControl = extensionWidget;
+				}
+			}
+			else {
+				stack.topControl = nullWidget;
 			}
 		}
 
@@ -114,16 +145,17 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 		parent.layout();
 	}
 
-//	@Override
-//	public List<Rectangle> toRedraw() {
-//		return extension.toRedraw();
-//	}
 
 	@Override
 	public final void paintControl(PaintEvent e) {
-		if(getObject() != null)
-			extension.drawObject(e.gc);
+		if(getObject() != null) {
+			List<DrawItem> items = drawItems();
+			for(DrawItem item : items) {
+				item.draw(e.gc);
+			}
+		}
 	}
+
 
 	@Override
 	public Object defaultValue() {
@@ -135,25 +167,6 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 		return canvas;
 	}
 
-
-
-	// TODO error-safe
-//	@Override
-//	public int canvasWidth() {
-//		return extension.canvasWidth();
-//	}
-//
-//	// TODO error-safe
-//	@Override
-//	public int canvasHeight() {
-//		return extension.canvasHeight();
-//	}
-//
-//	// TODO error-safe
-//	@Override
-//	public void drawObject(GC gc) {
-//		extension.drawObject(gc);
-//	}
 
 	@Override
 	public Object getObject() {		
@@ -172,15 +185,84 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 		item.setText("Save to file");
 		item.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
-				//				try {
-				//					Thread.sleep(500);
-				//				} catch (InterruptedException e1) {					
-				//					e1.printStackTrace();
-				//				}
 				SWTUtils.saveImageToFile(canvas, getObject().getClass().getSimpleName() + ".png");
 			}
 		});
 		canvas.setMenu(menu);
 	}
+
+
+	//	private void initialize(Canvas canvas) {
+	//		Method method = null;
+	//		try {
+	//			method = extension.getClass().getMethod("initialize", Canvas.class);
+	//		} catch (Exception e) {
+	//			e.printStackTrace();
+	//		}
+	//		MethodInvocationCommand initializeCommand = new MethodInvocationCommand(extension, null, method, new Object[] { canvas },  null);
+	//		ExceptionHandler.INSTANCE.execute(initializeCommand);
+	//	}
+
+	private int canvasWidth() {
+		if(ExceptionHandler.INSTANCE.execute(canvasWidthCommand)) {	
+			return (Integer) canvasWidthCommand.getResultingObject();
+		}
+		else {
+			stack.topControl = nullWidget;
+			return 1;
+		}
+	}
+
+	private int canvasHeight() {
+		if(ExceptionHandler.INSTANCE.execute(canvasHeightCommand)) {
+			return (Integer) canvasHeightCommand.getResultingObject();
+		}
+		else {
+			stack.topControl = nullWidget;
+			return 1;
+		}
+	}
+
+	private List<DrawItem> drawItems() {
+		if(ExceptionHandler.INSTANCE.execute(drawItemsCommand))	{	
+			stack.topControl = extensionWidget;
+			return (List<DrawItem>) drawItemsCommand.getResultingObject();
+		}
+		else {
+			stack.topControl = nullWidget;
+			return Collections.emptyList();
+		}
+	}
+
+	private boolean updateObject(Object object) {
+		Method method = null;
+		try {
+			method = extension.getClass().getMethod("update", Object.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		MethodInvocationCommand updateCommand = new MethodInvocationCommand(extension, null, method, new Object[] { object },  null);
+		return ExceptionHandler.INSTANCE.execute(updateCommand);
+	}
+
+
+	//	private List<Rectangle> toRedraw() {
+	//	if(ExceptionHandler.INSTANCE.execute(toRedrawCommand))		
+	//		return (List<Rectangle>) toRedrawCommand.getResultingObject();
+	//	else
+	//		return Collections.emptyList();
+	//}
+
+
+	//	private void drawObject(GC gc) {
+	//		Method method = null;
+	//		try {
+	//			method = extension.getClass().getMethod("drawObject", GC.class);
+	//		} catch (Exception e) {
+	//			e.printStackTrace();
+	//		}
+	//		MethodInvocationCommand drawObjectCommand = new MethodInvocationCommand(extension, null, method, new Object[] { gc },  null);
+	//		ExceptionHandler.INSTANCE.execute(drawObjectCommand);
+	//	}
 
 }

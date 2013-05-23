@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
+import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 import pt.org.aguiaj.extensibility.VisualizationWidget;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
@@ -136,8 +137,10 @@ public class TableArrayObjectWidget implements VisualizationWidget<Object> {
 				}
 
 				for(Method m : properties) {							
-					MethodInvocationCommand cmd = new MethodInvocationCommand(element, "", m, new Object[0], new String[0]);
-					cmd.execute();
+					MethodInvocationCommand cmd = new MethodInvocationCommand(element, "", m);
+					ExceptionHandler.INSTANCE.execute(cmd);
+
+//					cmd.execute();
 					Object val = cmd.getResultingObject();
 					data[i][j++] = val == null ? "null" : val.toString();
 				}

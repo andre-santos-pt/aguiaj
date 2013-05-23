@@ -18,6 +18,7 @@ import java.util.Set;
 
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
+import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 import pt.org.aguiaj.extensibility.Reference;
 
 public class MethodCall extends Expression implements Instruction {
@@ -142,7 +143,9 @@ public class MethodCall extends Expression implements Instruction {
 	@Override
 	public Object resolve() {
 		MethodInvocationCommand cmd = getCommand();
-		cmd.execute();
+		ExceptionHandler.INSTANCE.execute(cmd);
+
+//		cmd.execute();
 		return cmd.getResultingObject();
 	}
 

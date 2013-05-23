@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Composite;
 import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
+import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -117,8 +118,11 @@ public class FieldContainer extends Composite {
 	private void updateProperty(Method method, Object object) {
 		for(TypeWidget propWidget : fieldTable.get(method)) {
 			Object newVal = null;
-			MethodInvocationCommand command = new MethodInvocationCommand(object, "na", method, new Object[0], new String[0]);
-			command.execute();		
+			MethodInvocationCommand command = new MethodInvocationCommand(object, method);
+			
+			ExceptionHandler.INSTANCE.execute(command);
+			
+//			command.execute();		
 			newVal = command.getResultingObject();
 			updateTypeWidget(propWidget, method.getReturnType(), newVal);
 		}

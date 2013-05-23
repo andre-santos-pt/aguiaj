@@ -105,13 +105,6 @@ public class AguiaClassLoader extends ClassLoader{
 				return super.loadClass(name);
 			}
 		}
-		else {
-			//			String pluginId = ClassModel.aspectOf().getPluginId(clazz);
-			//			ClassModel.aspectOf().activatePlugin(pluginId);
-
-			//			ClassModel.getInstance().activatePackage(clazz.getPackage().getName());
-			//			ClassesView.getInstance().packageWasImported(clazz.getPackage().getName());
-		}
 
 		assert clazz != null;
 		return clazz;

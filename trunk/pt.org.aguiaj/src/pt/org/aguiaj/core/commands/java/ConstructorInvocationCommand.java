@@ -11,17 +11,16 @@
 package pt.org.aguiaj.core.commands.java;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Member;
 
 import pt.org.aguiaj.common.ConstructorInvocationThread;
 import pt.org.aguiaj.core.ReflectionUtils;
-import pt.org.aguiaj.core.commands.CommandsCommon;
 import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 import pt.org.aguiaj.objects.ObjectModel;
 
-public class ConstructorInvocationCommand extends JavaCommandWithReturn implements ContractAware {
+public class ConstructorInvocationCommand extends JavaCommandWithArgs implements ContractAware {
 
 	private Constructor<?> constructor;
-	private Object[] args;
 
 	private String reference;
 	private Class<?> referenceType;
@@ -29,17 +28,16 @@ public class ConstructorInvocationCommand extends JavaCommandWithReturn implemen
 	private ConstructorInvocationThread thread;
 	
 	public ConstructorInvocationCommand(final Constructor<?> constructor, Object[] args) {
-		this(constructor, args, ObjectModel.getInstance().nextReference(constructor.getDeclaringClass()), constructor.getDeclaringClass());
+		this(constructor, args, null, ObjectModel.getInstance().nextReference(constructor.getDeclaringClass()), constructor.getDeclaringClass());
 	}
 	
-	public ConstructorInvocationCommand(final Constructor<?> constructor, Object[] args, String reference, Class<?> referenceType) {
+	public ConstructorInvocationCommand(final Constructor<?> constructor, Object[] args, String[] argsText, String reference, Class<?> referenceType) {
+		super(args, argsText);
 		assert constructor != null;
-		assert args != null;
 		assert reference != null;
 		assert ReflectionUtils.checkParamTypes(constructor.getParameterTypes(), args);
 
 		this.constructor = constructor;
-		this.args = args;
 		this.reference = reference;
 		this.referenceType = referenceType;		
 		
@@ -58,7 +56,7 @@ public class ConstructorInvocationCommand extends JavaCommandWithReturn implemen
 	}
 
 	private String invocationInstruction() {
-		return constructor.getDeclaringClass().getSimpleName() + "(" + CommandsCommon.buildParams(args) + ")";
+		return constructor.getDeclaringClass().getSimpleName() + params();
 	}
 
 
@@ -99,7 +97,11 @@ public class ConstructorInvocationCommand extends JavaCommandWithReturn implemen
 		return thread.getResultingObject();
 	}
 
-	public Object[] getArgs() {
-		return args;
+	@Override
+	public Member getMember() {
+		return constructor;
 	}
+
+	
+
 }

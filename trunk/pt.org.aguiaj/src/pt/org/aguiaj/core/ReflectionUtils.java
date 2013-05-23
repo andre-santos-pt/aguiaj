@@ -33,6 +33,7 @@ import org.eclipse.core.runtime.Path;
 
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
+import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 
 
 public class ReflectionUtils {
@@ -342,13 +343,15 @@ public class ReflectionUtils {
 		Method toStringMethod = getToStringMethod(object.getClass());
 
 		if(!toStringMethod.getDeclaringClass().equals(Object.class)) {
-			MethodInvocationCommand command = new MethodInvocationCommand(object, "na", toStringMethod, new Object[0], new String[0]);
-			command.execute();
+			MethodInvocationCommand cmd = new MethodInvocationCommand(object, null, toStringMethod);
+			ExceptionHandler.INSTANCE.execute(cmd);
 
-			if(command.failed())
+//			command.execute();
+
+			if(cmd.failed())
 				return null;
 
-			return (String) command.getResultingObject();
+			return (String) cmd.getResultingObject();
 		}
 		else {
 			String nl = System.getProperty("line.separator");

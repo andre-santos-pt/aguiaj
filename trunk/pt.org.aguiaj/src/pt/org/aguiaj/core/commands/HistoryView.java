@@ -58,7 +58,7 @@ public class HistoryView extends ViewPart {
 		composite.setLayout(new FillLayout());
 
 		list = new List(composite, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
-		FontData data = new FontData(AguiaJParam.FONT.getString(), AguiaJParam.HUGE_FONT.getInt(), SWT.NONE);
+		FontData data = new FontData(AguiaJParam.FONT.getString(), AguiaJParam.BIG_FONT.getInt(), SWT.NONE);
 		list.setFont(new Font(Display.getDefault(), data));		
 		Menu menu = buildMenu(parent);		
 		list.setMenu(menu);
