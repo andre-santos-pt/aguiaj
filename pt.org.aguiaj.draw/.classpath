@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry excluding="aguiaj/color/RGBColor2.java|samples/grid/MyGrid.java|samples/grid/TicTacToe.java|samples/grid/TicTacToeGrid.java|aguiaj/image/view/BinaryImageWidget.java|samples/grid/PermeabilityVisualizer.java|aguiaj/color/Graytone.java|aguiaj/color/RGBColor.java|aguiaj/color/StandardColor.java|aguiaj/grid/NewGrid.java|aguiaj/grid/view/GridWidget.java|aguiaj/draw/view/GridWidgetTMp.java|aguiaj/draw/view/Common.java" kind="src" path="src"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
