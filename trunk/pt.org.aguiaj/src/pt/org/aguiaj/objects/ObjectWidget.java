@@ -32,6 +32,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -80,7 +81,8 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 	private Map<Method, Highlightable> methodToWidget;
 	private Menu menu;
 
-	private static int PADDING = 0;
+	private static final int PADDING = 0;
+	private static final int PADDING_FORM = 5;
 
 
 	public ObjectWidget(final Composite parent, final Object object) {		
@@ -119,26 +121,24 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		}					
 
 		createPrivateAttributesGroup();
-		createAttributesGroup();
+		createFieldsGroup();
 		createPropertiesGroup();
 		createOperationsGroup();
-
+//		new Label(createSection(null, false), SWT.NONE);
+		
 		for(Composite section : sections)
 			section.setMenu(menu);
 
-		setBackground(AguiaJColor.OBJECT.getColor());
-		for(Composite section : sections) {
-			if(!section.equals(section(Section.INTERNALS)))
-				SWTUtils.setColorRecursively(section, AguiaJColor.OBJECT.getColor());
-		}
+//		setBackground(AguiaJColor.OBJECT.getColor());
+//		for(Composite section : sections) {
+//			if(!section.equals(section(Section.INTERNALS)))
+//				SWTUtils.setColorRecursively(section, AguiaJColor.OBJECT.getColor());
+//		}
 
 		show(Section.INTERNALS, false);
+		show(Section.ATTRIBUTES, true);		
+		show(Section.PROPERTIES, !hasExtension);
 		show(Section.OPERATIONS, false);
-
-		if(hasExtension) {
-			show(Section.ATTRIBUTES, false);
-			show(Section.PROPERTIES, false);
-		}
 
 		updateFields();
 
@@ -166,13 +166,13 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 	}
 
 	public void highlight() {
-		if(!isDisposed()) {
-			setBackground(AguiaJColor.HIGHLIGHT.getColor());
-			for(Composite section : sections) {
-				if(!section.equals(section(Section.INTERNALS)))
-					SWTUtils.setColorRecursively(section, AguiaJColor.HIGHLIGHT.getColor());
-			}	
-		}
+//		if(!isDisposed()) {
+//			setBackground(AguiaJColor.HIGHLIGHT.getColor());
+//			for(Composite section : sections) {
+//				if(!section.equals(section(Section.INTERNALS)))
+//					SWTUtils.setColorRecursively(section, AguiaJColor.HIGHLIGHT.getColor());
+//			}	
+//		}
 	}
 
 	public void highlight(Method method) {
@@ -182,13 +182,13 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 
 
 	public void unhighlight() {
-		if(!isDisposed()) {
-			setBackground(AguiaJColor.OBJECT.getColor());
-			for(Composite section : sections) {
-				if(!section.equals(section(Section.INTERNALS)))
-					SWTUtils.setColorRecursively(section, AguiaJColor.OBJECT.getColor());
-			}		
-		}
+//		if(!isDisposed()) {
+//			setBackground(AguiaJColor.OBJECT.getColor());
+//			for(Composite section : sections) {
+//				if(!section.equals(section(Section.INTERNALS)))
+//					SWTUtils.setColorRecursively(section, AguiaJColor.OBJECT.getColor());
+//			}		
+//		}
 	}
 
 	public void unhighlight(Method method) {
@@ -257,31 +257,50 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 	}
 
 
-	private void createAttributesGroup() {
+	private void createFieldsGroup() {
 		List<Field> visibleAttributes = ClassModel.getInstance().getVisibleAttributes(objectClass);
 		if(visibleAttributes.size() > 0) {
-			Composite attributesGroup = createSection(); 
+			Composite attributesGroup = createSection(null, true, false); 	
+			attributesGroup.setLayout(createGridLayout());
+//			RowLayout layout = new RowLayout(SWT.VERTICAL);
+//			layout.spacing = PADDING;
+//			layout.marginBottom = PADDING;
+//			layout.marginTop = PADDING;
+//			layout.marginLeft = PADDING;
+//			layout.marginRight = PADDING;
+//
+//			attributesGroup.setLayout(layout);
+			
 			sectionMap.put(Section.ATTRIBUTES, attributesGroup);
 
-			RowLayout layout = new RowLayout(SWT.VERTICAL);
-			layout.spacing = PADDING;
-			attributesGroup.setLayout(layout);
-
+			new LabelWidget.Builder().small().bold().text("Fields:").create(attributesGroup);
+			new Label(attributesGroup, SWT.NONE);
+			
 			for(Field field : visibleAttributes)	
 				new AttributeWidget(attributesGroup, field, object, this, true, false);	
 
-			createShowHide(UIText.SHOW_ATTRIBUTES, UIText.HIDE_ATTRIBUTES, attributesGroup, Section.ATTRIBUTES);
+			createShowHide(UIText.SHOW_FIELDS, UIText.HIDE_FIELDS, attributesGroup, Section.ATTRIBUTES);
 		}
 	}
 
 	private void createPropertiesGroup() {
 		List<Method> queryMethods = ClassModel.getInstance().getAccessorMethods(objectClass);
 		if(queryMethods.size() > 0) {
-			Composite propertiesGroup = createSection("Properties");
-			sectionMap.put(Section.PROPERTIES, propertiesGroup);
-
+			Composite propertiesGroup = createSection(null, true, false);
 			propertiesGroup.setLayout(createGridLayout());
 
+			sectionMap.put(Section.PROPERTIES, propertiesGroup);
+			
+//			new Label(propertiesGroup, SWT.SEPARATOR | SWT.HORIZONTAL).setLayoutData(new GridData(SWT.FILL));
+			new LabelWidget.Builder().small().bold().text("Properties:").create(propertiesGroup);
+			new Label(propertiesGroup, SWT.NONE);
+//			GridData gd = new GridData();
+//			gd.grabExcessHorizontalSpace = true;
+//			gd.horizontalAlignment = SWT.FILL | SWT.LEFT;
+//			new LabelWidget.Builder().small().bold().text("Properties").create(propertiesGroup).setLayoutData(gd);
+			
+			
+			
 			for(final Method m : queryMethods) {
 				PropertyWidget widget = new PropertyWidget(propertiesGroup, object, m, this);
 				methodToWidget.put(m, widget);
@@ -296,11 +315,13 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		List<Method> methods = ClassModel.getInstance().getCommandMethods(objectClass);
 
 		if(methods.size() > 0) {
-			Composite operationsGroup = createSection("Operations");
-			sectionMap.put(Section.OPERATIONS, operationsGroup);
-
+			Composite operationsGroup = createSection(null, true, true);
 			operationsGroup.setLayout(createGridLayout());
-
+			sectionMap.put(Section.OPERATIONS, operationsGroup);
+			
+			new LabelWidget.Builder().small().bold().text("Operations:").create(operationsGroup);
+			new Label(operationsGroup, SWT.NONE);
+			
 			for(Method m : methods) {
 				MethodWidget widget = new MethodWidget(operationsGroup, object, m, this);
 				methodToWidget.put(m, widget);
@@ -351,11 +372,12 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
 				if(existsSection(Section.PROPERTIES) && isVisible(Section.OPERATIONS)) {
-					show(Section.ATTRIBUTES, !hasExtension);
+					show(Section.ATTRIBUTES, true);
 					show(Section.PROPERTIES, !hasExtension);
 					show(Section.OPERATIONS, false);
 				}
 				else {
+					show(Section.ATTRIBUTES, true);
 					show(Section.PROPERTIES, true);
 					show(Section.OPERATIONS, true);
 				}
@@ -483,27 +505,36 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 	}
 
 	private Composite createSection() {
-		return createSection(null);
+		return createSection(null, false, false);
 	}
-	private Composite createSection(String group) {
-		Composite section = group != null ? new Group(this, SWT.BORDER) : new Composite(this, SWT.NONE);
+	private Composite createSection(String group, boolean border, boolean last) {
+		Composite section = group != null ? new Group(this, SWT.NONE) : new Composite(this, border ? SWT.BORDER : SWT.NONE);
 		if(group != null)
-			((Group) section).setText(group);
+			((Group) section).setText(group);		
 		
 		FormData groupData = new FormData();
 
 		if(sections.isEmpty()) {
-			groupData.top = new FormAttachment(0, PADDING);	
+			groupData.top = new FormAttachment(0, PADDING_FORM);	
 		}
 		else {
-			groupData.top = new FormAttachment(sections.peek(), PADDING);			
+			groupData.top = new FormAttachment(sections.peek(), PADDING_FORM);			
 		}
 
-		groupData.left = new FormAttachment(0, PADDING);
-		groupData.right = new FormAttachment(100, -PADDING);
-
+		groupData.left = new FormAttachment(0, PADDING_FORM);
+		groupData.right = new FormAttachment(100, -PADDING_FORM);
+		
+		if(last)
+			groupData.bottom = new FormAttachment(100, -PADDING_FORM);
+		
 		section.setLayoutData(groupData);
 		sections.push(section);
+		
+//		Label sep = new Label(this, SWT.SEPARATOR | SWT.HORIZONTAL);
+//		FormData sepData = new FormData();
+//		sepData.top = new FormAttachment(section, 0);
+//		sep.setLayoutData(sepData);
+		
 		return section;
 	}
 

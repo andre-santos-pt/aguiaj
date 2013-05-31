@@ -66,7 +66,6 @@ import pt.org.aguiaj.classes.ClassesView;
 import pt.org.aguiaj.classes.NameBasedFilter;
 import pt.org.aguiaj.common.AguiaJImage;
 import pt.org.aguiaj.common.SWTUtils;
-import pt.org.aguiaj.core.commands.JavaBarView;
 import pt.org.aguiaj.core.commands.ReloadClassesCommand;
 import pt.org.aguiaj.core.exceptions.ActiveExceptionHandler;
 import pt.org.aguiaj.core.typewidgets.ActiveTypeWidget;

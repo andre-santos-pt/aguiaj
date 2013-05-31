@@ -120,7 +120,7 @@ public class ReferenceWidget extends Composite {
 
 		typeLabel.getControl().setMenu(menu);
 
-		SWTUtils.setColorRecursively(refBox, AguiaJColor.OBJECT.getColor());
+//		SWTUtils.setColorRecursively(refBox, AguiaJColor.OBJECT.getColor());
 	}
 
 	//	public void highlight() {
@@ -130,10 +130,10 @@ public class ReferenceWidget extends Composite {
 	//		}
 	//	}
 
-	public void unhighlight() {
-		if(!isDisposed())
-			SWTUtils.setColorRecursively(refBox, AguiaJColor.OBJECT.getColor());
-	}
+//	public void unhighlight() {
+//		if(!isDisposed())
+//			SWTUtils.setColorRecursively(refBox, AguiaJColor.OBJECT.getColor());
+//	}
 
 	private Menu createMenu() {
 		Menu menu = new Menu(getShell(), SWT.POP_UP);

@@ -12,7 +12,6 @@ package pt.org.aguiaj.extensibility;
 
 import org.eclipse.swt.graphics.Image;
 
-
 import pt.org.aguiaj.classes.ClassesView;
 import pt.org.aguiaj.common.AguiaJImage;
 import pt.org.aguiaj.core.AguiaJActivator;

@@ -19,8 +19,6 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -31,6 +29,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.part.ViewPart;
 
+import pt.org.aguiaj.common.Fonts;
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.extensibility.AguiaJContribution;
@@ -58,8 +57,9 @@ public class HistoryView extends ViewPart {
 		composite.setLayout(new FillLayout());
 
 		list = new List(composite, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
-		FontData data = new FontData(AguiaJParam.FONT.getString(), AguiaJParam.BIG_FONT.getInt(), SWT.NONE);
-		list.setFont(new Font(Display.getDefault(), data));		
+		
+		Fonts.set(list, AguiaJParam.BIG_FONT);
+		
 		Menu menu = buildMenu(parent);		
 		list.setMenu(menu);
 		

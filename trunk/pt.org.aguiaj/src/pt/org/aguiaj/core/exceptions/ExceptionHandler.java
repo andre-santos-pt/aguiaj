@@ -21,12 +21,9 @@ import org.eclipse.swt.widgets.Display;
 
 import pt.org.aguiaj.common.PluggableExceptionHandler;
 import pt.org.aguiaj.core.UIText;
-import pt.org.aguiaj.core.commands.java.ConstructorInvocationCommand;
 import pt.org.aguiaj.core.commands.java.JavaCommandWithArgs;
-import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
 import pt.org.aguiaj.extensibility.ExceptionListener;
 import pt.org.aguiaj.extensibility.ExceptionTrace;
-import pt.org.aguiaj.extensibility.JavaCommand;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 public enum ExceptionHandler {

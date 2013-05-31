@@ -31,7 +31,6 @@ import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.NewDeadObjectCommand;
 import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
 import pt.org.aguiaj.core.documentation.DocumentationLinking;
-import pt.org.aguiaj.core.documentation.DocumentationView;
 import pt.org.aguiaj.core.typewidgets.AbstractTypeWidget;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
@@ -40,7 +39,7 @@ import pt.org.aguiaj.objects.ObjectModel;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 
-public class AttributeWidget extends Composite {
+public class AttributeWidget {
 
 	private boolean inherited;
 	
@@ -52,17 +51,17 @@ public class AttributeWidget extends Composite {
 			final boolean modifiable,
 			final boolean isPrivate) {
 
-		super(parent, SWT.NONE);
+//		super(parent, SWT.NONE);
 
-		setLayout(new GridLayout(2, false));
+//		setLayout(new GridLayout(2, false));
 
 		// there are no inherited static fields
 		this.inherited = object != null && Inspector.isInherited(object.getClass(), field);
 
-		createContents(field, object, fieldContainer, modifiable, isPrivate);
+		createContents(parent, field, object, fieldContainer, modifiable, isPrivate);
 	}
 
-	private void createContents(final Field field, final Object object,
+	private void createContents(Composite parent, final Field field, final Object object,
 			FieldContainer fieldContainer, boolean modifiable, boolean isPrivate) {
 
 		String prettyName = StandardNamePolicy.prettyField(field);
@@ -78,7 +77,7 @@ public class AttributeWidget extends Composite {
 		.italicIf(inherited)
 		.toolTip(toolTip)
 		.linkIf(referenceType)
-		.create(this);
+		.create(parent);
 
 		DocumentationLinking.add(label.getControl(), field);
 
@@ -101,7 +100,7 @@ public class AttributeWidget extends Composite {
 		if(isPrivate)
 			props.add(WidgetProperty.NO_EXTENSION);
 		
-		Composite row = new Composite(this, SWT.NONE);
+		Composite row = new Composite(parent, SWT.NONE);
 		row.setLayout(new RowLayout(SWT.HORIZONTAL));
 		
 		List<TypeWidget> widgets = 	WidgetFactory.INSTANCE.createWidgets(row, field.getType(), props);
