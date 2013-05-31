@@ -102,4 +102,9 @@ public class Position {
 		icon = null;
 		background = DEFAULT_BACKGROUND;
 	}
+	
+	@Override
+	public String toString() {
+		return "(" + row + ", " + column + ")";
+	}
 }
