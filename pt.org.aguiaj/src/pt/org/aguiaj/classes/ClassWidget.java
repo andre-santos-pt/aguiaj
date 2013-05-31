@@ -28,6 +28,9 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Listener;
 
+import pt.org.aguiaj.common.AguiaJColor;
+import pt.org.aguiaj.common.CompositeFrame;
+import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.common.widgets.AttributeWidget;
 import pt.org.aguiaj.common.widgets.FieldContainer;
 import pt.org.aguiaj.common.widgets.IconWidget;
@@ -37,7 +40,6 @@ import pt.org.aguiaj.common.widgets.MethodWidget;
 import pt.org.aguiaj.core.UIText;
 import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
 import pt.org.aguiaj.core.documentation.DocumentationLinking;
-import pt.org.aguiaj.core.documentation.DocumentationView;
 import pt.org.aguiaj.objects.ObjectModel;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
@@ -49,7 +51,7 @@ public class ClassWidget extends FieldContainer {
 	private Map<Method, MethodWidget> methodMap;
 	
 	public ClassWidget(Composite parent, final Class<?> clazz) {
-		super(parent, SWT.BORDER);
+		super(parent, SWT.NONE);
 		
 		constructorMap = new HashMap<Constructor<?>, ConstructorWidget>();
 		methodMap = new HashMap<Method, MethodWidget>();
@@ -66,7 +68,7 @@ public class ClassWidget extends FieldContainer {
 
 		LabelWidget classNameLabel = new LabelWidget.Builder()
 			.text(StandardNamePolicy.prettyClassName(clazz))
-			.big()
+			.huge()
 			.create(classHeader);
 		
 		DocumentationLinking.add(classNameLabel.getControl(), clazz);
@@ -116,6 +118,8 @@ public class ClassWidget extends FieldContainer {
 			data.right = new FormAttachment(100, -5);
 			staticMethodsGroup.setLayoutData(data);
 		}
+		
+		SWTUtils.setColorRecursively(this, AguiaJColor.WHITE.getColor());
 		
 		updateFields();	
 	}
@@ -171,8 +175,8 @@ public class ClassWidget extends FieldContainer {
 		if(!staticFields.isEmpty()) {
 			Group staticAttributesGroup = new Group(parent, SWT.NONE);
 			staticAttributesGroup.setText(UIText.STATIC_FIELDS.get());
-			RowLayout layout = new RowLayout(SWT.VERTICAL);
-			staticAttributesGroup.setLayout(layout);			
+			GridLayout layout = new GridLayout(2, false);			
+			staticAttributesGroup.setLayout(layout);
 			
 			for(Field field : staticFields)	
 				new AttributeWidget(staticAttributesGroup, field, null, this, true, false);
@@ -185,7 +189,9 @@ public class ClassWidget extends FieldContainer {
 	private Composite createConstructorsGroup(Composite parent, final Class<?> clazz) {
 		List<Constructor<?>> constructors = ClassModel.getInspector().getVisibleConstructors(clazz);
 		if(constructors.size() > 0) {
-			Composite constructorsGroup = new Composite(parent, SWT.NONE);
+			Group constructorsGroup = new Group(parent, SWT.NONE);
+			constructorsGroup.setText(UIText.CONSTRUCTORS.get());
+//			Composite constructorsGroup = CompositeFrame.create(parent, "Constructors");
 			
 			GridLayout layout = new GridLayout(2, false);			
 			constructorsGroup.setLayout(layout);

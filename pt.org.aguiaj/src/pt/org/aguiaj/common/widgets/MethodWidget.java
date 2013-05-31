@@ -20,15 +20,13 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 
+import pt.org.aguiaj.common.Fonts;
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.Highlightable;
@@ -37,7 +35,6 @@ import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
 import pt.org.aguiaj.core.documentation.DocumentationLinking;
-import pt.org.aguiaj.core.documentation.DocumentationView;
 import pt.org.aguiaj.core.typewidgets.AbstractTypeWidget;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
@@ -108,10 +105,15 @@ public class MethodWidget implements Highlightable {
 				executeInvocation();
 			}
 		});
-		FontData data = new FontData(AguiaJParam.FONT.getString(), 
-				AguiaJParam.MEDIUM_FONT.getInt(), inherited ? SWT.ITALIC : overriding ? SWT.BOLD : SWT.NONE);
-		Font font = new Font(Display.getDefault(), data);
-		invokeButton.setFont(font);
+		
+		int style = inherited ? SWT.ITALIC : overriding ? SWT.BOLD  : SWT.NONE;
+		
+		Fonts.set(invokeButton, AguiaJParam.MEDIUM_FONT, style);
+		
+//		FontData data = new FontData(AguiaJParam.FONT.getString(), 
+//				AguiaJParam.MEDIUM_FONT.getInt(), inherited ? SWT.ITALIC : overriding ? SWT.BOLD : SWT.NONE);
+//		Font font = new Font(Display.getDefault(), data);
+//		invokeButton.setFont(font);
 
 		DocumentationLinking.add(invokeButton, method);
 	}

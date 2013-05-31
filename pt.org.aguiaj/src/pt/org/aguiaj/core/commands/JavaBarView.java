@@ -26,8 +26,6 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -36,6 +34,7 @@ import org.eclipse.ui.ISizeProvider;
 import org.eclipse.ui.part.ViewPart;
 
 import pt.org.aguiaj.classes.ClassModel;
+import pt.org.aguiaj.common.Fonts;
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.core.AguiaJActivator;
 import pt.org.aguiaj.core.AguiaJParam;
@@ -163,8 +162,7 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 	}
 
 	public void updateFont() {
-		FontData data = new FontData(AguiaJParam.FONT.getString(), AguiaJParam.JAVABAR_FONT.getInt(), SWT.NONE);
-		instructionBar.setFont(new Font(Display.getDefault(), data));
+		Fonts.set(instructionBar, AguiaJParam.JAVABAR_FONT);
 	}
 
 	public int computePreferredSize(boolean width, int availableParallel,

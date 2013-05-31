@@ -39,8 +39,8 @@ public enum UIText {
 	CHECK_METHOD_RECURSION("Check method %1 for recursive method calls."),
 	CHECK_METHOD_MEMORY("Check method %1 for excessive memory usage."), 
 	CHECK_CLASS_AT("Check class %1 on line %2. %3"), 
-	SHOW_PROPERTIES, HIDE_PROPERTIES, SHOW_ATTRIBUTES, HIDE_ATTRIBUTES,
-	STATIC_METHODS, STATIC_FIELDS, ENUM_CONSTANTS;
+	SHOW_PROPERTIES, HIDE_PROPERTIES, SHOW_FIELDS, HIDE_FIELDS,
+	STATIC_METHODS, STATIC_FIELDS, ENUM_CONSTANTS, CONSTRUCTORS;
 	
 	private String defaultValue;
 	private String value;

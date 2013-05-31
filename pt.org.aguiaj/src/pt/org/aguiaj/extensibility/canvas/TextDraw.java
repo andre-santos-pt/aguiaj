@@ -1,10 +1,11 @@
 package pt.org.aguiaj.extensibility.canvas;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+
+import pt.org.aguiaj.common.AguiaJColor;
 
 
 public class TextDraw extends DrawItem {
@@ -19,8 +20,10 @@ public class TextDraw extends DrawItem {
 
 	@Override	
 	public void draw(GC gc) {
-		gc.setFont(new Font(null, "Monospaced", size, SWT.NONE));
-		gc.setForeground(new Color(null, 0, 0, 0));
+		Font font = new Font(gc.getDevice(), "Courier", size, SWT.NONE);
+		gc.setFont(font);
+		gc.setForeground(AguiaJColor.BLACK.getColor());
 		gc.drawText(text, x, y, SWT.DRAW_TRANSPARENT);
+		font.dispose();
 	}
 }

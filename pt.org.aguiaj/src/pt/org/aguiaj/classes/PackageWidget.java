@@ -15,6 +15,7 @@ import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.eclipse.core.runtime.FileLocator;
@@ -26,10 +27,13 @@ import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 
 import pt.org.aguiaj.common.AguiaJColor;
@@ -46,8 +50,8 @@ import pt.org.aguiaj.core.documentation.DocumentationView;
 import com.google.common.collect.Sets;
 
 class PackageWidget extends Composite {
-	private static final int SPACING = 30;
-	private static final int MARGIN = 10;
+	private static final int SPACING = 20;
+	private static final int MARGIN = 5;
 
 	private ScrolledComposite scrl;
 	private Composite area;
@@ -68,10 +72,16 @@ class PackageWidget extends Composite {
 		area = new Composite(scrl, SWT.NONE);
 		area.setBackground(AguiaJColor.OBJECT_AREA.getColor());
 
-		RowLayout areaLayout = new RowLayout(SWT.VERTICAL);
-		areaLayout.spacing = SPACING;
+		GridLayout areaLayout = new GridLayout(1, true);
+		areaLayout.verticalSpacing = SPACING;
+		areaLayout.marginBottom = MARGIN;
 		areaLayout.marginTop = MARGIN;
 		areaLayout.marginLeft = MARGIN;
+		areaLayout.marginRight = MARGIN;
+		
+//		areaLayout.spacing = SPACING;
+//		areaLayout.marginTop = MARGIN;
+//		areaLayout.marginLeft = MARGIN;
 		area.setLayout(areaLayout);
 		area.setToolTipText("Class Area (create objects and invoke static operations by pressing the buttons)");
 
@@ -89,15 +99,22 @@ class PackageWidget extends Composite {
 		if(isPluginPackage())
 			addPluginHeader();
 
-		for(final Class<?> clazz : classes) {
+		Iterator<Class<?>> it = classes.iterator();
+		while(it.hasNext()) {
+			Class<?> clazz = it.next();
 			if(clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()) && !clazz.isEnum())
 				new AbstractClassWidget(area, clazz);
 			else if(ReflectionUtils.tryClass(clazz)) {
-				classWidgets.add(new ClassWidget(area, clazz));
+				ClassWidget w = new ClassWidget(area, clazz);
+				w.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+				classWidgets.add(w);
 			}
 			else {
 				new ErrorWidget(area, clazz);
 			}
+			
+			if(it.hasNext())
+				new Label(area, SWT.SEPARATOR | SWT.HORIZONTAL).setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		}
 
 		addControlListener(new ControlAdapter() {
@@ -106,6 +123,7 @@ class PackageWidget extends Composite {
 			}
 		});
 
+		SWTUtils.setColorRecursively(this, AguiaJColor.WHITE.getColor());
 		DragNDrop.addFileDragNDropSupport(area);
 		layout();
 	}
@@ -159,7 +177,6 @@ class PackageWidget extends Composite {
 		});
 
 		handleDocumentationLink(comp);
-		SWTUtils.setColorRecursively(comp, AguiaJColor.WHITE.getColor());
 	}
 
 	private void handleDocumentationLink(Composite parent) {

@@ -7,16 +7,14 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
+import pt.org.aguiaj.common.Fonts;
 import pt.org.aguiaj.core.AguiaJParam;
 
 
@@ -122,10 +120,8 @@ public abstract class TextTypeWidget extends PrimitiveTypeWidget {
 		if(!isModifiable())
 			text.setBackground(parent.getBackground());
 		
-		FontData data = new FontData("Courier", AguiaJParam.MEDIUM_FONT.getInt(), SWT.NONE);
-		Font font = new Font(Display.getDefault(), data);
-		text.setFont(font);
-			
+		Fonts.set(text, "Courier", AguiaJParam.MEDIUM_FONT);
+		
 		if(getUsageType() != WidgetProperty.PARAMETER)
 			addFocusListener(text);
 		

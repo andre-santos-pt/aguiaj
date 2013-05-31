@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.commands.java.ContractAware;
@@ -41,7 +40,6 @@ import pt.org.aguiaj.extensibility.JavaCommand;
 import pt.org.aguiaj.extensibility.ObjectEventListener;
 import pt.org.aguiaj.extensibility.Reference;
 import pt.org.aguiaj.extensibility.contracts.ContractDecorator;
-import pt.org.aguiaj.extensibility.contracts.InvariantException;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 import com.google.common.collect.HashBasedTable;

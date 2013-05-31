@@ -13,17 +13,15 @@ package pt.org.aguiaj.common.widgets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseTrackListener;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 
 import pt.org.aguiaj.common.AguiaJColor;
+import pt.org.aguiaj.common.Fonts;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.Highlightable;
 import pt.org.aguiaj.core.Highlighter;
@@ -35,23 +33,21 @@ public class LabelWidget extends Composite implements Highlightable {
 	private Control control;
 	private Highlighter highlighter;
 	
-	private LabelWidget(Composite parent, Font font, String text, boolean link, 
-			boolean hasBorder, String tooltip, AguiaJColor color) {
+	private LabelWidget(Composite parent, AguiaJParam fontFace, AguiaJParam size, String text, int style, boolean link, 
+			String tooltip, AguiaJColor color) {
 		
 		super(parent, SWT.NONE);
 		setLayout(new FillLayout());
-		
-		int style = hasBorder ? SWT.BORDER : SWT.NONE;
-		
+			
 		if(link) {
 			Link linkWidget = new Link(this, style);
-			linkWidget.setFont(font);
+			Fonts.set(linkWidget, fontFace, size, style);
 			linkWidget.setText("<a>" + text + "</a>");
 			control = linkWidget;
 		}
 		else {
 			Label labelWidget = new Label(this, style);
-			labelWidget.setFont(font);
+			Fonts.set(labelWidget, fontFace, size, style);
 			labelWidget.setText(text);
 			control = labelWidget;
 		}
@@ -104,10 +100,9 @@ public class LabelWidget extends Composite implements Highlightable {
 	public static class Builder {
 		private String text = "";
 		private boolean link = false;
-		private int size = AguiaJParam.MEDIUM_FONT.getInt();
-		private String fontName = AguiaJParam.FONT.getString();
+		private AguiaJParam size = AguiaJParam.MEDIUM_FONT;
+		private AguiaJParam fontFace = AguiaJParam.FONT;
 		private int style = SWT.NONE;
-		private boolean border = false;
 		private String tooltip = "";
 		private AguiaJColor color = AguiaJColor.BLACK;
 		
@@ -126,34 +121,34 @@ public class LabelWidget extends Composite implements Highlightable {
 		}
 		
 		public Builder tiny() {
-			size = AguiaJParam.TINY_FONT.getInt();
+			size = AguiaJParam.TINY_FONT;
 			return this;
 		}
 		
 		public Builder small() {
-			size = AguiaJParam.SMALL_FONT.getInt();
+			size = AguiaJParam.SMALL_FONT;
 			return this;
 		}
 		
 		public Builder medium() {
-			size = AguiaJParam.MEDIUM_FONT.getInt();
+			size = AguiaJParam.MEDIUM_FONT;
 			return this;
 		}
 		
 		public Builder big() {
-			size = AguiaJParam.BIG_FONT.getInt();
+			size = AguiaJParam.BIG_FONT;
 			return this;
 		}
 		
 		public Builder huge() {
-			size = AguiaJParam.HUGE_FONT.getInt();
+			size = AguiaJParam.HUGE_FONT;
 			return this;
 		}
 		
-		public Builder font(String fontName) {
-			this.fontName = fontName;
-			return this;
-		}
+//		public Builder font(String fontName) {
+//			this.fontFace = fontName;
+//			return this;
+//		}
 		
 		public Builder italic() {
 			style |= SWT.ITALIC;
@@ -174,7 +169,7 @@ public class LabelWidget extends Composite implements Highlightable {
 		}
 		
 		public Builder border() {
-			border = true;
+			style |= SWT.BORDER;
 			return this;
 		}
 
@@ -188,10 +183,9 @@ public class LabelWidget extends Composite implements Highlightable {
 			return this;
 		}
 		
-		public LabelWidget create(Composite parent) {			
-			FontData data = new FontData(fontName, size, style);			
-			Font font = new Font(Display.getDefault(), data);
-			return new LabelWidget(parent, font, text, link, border, tooltip, color);
+		public LabelWidget create(Composite parent) {
+			LabelWidget label = new LabelWidget(parent, fontFace, size, text, style, link, tooltip, color);
+			return label;
 		}
 	}
 

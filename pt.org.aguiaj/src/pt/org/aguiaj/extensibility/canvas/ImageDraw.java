@@ -17,5 +17,6 @@ public class ImageDraw extends DrawItem {
 	public void draw(GC gc) {
 		Image img = new Image(gc.getDevice(), data);
 		gc.drawImage(img, x, y);
+		img.dispose();
 	}	
 }

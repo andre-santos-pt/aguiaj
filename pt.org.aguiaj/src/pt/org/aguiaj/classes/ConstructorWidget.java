@@ -20,14 +20,12 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 
+import pt.org.aguiaj.common.Fonts;
 import pt.org.aguiaj.common.widgets.FieldContainer;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.TypeWidget;
@@ -55,9 +53,9 @@ public class ConstructorWidget {
 
 		final Button newButton = new Button(parent, SWT.PUSH);
 		newButton.setText("new");
-		FontData data = new FontData(AguiaJParam.FONT.getString(), AguiaJParam.MEDIUM_FONT.getInt(), SWT.NONE);
-		Font font = new Font(Display.getDefault(), data);
-		newButton.setFont(font);
+		
+		Fonts.set(newButton, AguiaJParam.MEDIUM_FONT);
+		
 		newButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				invokeConstructor();
