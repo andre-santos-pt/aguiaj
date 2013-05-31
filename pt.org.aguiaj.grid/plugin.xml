@@ -14,9 +14,7 @@
          </class>
          <class
                allowImport="true"
-               icon="images/grid_position.png"
-               id="aguiaj.grid.Position"
-               viewClass="aguiaj.grid.view.PositionWidget">
+               id="aguiaj.grid.Position">
          </class>
       </group>
    </extension>

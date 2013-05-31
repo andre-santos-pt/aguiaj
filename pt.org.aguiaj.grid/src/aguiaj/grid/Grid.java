@@ -65,14 +65,17 @@ public class Grid {
 
 
 	/**
-	 * Objects a position.
+	 * Obtains a position.
 	 * @param row Row number
 	 * @param column Column number
 	 * @return The actual position object.
 	 */
 	public final Position getPosition(int row, int column) {
-		if(!isValidPosition(row, column))
-			throw new IllegalArgumentException("Invalid coordinates");		
+		if(row < 0 || row >= getNumberOfRows())
+			throw new IllegalArgumentException("Invalid row: " + row);
+		
+		if(column < 0 || column >= getNumberOfColumns())
+			throw new IllegalArgumentException("Invalid column: " + column);
 
 		return positions[row][column];
 	}
@@ -85,7 +88,7 @@ public class Grid {
 	 */
 	public final Position[] getRow(int row) {
 		if(row < 0 || row >= getNumberOfRows())
-			throw new IllegalArgumentException("Invalid row number");
+			throw new IllegalArgumentException("Invalid row");
 
 		return Arrays.copyOf(positions[row], getNumberOfColumns());
 	}
@@ -97,9 +100,8 @@ public class Grid {
 	 * @return An array with the actual <code>Position</code> objects that form the column
 	 */
 	public final Position[] getColumn(int column) {
-		
 		if(column < 0 || column >= getNumberOfColumns())
-			throw new IllegalArgumentException("Invalid column number");
+			throw new IllegalArgumentException("Invalid column");
 
 		Position[] col = new Position[getNumberOfRows()];
 		for(int i = 0; i < getNumberOfRows(); i++)
@@ -109,16 +111,15 @@ public class Grid {
 	}
 
 	/**
-	 * Obtains all the grid's positions.
+	 * Obtains all grid positions.
 	 * 
 	 * @return An array with the positions, line-by-line, left-to-right.
 	 */
 	public Position[] allPositions() {		
 		Position[] ret = new Position[getNumberOfRows() * getNumberOfColumns()];
-		int x = 0;
 		for(int i = 0; i < getNumberOfRows(); i++)
 			for(int j = 0; j < getNumberOfColumns(); j++)
-				ret[x++] = positions[i][j];
+				ret[i*getNumberOfColumns() + j] = positions[i][j];
 
 		return ret;
 	}
@@ -141,8 +142,7 @@ public class Grid {
 	 * Clears all the positions.
 	 */
 	public void clearAll() {
-		for(int i = 0; i < getNumberOfRows(); i++)
-			for(Position p : positions[i])
-				p.clear();
+		for(Position p : allPositions())
+			p.clear();
 	}
 }
