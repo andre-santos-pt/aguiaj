@@ -17,8 +17,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Event;
@@ -27,9 +29,11 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
 import pt.org.aguiaj.extensibility.AguiaJHelper;
-import pt.org.aguiaj.extensibility.CanvasVisualizationWidget;
+import pt.org.aguiaj.extensibility.canvas.CanvasVisualizationWidget;
+import pt.org.aguiaj.extensibility.canvas.DrawItem;
+import pt.org.aguiaj.extensibility.canvas.ImageDraw;
+import aguiaj.images.ImageWithTransparency;
 import aguiaj.images.Image;
-import aguiaj.images.contribution.Common;
 
 public class ImageWidget implements CanvasVisualizationWidget<Image> {
 	private static final int ZOOM_STEP = 3;
@@ -130,51 +134,97 @@ public class ImageWidget implements CanvasVisualizationWidget<Image> {
 
 
 
+//	@Override
+//	public void drawObject(GC gc) {
+//		if(image != null) {
+//			Common.drawImage(image, gc, 0, 0, zoom);
+//			for(int y = 0; y < image.getHeight(); y++) {
+//				for(int x = 0; x < image.getWidth(); x++) {				
+//					prev[y][x] = image.getColor(x, y);
+//				}
+//			}
+//		}
+//	}
+//
+//
+//
+//	@Override
+//	public List<Rectangle> toRedraw() {
+//		if(image != null) {
+//			Point first = null;
+//			int lastX = 0;
+//			int lastY = 0;
+//			
+//			for(int y = 0; y < image.getHeight(); y++) {
+//				for(int x = 0; x < image.getWidth(); x++) {				
+//					if(!image.getColor(x, y).equals(prev[y][x])) {
+//						if(first == null)
+//							first = new Point(x, y);
+//						if(first.x > x)
+//							first.x = x;
+//						
+//						if(x > lastX)
+//							lastX = x;
+//						
+//						if(y > lastY)
+//							lastY = y;
+//					}	
+//				}
+//			}
+//
+//			toRedraw.clear();
+//			if(first != null) {
+//				Rectangle area = new Rectangle(first.x*zoom, first.y*zoom, (lastX - first.x + 1)*zoom, (lastY - first.y + 1)*zoom);
+//				toRedraw.add(area);
+//			}
+//		}
+//
+//		return toRedraw;
+//	}
+
+
+	private List<DrawItem> single = new ArrayList<DrawItem>(1);
+	
 	@Override
-	public void drawObject(GC gc) {
-		if(image != null) {
-			Common.drawImage(image, gc, 0, 0, zoom);
-			for(int y = 0; y < image.getHeight(); y++) {
-				for(int x = 0; x < image.getWidth(); x++) {				
-					prev[y][x] = image.getColor(x, y);
-				}
-			}
-		}
+	public List<DrawItem> drawItems() {
+		single.clear();
+		single.add(createImageDraw(image, new Point(0, 0), zoom));
+		return single;
 	}
 
-
-
-	@Override
-	public List<Rectangle> toRedraw() {
-		if(image != null) {
-			Point first = null;
-			int lastX = 0;
-			int lastY = 0;
-			
-			for(int y = 0; y < image.getHeight(); y++) {
-				for(int x = 0; x < image.getWidth(); x++) {				
-					if(!image.getColor(x, y).equals(prev[y][x])) {
-						if(first == null)
-							first = new Point(x, y);
-						if(first.x > x)
-							first.x = x;
-						
-						if(x > lastX)
-							lastX = x;
-						
-						if(y > lastY)
-							lastY = y;
-					}	
+	public static ImageDraw createImageDraw(Image image, Point origin, int zoom) {
+		PaletteData palette = new PaletteData(0xFF0000, 0x00FF00, 0x0000FF);
+//		int height = Math.min(image.getHeight(), maxHeight);
+//		int width = Math.min(image.getWidth(), maxWidth);
+		int width = image.getWidth();
+		int height = image.getHeight();
+		ImageData data = new ImageData(width, height, 24, palette);
+		data.alpha = -1;
+		byte[] alpha = new byte[width*height];
+		int[] v = new int[width*height];
+		
+		int i = 0;
+		for(int y = 0; y < height; y++) {
+			for(int x = 0; x < width; x++) {
+				aguiaj.colors.Color pixel = image.getColor(x, y);
+				v[i] = palette.getPixel(new RGB(pixel.getR(), pixel.getG(), pixel.getB()));
+				if(image instanceof ImageWithTransparency) {
+					int t = ((ImageWithTransparency)image).getOpacity(x, y);
+					alpha[i] = (byte) ((t*255)/100);
 				}
-			}
-
-			toRedraw.clear();
-			if(first != null) {
-				Rectangle area = new Rectangle(first.x*zoom, first.y*zoom, (lastX - first.x + 1)*zoom, (lastY - first.y + 1)*zoom);
-				toRedraw.add(area);
+				else {
+					alpha[i] = (byte) 255;
+				}
+				i++;
 			}
 		}
 
-		return toRedraw;
+		data.setPixels(0, 0, v.length, v, 0); 
+		data.setAlphas(0, 0, alpha.length, alpha, 0); 
+		
+		data = data.scaledTo(width*zoom, height*zoom);
+		
+		return new ImageDraw(data, origin);
 	}
+	
 }
