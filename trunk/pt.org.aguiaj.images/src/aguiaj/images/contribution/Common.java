@@ -56,7 +56,8 @@ public class Common {
 		data.setAlphas(0, 0, alpha.length, alpha, 0); 
 		
 		data = data.scaledTo(width*zoom, height*zoom);
-		
-		gc.drawImage(new org.eclipse.swt.graphics.Image(Display.getDefault(), data), destX*zoom, destY*zoom);
+		org.eclipse.swt.graphics.Image img = new org.eclipse.swt.graphics.Image(Display.getDefault(), data);
+		gc.drawImage(img, destX*zoom, destY*zoom);
+		img.dispose();
 	}
 }

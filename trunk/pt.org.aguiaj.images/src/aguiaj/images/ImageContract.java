@@ -1,12 +1,12 @@
 package aguiaj.images;
 
 import aguiaj.colors.Color;
-import pt.org.aguiaj.extensibility.ContractProxy;
-import pt.org.aguiaj.extensibility.InvariantException;
-import pt.org.aguiaj.extensibility.PostConditionException;
-import pt.org.aguiaj.extensibility.PreConditionException;
+import pt.org.aguiaj.extensibility.contracts.ContractDecorator;
+import pt.org.aguiaj.extensibility.contracts.InvariantException;
+import pt.org.aguiaj.extensibility.contracts.PostConditionException;
+import pt.org.aguiaj.extensibility.contracts.PreConditionException;
 
-public class ImageContract implements Image, ContractProxy<Image>{
+public class ImageContract implements Image, ContractDecorator<Image>{
 
 	private final Image image;
 	
@@ -18,7 +18,7 @@ public class ImageContract implements Image, ContractProxy<Image>{
 	}
 	
 	@Override
-	public Image getProxiedObject() {
+	public Image getWrappedObject() {
 		return image;
 	}
 

@@ -10,5 +10,6 @@ Require-Bundle: org.eclipse.swt;bundle-version="3.6.0",
  pt.org.aguiaj.colors;bundle-version="1.0.0"
 Export-Package: aguiaj.icons,
  aguiaj.images,
- aguiaj.images.contribution
+ aguiaj.images.contribution,
+ aguiaj.images.view
 Bundle-Vendor: aguiaj.org.pt
