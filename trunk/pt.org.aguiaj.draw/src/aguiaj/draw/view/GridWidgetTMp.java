@@ -19,7 +19,8 @@ import org.eclipse.swt.events.DragDetectListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.graphics.Font;
+//import org.eclipse.swt.graphics.Font;
+
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
