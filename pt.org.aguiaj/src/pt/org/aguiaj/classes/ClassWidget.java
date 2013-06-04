@@ -25,7 +25,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Listener;
 
 import pt.org.aguiaj.common.AguiaJColor;
@@ -101,7 +100,7 @@ public class ClassWidget extends FieldContainer {
 			constructorsOrContantsGroup.setLayoutData(data);
 		}
 		
-		Group staticFieldsGroup = createStaticFieldsGroup(this, clazz);		
+		Composite staticFieldsGroup = createStaticFieldsGroup(this, clazz);		
 		if(staticFieldsGroup != null) {
 			FormData data = new FormData();
 			data.top = new FormAttachment(constructorsOrContantsGroup != null ? constructorsOrContantsGroup : classHeader, 5);
@@ -110,7 +109,7 @@ public class ClassWidget extends FieldContainer {
 			staticFieldsGroup.setLayoutData(data);
 		}
 		
-		Group staticMethodsGroup = createStaticMethodsGroup(this, clazz);
+		Composite staticMethodsGroup = createStaticMethodsGroup(this, clazz);
 		if(staticMethodsGroup != null) {
 			FormData data = new FormData();
 			data.top = new FormAttachment(staticFieldsGroup != null ? staticFieldsGroup :  constructorsOrContantsGroup != null ? constructorsOrContantsGroup : classHeader, 5);
@@ -124,9 +123,8 @@ public class ClassWidget extends FieldContainer {
 		updateFields();	
 	}
 
-	private Group createConstantsGroup(Composite parent, final Class<?> clazz) {
-		Group constantsGroup = new Group(parent, SWT.NONE);
-		constantsGroup.setText(UIText.ENUM_CONSTANTS.get());
+	private Composite createConstantsGroup(Composite parent, final Class<?> clazz) {
+		Composite constantsGroup = CompositeFrame.create(parent, UIText.ENUM_CONSTANTS.get());
 		constantsGroup.setLayout(new RowLayout(SWT.VERTICAL));
 		for(final Field field : clazz.getFields()) {
 			if(field.isEnumConstant()) {
@@ -171,10 +169,9 @@ public class ClassWidget extends FieldContainer {
 		return constantsGroup;
 	}
 
-	private Group createStaticFieldsGroup(Composite parent, final Class<?> clazz) {	
+	private Composite createStaticFieldsGroup(Composite parent, final Class<?> clazz) {	
 		if(!staticFields.isEmpty()) {
-			Group staticAttributesGroup = new Group(parent, SWT.NONE);
-			staticAttributesGroup.setText(UIText.STATIC_FIELDS.get());
+			Composite staticAttributesGroup = CompositeFrame.create(parent, UIText.STATIC_FIELDS.get());
 			GridLayout layout = new GridLayout(2, false);			
 			staticAttributesGroup.setLayout(layout);
 			
@@ -189,9 +186,7 @@ public class ClassWidget extends FieldContainer {
 	private Composite createConstructorsGroup(Composite parent, final Class<?> clazz) {
 		List<Constructor<?>> constructors = ClassModel.getInspector().getVisibleConstructors(clazz);
 		if(constructors.size() > 0) {
-			Group constructorsGroup = new Group(parent, SWT.NONE);
-			constructorsGroup.setText(UIText.CONSTRUCTORS.get());
-//			Composite constructorsGroup = CompositeFrame.create(parent, "Constructors");
+			Composite constructorsGroup = CompositeFrame.create(parent, UIText.CONSTRUCTORS.get());
 			
 			GridLayout layout = new GridLayout(2, false);			
 			constructorsGroup.setLayout(layout);
@@ -205,12 +200,11 @@ public class ClassWidget extends FieldContainer {
 			return null;
 	}
 
-	private Group createStaticMethodsGroup(Composite parent, final Class<?> clazz) {
+	private Composite createStaticMethodsGroup(Composite parent, final Class<?> clazz) {
 		List<Method> methods = ClassModel.getInspector().getVisibleStaticMethods(clazz);
 
 		if(methods.size() > 0) {
-			Group staticMethodsGroup = new Group(parent, SWT.NONE);
-			staticMethodsGroup.setText(UIText.STATIC_METHODS.get());
+			Composite staticMethodsGroup = CompositeFrame.create(parent, UIText.STATIC_METHODS.get());
 			staticMethodsGroup.setLayout(new GridLayout(2, false));
 			for(Method m : methods)	{
 				MethodWidget widget = new MethodWidget(staticMethodsGroup, null, m, this);
