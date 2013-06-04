@@ -32,12 +32,9 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -46,6 +43,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.AguiaJColor;
 import pt.org.aguiaj.common.AguiaJImage;
+import pt.org.aguiaj.common.CompositeFrame;
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.common.widgets.AttributeWidget;
 import pt.org.aguiaj.common.widgets.FieldContainer;
@@ -120,7 +118,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 			sectionMap.put(Section.VISUAL, visualSection);
 		}					
 
-		createPrivateAttributesGroup();
+		createPrivateFieldsGroup();
 		createFieldsGroup();
 		createPropertiesGroup();
 		createOperationsGroup();
@@ -197,16 +195,16 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 	}
 
 
-	private void createPrivateAttributesGroup() {
+	private void createPrivateFieldsGroup() {
 		List<Field> invisibleAttributes = ClassModel.getInstance().getInvisibleAttributes(objectClass);
 
 		if(invisibleAttributes.size() > 0) {
 			Composite privateAttributesGroup = createSection();
 			sectionMap.put(Section.INTERNALS, privateAttributesGroup);
 
-			RowLayout layout = new RowLayout(SWT.VERTICAL);
-			layout.spacing = PADDING;
-			privateAttributesGroup.setLayout(layout);
+//			RowLayout layout = new RowLayout(SWT.VERTICAL);
+//			layout.spacing = PADDING;
+//			privateAttributesGroup.setLayout(layout);
 
 			ReverseIterator<Field> it = new ReverseIterator<Field>(invisibleAttributes);
 
@@ -260,22 +258,10 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 	private void createFieldsGroup() {
 		List<Field> visibleAttributes = ClassModel.getInstance().getVisibleAttributes(objectClass);
 		if(visibleAttributes.size() > 0) {
-			Composite attributesGroup = createSection(null, true, false); 	
-			attributesGroup.setLayout(createGridLayout());
-//			RowLayout layout = new RowLayout(SWT.VERTICAL);
-//			layout.spacing = PADDING;
-//			layout.marginBottom = PADDING;
-//			layout.marginTop = PADDING;
-//			layout.marginLeft = PADDING;
-//			layout.marginRight = PADDING;
-//
-//			attributesGroup.setLayout(layout);
+			Composite attributesGroup = createSection(UIText.FIELDS.get(), false); 	
 			
 			sectionMap.put(Section.ATTRIBUTES, attributesGroup);
 
-			new LabelWidget.Builder().small().bold().text("Fields:").create(attributesGroup);
-			new Label(attributesGroup, SWT.NONE);
-			
 			for(Field field : visibleAttributes)	
 				new AttributeWidget(attributesGroup, field, object, this, true, false);	
 
@@ -286,20 +272,8 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 	private void createPropertiesGroup() {
 		List<Method> queryMethods = ClassModel.getInstance().getAccessorMethods(objectClass);
 		if(queryMethods.size() > 0) {
-			Composite propertiesGroup = createSection(null, true, false);
-			propertiesGroup.setLayout(createGridLayout());
-
+			Composite propertiesGroup = createSection(UIText.PROPERTIES.get(), false);
 			sectionMap.put(Section.PROPERTIES, propertiesGroup);
-			
-//			new Label(propertiesGroup, SWT.SEPARATOR | SWT.HORIZONTAL).setLayoutData(new GridData(SWT.FILL));
-			new LabelWidget.Builder().small().bold().text("Properties:").create(propertiesGroup);
-			new Label(propertiesGroup, SWT.NONE);
-//			GridData gd = new GridData();
-//			gd.grabExcessHorizontalSpace = true;
-//			gd.horizontalAlignment = SWT.FILL | SWT.LEFT;
-//			new LabelWidget.Builder().small().bold().text("Properties").create(propertiesGroup).setLayoutData(gd);
-			
-			
 			
 			for(final Method m : queryMethods) {
 				PropertyWidget widget = new PropertyWidget(propertiesGroup, object, m, this);
@@ -315,12 +289,8 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		List<Method> methods = ClassModel.getInstance().getCommandMethods(objectClass);
 
 		if(methods.size() > 0) {
-			Composite operationsGroup = createSection(null, true, true);
-			operationsGroup.setLayout(createGridLayout());
+			Composite operationsGroup = createSection(UIText.OPERATIONS.get(), true);
 			sectionMap.put(Section.OPERATIONS, operationsGroup);
-			
-			new LabelWidget.Builder().small().bold().text("Operations:").create(operationsGroup);
-			new Label(operationsGroup, SWT.NONE);
 			
 			for(Method m : methods) {
 				MethodWidget widget = new MethodWidget(operationsGroup, object, m, this);
@@ -331,17 +301,6 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		}
 	}
 
-
-	private GridLayout createGridLayout() {
-		GridLayout layout = new GridLayout(2, false);
-		layout.horizontalSpacing = PADDING;
-		layout.verticalSpacing = PADDING;
-		layout.marginBottom = PADDING;
-		layout.marginTop = PADDING;
-		layout.marginLeft = PADDING;
-		layout.marginRight = PADDING;
-		return layout;
-	}
 
 
 	private String headerText() {
@@ -505,12 +464,11 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 	}
 
 	private Composite createSection() {
-		return createSection(null, false, false);
+		return createSection(null, false);
 	}
-	private Composite createSection(String group, boolean border, boolean last) {
-		Composite section = group != null ? new Group(this, SWT.NONE) : new Composite(this, border ? SWT.BORDER : SWT.NONE);
-		if(group != null)
-			((Group) section).setText(group);		
+	
+	private Composite createSection(String title, boolean last) {
+		Composite section = CompositeFrame.create(this, title);
 		
 		FormData groupData = new FormData();
 
@@ -529,11 +487,6 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		
 		section.setLayoutData(groupData);
 		sections.push(section);
-		
-//		Label sep = new Label(this, SWT.SEPARATOR | SWT.HORIZONTAL);
-//		FormData sepData = new FormData();
-//		sepData.top = new FormAttachment(section, 0);
-//		sep.setLayoutData(sepData);
 		
 		return section;
 	}
