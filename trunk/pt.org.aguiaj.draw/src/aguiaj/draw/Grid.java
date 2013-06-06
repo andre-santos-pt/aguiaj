@@ -1,7 +1,7 @@
 package aguiaj.draw;
 
 
-public interface Grid  {
+public interface Grid extends TwoDimensional {
 
 	int getNumberOfRows();
 	int getNumberOfColumns();

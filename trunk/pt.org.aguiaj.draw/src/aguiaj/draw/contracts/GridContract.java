@@ -1,6 +1,7 @@
 package aguiaj.draw.contracts;
 
 import aguiaj.draw.Color;
+import aguiaj.draw.Dimension;
 import aguiaj.draw.Grid;
 import aguiaj.draw.Image;
 import pt.org.aguiaj.extensibility.contracts.ContractDecorator;
@@ -106,6 +107,11 @@ public final class GridContract implements Grid, ContractDecorator<Grid> {
 	@Override
 	public int getPositionHeight() {
 		return grid.getPositionHeight();
+	}
+
+	@Override
+	public Dimension getDimension() {
+		return grid.getDimension();
 	}
 
 	

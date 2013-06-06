@@ -17,7 +17,7 @@ package aguiaj.draw;
  * 
  * @author Andre L. Santos
  */
-public interface Image {
+public interface Image extends TwoDimensional {
 	/**
 	 * The image width in pixels.
 	 */

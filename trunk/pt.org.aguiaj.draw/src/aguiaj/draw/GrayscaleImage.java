@@ -1,11 +1,13 @@
 package aguiaj.draw;
 
+
 import aguiaj.draw.Image;
 
 public class GrayscaleImage implements Image {
 		
-	private int[][] pixels;
-	private ConstantDimension dimension;
+	
+	private final int[][] pixels;
+	private final Dimension dimension;
 	
 	public GrayscaleImage(int width, int height) {
 		this(new int[height][width]);
@@ -13,25 +15,37 @@ public class GrayscaleImage implements Image {
 	
 	private GrayscaleImage(int[][] pixels) {
 		this.pixels = pixels;
-		dimension = new ConstantDimension(pixels[0].length, pixels.length);
+		dimension = new Dimension(pixels[0].length, pixels.length);
 	}
 	
-//	@Override
-//	public int getWidth() {
-//		return pixels[0].length;
-//	}
-//
-//	@Override
-//	public int getHeight() {
-//		return pixels.length;
-//	}
+	public static GrayscaleImage create(int[][] pixels) {
+		if(!validMatrix(pixels))
+			throw new IllegalArgumentException("invalid matrix for grayscale image");
+		
+		int[][] copy = new int[pixels.length][pixels[0].length];
+		for(int y = 0; y < pixels.length; y++)
+			for(int x = 0; x < pixels[y].length; x++)
+				copy[y][x] = pixels[y][x];
+		
+		return new GrayscaleImage(copy);
+	}
 
+	private static boolean validMatrix(int[][] pixels) {
+		// ...
+		return true;
+	}
+	
+	@Override
+	public Dimension getDimension() {
+		return dimension;
+	}
+	
 	@Override
 	public GrayTone getColor(int x, int y) {
-		return new GrayTone(pixels[y][x]);
+		return GrayTone.get(pixels[y][x]);
 	}
 	
-	
+
 	
 	public void invert() {
 		for(int y = 0; y < pixels.length; y++)
@@ -41,16 +55,13 @@ public class GrayscaleImage implements Image {
 
 	@Override
 	public GrayscaleImage copy() {
-		int[][] copy = new int[pixels.length][pixels[0].length];
-		for(int y = 0; y < pixels.length; y++)
-			for(int x = 0; x < pixels[y].length; x++)
-				copy[y][x] = pixels[y][x];
+//		int[][] copy = new int[pixels.length][pixels[0].length];
+//		for(int y = 0; y < pixels.length; y++)
+//			for(int x = 0; x < pixels[y].length; x++)
+//				copy[y][x] = pixels[y][x];
 		
-		return new GrayscaleImage(copy);
+		return new GrayscaleImage(this.pixels);
 	}
 
-	@Override
-	public Dimension getDimension() {
-		return dimension;
-	}
+
 }
