@@ -47,10 +47,6 @@
                allowImport="true"
                id="aguiaj.draw.Dimension">
          </class>
-         <class
-               allowImport="true"
-               id="aguiaj.draw.ConstantDimension">
-         </class>
       </group>
       <group
             id="Data Structures">
@@ -63,11 +59,6 @@
                allowImport="true"
                contractProxy="aguiaj.adt.CollectionContract"
                id="aguiaj.adt.Collection">
-         </class>
-         <class
-               allowImport="true"
-               contractProxy="aguiaj.java.ObjectContract"
-               id="java.lang.Object">
          </class>
       </group>
    </extension>

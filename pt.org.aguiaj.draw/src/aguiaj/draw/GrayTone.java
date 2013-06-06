@@ -5,15 +5,28 @@ import aguiaj.draw.Color;
 
 public class GrayTone implements Color {
 
-	private int value;
 	
 	private static final int MAX = 255;
+	private static final GrayTone[] tones;
+	static {
+		tones = new GrayTone[MAX+1];
+		for(int i = 0; i <= MAX; i++)
+			tones[i] = new GrayTone(i);
+	}
+	
+
+	private int value;
+	
 //	public static final GrayTone WHITE = new GrayTone(MAX);
 //	public static final GrayTone BLACK = new GrayTone(0);
 //	public static final GrayTone GRAY = new GrayTone(MAX/2);
 	
-	public GrayTone(int value) {
+	private GrayTone(int value) {
 		this.value = value;
+	}
+	
+	public static GrayTone get(int v) {
+		return tones[v];
 	}
 	
 	public static GrayTone random() {
