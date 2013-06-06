@@ -41,7 +41,7 @@ import pt.org.aguiaj.objects.ObjectModel;
 	boolean[][].class, 
 	Object[][].class
 })
-public class Array2DObjectWidget implements VisualizationWidget<Object> {
+public class Array2DObjectWidget extends VisualizationWidget.Adapter<Object> {
 	private Composite section;
 	private Object object;
 	private List<TypeWidget> rows;
@@ -114,16 +114,5 @@ public class Array2DObjectWidget implements VisualizationWidget<Object> {
 				i++;
 			}
 		}
-	}
-
-	@Override	
-	public Control getControl() {
-		return section;
-	}
-
-
-	@Override
-	public boolean needsRelayout() {
-		return true;
 	}
 }

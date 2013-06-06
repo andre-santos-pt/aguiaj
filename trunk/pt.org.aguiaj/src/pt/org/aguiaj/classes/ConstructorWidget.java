@@ -53,6 +53,7 @@ public class ConstructorWidget {
 
 		final Button newButton = new Button(parent, SWT.PUSH);
 		newButton.setText("new");
+		newButton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 		
 		Fonts.set(newButton, AguiaJParam.MEDIUM_FONT);
 		

@@ -330,7 +330,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		nameLabel.getControl().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
-				if(existsSection(Section.PROPERTIES) && isVisible(Section.OPERATIONS)) {
+				if(isVisible(Section.OPERATIONS)) {
 					show(Section.ATTRIBUTES, true);
 					show(Section.PROPERTIES, !hasExtension);
 					show(Section.OPERATIONS, false);
@@ -349,7 +349,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 
 		for(final Class<?> type : types) {
 			if(ClassModel.getInstance().isClassInUse(type) && !type.equals(Enum.class) && !type.isEnum()) {
-				IconWidget icon = new IconWidget(classHeader, type);
+				IconWidget icon = IconWidget.createForRowLayout(classHeader, type);
 				String toolTip = type.isInterface() ?
 						type.getSimpleName() + " (interface)" :
 							UIText.IS_A.get(objectClass.getSimpleName(), type.getSimpleName());

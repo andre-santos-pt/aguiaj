@@ -45,7 +45,9 @@ import pt.org.aguiaj.common.widgets.LabelWidget;
 import pt.org.aguiaj.core.AguiaJActivator;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.ReflectionUtils;
+import pt.org.aguiaj.core.documentation.DocumentationLinking;
 import pt.org.aguiaj.core.documentation.DocumentationView;
+import pt.org.aguiaj.standard.StandardNamePolicy;
 
 import com.google.common.collect.Sets;
 
@@ -102,8 +104,9 @@ class PackageWidget extends Composite {
 		Iterator<Class<?>> it = classes.iterator();
 		while(it.hasNext()) {
 			Class<?> clazz = it.next();
-			if(clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()) && !clazz.isEnum())
+			if(clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()) && !clazz.isEnum()) {
 				new AbstractClassWidget(area, clazz);
+			}
 			else if(ReflectionUtils.tryClass(clazz)) {
 				ClassWidget w = new ClassWidget(area, clazz);
 				w.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -217,13 +220,28 @@ class PackageWidget extends Composite {
 		public ErrorWidget(Composite parent, Class<?> clazz) {
 			super(parent, SWT.NONE);
 			setLayout(new RowLayout(SWT.HORIZONTAL));		
-			new IconWidget(parent, AguiaJImage.ERROR);									
+			IconWidget.createForRowLayout(parent, AguiaJImage.ERROR.getImage());									
 			new LabelWidget.Builder()
 			.text(clazz.getSimpleName())
 			.big()
 			.toolTip("Class could not be loaded, either due to compilation errors or missing dependencies.")
 			.color(AguiaJColor.ALERT)
 			.create(parent);
+		}
+	}
+	
+	private static class AbstractClassWidget extends Composite  {
+
+		public AbstractClassWidget(Composite parent, Class<?> clazz) {
+			super(parent, SWT.NONE);
+			setLayout(new RowLayout(SWT.HORIZONTAL));
+			IconWidget.createForRowLayout(this, clazz).setToolTipText("Polymorphic type");
+			LabelWidget classNameLabel =  new LabelWidget.Builder()
+				.text(StandardNamePolicy.prettyClassName(clazz))
+				.big()
+				.create(this);
+			
+			DocumentationLinking.add(classNameLabel.getControl(), clazz);
 		}
 	}
 }

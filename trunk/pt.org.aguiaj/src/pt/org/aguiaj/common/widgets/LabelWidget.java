@@ -28,7 +28,7 @@ import pt.org.aguiaj.core.Highlighter;
 import pt.org.aguiaj.objects.ObjectsView;
 
 
-public class LabelWidget extends Composite implements Highlightable {
+public class LabelWidget implements Highlightable {
 	
 	private Control control;
 	private Highlighter highlighter;
@@ -36,17 +36,17 @@ public class LabelWidget extends Composite implements Highlightable {
 	private LabelWidget(Composite parent, AguiaJParam fontFace, AguiaJParam size, String text, int style, boolean link, 
 			String tooltip, AguiaJColor color) {
 		
-		super(parent, SWT.NONE);
-		setLayout(new FillLayout());
+//		super(parent, SWT.NONE);
+//		setLayout(new FillLayout());
 			
 		if(link) {
-			Link linkWidget = new Link(this, style);
+			Link linkWidget = new Link(parent, style);
 			Fonts.set(linkWidget, fontFace, size, style);
 			linkWidget.setText("<a>" + text + "</a>");
 			control = linkWidget;
 		}
 		else {
-			Label labelWidget = new Label(this, style);
+			Label labelWidget = new Label(parent, style);
 			Fonts.set(labelWidget, fontFace, size, style);
 			labelWidget.setText(text);
 			control = labelWidget;
@@ -102,7 +102,7 @@ public class LabelWidget extends Composite implements Highlightable {
 		private boolean link = false;
 		private AguiaJParam size = AguiaJParam.MEDIUM_FONT;
 		private AguiaJParam fontFace = AguiaJParam.FONT;
-		private int style = SWT.NONE;
+		private int style = SWT.NORMAL;
 		private String tooltip = "";
 		private AguiaJColor color = AguiaJColor.BLACK;
 		

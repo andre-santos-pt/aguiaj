@@ -361,31 +361,6 @@ public class ClassModel {
 	}
 
 
-
-	//	private Map<Class<?>,List<Method>> filteredCommandMethods(Class<?> clazz, List<Method> queryMethods) {					
-	//		Map<Class<?>,List<Method>> commandMethodsByType = inspector.getCommandMethodsByType(clazz);
-	//		
-	//		List<ClassMemberFilter> filters = findFilters(clazz);
-	//
-	//		for(List<Method> commandMethods : commandMethodsByType.values()) {
-	//			for(Iterator<Method> it = commandMethods.iterator(); it.hasNext(); ) {
-	//				Method method = it.next();
-	//				for(ClassMemberFilter f : filters) {					
-	//					if(f.filter(method) && !toPromote(clazz, method)) {
-	//						it.remove();
-	//						break;
-	//					}
-	//				}
-	//
-	//				if(toPromote(clazz, method)) {
-	//					queryMethods.add(method);
-	//					it.remove();
-	//				}
-	//			}
-	//		}
-	//		return commandMethodsByType;
-	//	}
-
 	private List<ClassMemberFilter> findFilters(Class<?> clazz) {
 		List<ClassMemberFilter> filters = new ArrayList<ClassMemberFilter>();
 		for(Class<?> key : filterMap.keySet()) {

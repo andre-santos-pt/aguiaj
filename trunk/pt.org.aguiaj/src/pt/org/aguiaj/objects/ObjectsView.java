@@ -272,7 +272,7 @@ public class ObjectsView extends ViewPart {
 			ReferenceStackWidget<ObjectWidget> pair =  ReferenceStackWidget.newObject(area, object);
 			widgetsTable.put(object, pair.getWidget());
 			refStackTable.put(object, pair);	
-			pair.moveAbove(null);
+//			pair.moveAbove(null);
 		}
 		
 		addReference(referenceType, reference, object);

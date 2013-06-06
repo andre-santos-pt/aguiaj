@@ -60,7 +60,7 @@ public class ReferenceWidget extends Composite {
 		iconAndRef.setLayout(new RowLayout(SWT.HORIZONTAL));
 
 		if(isPolymorphic)
-			new IconWidget(iconAndRef, type).setToolTipText(toolTip);
+			IconWidget.createForRowLayout(iconAndRef, type).setToolTipText(toolTip);
 
 		Menu menu = createMenu();
 		setMenu(menu);

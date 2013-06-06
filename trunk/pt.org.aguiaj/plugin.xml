@@ -221,8 +221,7 @@
          </class>
          <class
                allowImport="false"
-               id="java.lang.String"
-               viewClass="pt.org.aguiaj.standard.extensions.StringObjectWidget">
+               id="java.lang.String">
             <promoteToAccessor>
                <method
                      id="length">
@@ -262,6 +261,12 @@
          <class
                allowImport="false"
                id="java.util.Random">
+         </class>
+         <class
+               allowImport="false"
+               contractProxy="pt.org.aguiaj.standard.extensions.ObjectContract"
+               id="java.lang.Object"
+               viewClass="pt.org.aguiaj.standard.extensions.ObjectToStringWidget">
          </class>
       </group>
    </extension>

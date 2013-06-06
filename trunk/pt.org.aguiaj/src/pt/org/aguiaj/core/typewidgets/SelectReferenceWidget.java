@@ -86,7 +86,7 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 	private void createContents2(Composite parent) {
 		if(ClassModel.getInstance().isPolymorphic(getType()) &&
 				ClassModel.getInstance().isPluginTypeActive(getType()))
-			new IconWidget(this, getType());
+			IconWidget.createForRowLayout(this, getType());
 
 //		int style = SWT.READ_ONLY;
 //		if(getType().equals(String.class))

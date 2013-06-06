@@ -28,7 +28,7 @@ import pt.org.aguiaj.extensibility.VisualizationWidget;
 	boolean[].class, 
 	Object[].class
 })
-public class ArrayObjectWidget implements VisualizationWidget<Object> {
+public class ArrayObjectWidget extends VisualizationWidget.Adapter<Object> {
 	private ArrayRowWidget row;
 	private FieldContainer fieldContainer;
 	private Composite section;
@@ -49,10 +49,6 @@ public class ArrayObjectWidget implements VisualizationWidget<Object> {
 
 
 	public void update(Object object) {
-//		if(object.getClass().equals(char[].class) && get) {
-//			
-//		}
-		
 		if(row == null && object != null) {
 			new ArrayLengthWidget(section).update(Array.getLength(object));
 			Class<?> arrayType = object.getClass().getComponentType();
@@ -65,12 +61,4 @@ public class ArrayObjectWidget implements VisualizationWidget<Object> {
 			row.updateFields(object);
 	}
 	
-	public Control getControl() {
-		return row;
-	}
-
-	@Override
-	public boolean needsRelayout() {
-		return true;
-	}
 }

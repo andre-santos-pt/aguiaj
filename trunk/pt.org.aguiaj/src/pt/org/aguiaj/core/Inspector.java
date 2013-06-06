@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -48,6 +49,12 @@ public class Inspector {
 				if(inspectionPolicy.isConstructorVisible(c))
 					constructors.add(c);
 		}
+		Collections.sort(constructors,new Comparator<Constructor<?>>() {
+			@Override
+			public int compare(Constructor<?> c1, Constructor<?> c2) {
+				return new Integer(c1.getParameterTypes().length).compareTo(c1.getParameterTypes().length);
+			}
+		});
 		return constructors;
 	}
 

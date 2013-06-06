@@ -128,7 +128,7 @@ public enum WidgetFactory {
 		}
 		else {
 			for(Class<?> key : objectWidgetTypeTable.keySet()) {
-				if(key.isAssignableFrom(clazz))
+				if(!key.equals(Object.class) && key.isAssignableFrom(clazz))
 					return bestExtension(key);
 			}
 		}
@@ -170,23 +170,24 @@ public enum WidgetFactory {
 				widgets.add(new SelectReferenceWidget(parent, type, ownerType));	
 			}
 			else if(type.isArray() &&					
-					!type.getComponentType().isArray() &&
-					ownerType.equals(WidgetProperty.PROPERTY)) {
+					!type.getComponentType().isArray()) {
+//					ownerType.equals(WidgetProperty.PROPERTY)) {
 
-				if(type.getComponentType().isPrimitive()) {
-					widgets.add(new ExtensionTypeWidget(parent, ownerType,  new StringObjectWidget()));
+				if(type.getComponentType().isPrimitive() && ownerType.equals(WidgetProperty.ARRAYPOSITION)) {
+					widgets.add(new ExtensionTypeWidget(parent, type, ownerType,  new StringObjectWidget()));
 				}
-				else {
-					widgets.add(new ExtensionTypeWidget(parent, ownerType,  new TableArrayObjectWidget()));
+				else if(ownerType.equals(WidgetProperty.PROPERTY)) {
+					widgets.add(new ExtensionTypeWidget(parent, type, ownerType,  new TableArrayObjectWidget()));
 				}
-			}
-			else if(!properties.contains(WidgetProperty.NO_EXTENSION)) {
-				addExtensionWidgets(parent, type, widgets, ownerType, single);	
 			}
 		}
 
-		if(widgets.isEmpty())
-			widgets.add(new ExtensionTypeWidget(parent, ownerType, new StringObjectWidget()));
+		if(!properties.contains(WidgetProperty.NO_EXTENSION) && ownerType != WidgetProperty.PARAMETER) {
+			addExtensionWidgets(parent, type, widgets, ownerType, single);	
+		}
+		
+//		if(widgets.isEmpty())
+//			widgets.add(new ExtensionTypeWidget(parent, type, ownerType, new StringObjectWidget()));
 
 		for(TypeWidget w : widgets)
 			SWTUtils.setTooltipRecursively(w.getControl(), type.getSimpleName());
@@ -214,14 +215,16 @@ public enum WidgetFactory {
 				if(single)
 					return;
 			}
-			else {
+			else if(VisualizationWidget.class.isAssignableFrom(constructor.getDeclaringClass())) {
 				VisualizationWidget<?> extension = null;
 				try {
 					extension = constructor.newInstance();
 				} catch (Exception e) {
 					e.printStackTrace();
-				} 
-				widgets.add(new ExtensionTypeWidget(parent, ownerType, extension));
+				}
+				if(extension.include(type))
+					widgets.add(new ExtensionTypeWidget(parent, type, ownerType, extension));
+				
 				if(single)
 					return;
 			}

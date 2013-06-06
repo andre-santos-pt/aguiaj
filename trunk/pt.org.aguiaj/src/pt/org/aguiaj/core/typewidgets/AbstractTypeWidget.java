@@ -19,6 +19,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.ISizeProvider;
 
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.ArrayPositionAssignmentCommand;
