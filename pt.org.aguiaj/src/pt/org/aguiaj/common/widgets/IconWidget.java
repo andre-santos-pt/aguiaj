@@ -14,6 +14,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.ISizeProvider;
 
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.AguiaJImage;
@@ -22,18 +23,27 @@ public class IconWidget extends Composite {
 
 	private static final int SIDE = 16;
 	
-	public IconWidget(Composite parent, AguiaJImage image) {
+	public IconWidget(Composite parent, Image image) {
 		super(parent, SWT.NONE);
-		setLayoutData(new RowData(SIDE, SIDE));
-		setBackgroundImage(image.getImage());
+		setBackgroundImage(image);
 	}
 	
 	public IconWidget(Composite parent, Class<?> clazz) {
-		super(parent, SWT.NONE);
-		setLayoutData(new RowData(SIDE, SIDE));
-		Image icon = ClassModel.getInstance().getIcon(clazz);
-		setBackgroundImage(icon);
+		this(parent, ClassModel.getInstance().getIcon(clazz));
 	}
+	
+	public static IconWidget createForRowLayout(Composite parent, Image image) {
+		IconWidget widget = new IconWidget(parent, image);
+		widget.setLayoutData(new RowData(SIDE, SIDE));
+		return widget;
+	}
+	
+	public static IconWidget createForRowLayout(Composite parent, Class<?> clazz) {
+		IconWidget widget = new IconWidget(parent, clazz);
+		widget.setLayoutData(new RowData(SIDE, SIDE));
+		return widget;
+	}
+
 
 
 }

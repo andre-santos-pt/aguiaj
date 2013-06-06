@@ -63,7 +63,7 @@ public class ClassWidget extends FieldContainer {
 		classHeader.setLayout(new RowLayout(SWT.HORIZONTAL));
 
 		if(ClassModel.getInstance().hasSubClasses(clazz)) 
-			new IconWidget(classHeader, clazz);
+			IconWidget.createForRowLayout(classHeader, clazz);
 
 		LabelWidget classNameLabel = new LabelWidget.Builder()
 			.text(StandardNamePolicy.prettyClassName(clazz))

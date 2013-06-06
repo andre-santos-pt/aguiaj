@@ -78,7 +78,7 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 		extensionWidget = new Composite(parent, SWT.NONE);
 		layout = new RowLayout();
 		extensionWidget.setLayout(layout);
-		canvas = new Canvas(extensionWidget, SWT.NONE);		
+		canvas = new Canvas(extensionWidget, SWT.NONE);
 		canvas.addPaintListener(this);
 		nullWidget = new NullReferenceWidget(parent, SWT.NONE);
 		stack.topControl = nullWidget;
@@ -140,6 +140,8 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 
 	@Override
 	public final void paintControl(PaintEvent e) {
+		e.gc.setBackground(parent.getBackground());
+		e.gc.fillRectangle(e.gc.getClipping());
 		if(getObject() != null) {
 			List<DrawItem> items = drawItems();
 			for(DrawItem item : items) {

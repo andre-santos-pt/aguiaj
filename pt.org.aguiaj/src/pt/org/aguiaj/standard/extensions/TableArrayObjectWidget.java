@@ -31,7 +31,7 @@ import pt.org.aguiaj.extensibility.VisualizationWidget;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 
-public class TableArrayObjectWidget implements VisualizationWidget<Object> {
+public class TableArrayObjectWidget extends VisualizationWidget.Adapter<Object> {
 
 	private Table table;
 	private Object object;
@@ -53,11 +53,6 @@ public class TableArrayObjectWidget implements VisualizationWidget<Object> {
 	@Override
 	public boolean needsRelayout() {
 		return true;
-	}
-
-	@Override
-	public Control getControl() {
-		return table;
 	}
 
 	@Override

@@ -16,15 +16,8 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.DragSource;
-import org.eclipse.swt.dnd.DragSourceEvent;
-import org.eclipse.swt.dnd.DragSourceListener;
-import org.eclipse.swt.dnd.TextTransfer;
-import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
@@ -59,11 +52,6 @@ class ArrayRowWidget extends Composite {
 		this.array = arrayObject;
 
 		hasExtension = WidgetFactory.INSTANCE.hasExtension(arrayType);		
-		//		boolean hasToString = !arrayType.isPrimitive() && ReflectionUtils.declaresToString(arrayType);
-		//
-		//		hasExtensionWidgets = (hasExtension || hasToString); 
-
-		//		if(hasExtensionWidgets)
 		extensionWidgets = new ArrayList<TypeWidget>();
 
 		int length = Array.getLength(arrayObject);
@@ -132,39 +120,9 @@ class ArrayRowWidget extends Composite {
 		}
 
 		fieldContainer.updateFields(arrayObject);
-		//		if(hasExtensionWidgets) {
-		//			int i = 0;
-		//			for(TypeWidget widget : extensionWidgets) {
-		//				Control control = widget.getControl();
-		//				if(control != null)
-		//					addDragSupport(control, arrayType, i);
-		//				i++;
-		//			}
-		//		}
 	}
 
-	private void addDragSupport(Control control, final Class<?> arrayType, final int index) {
-		assert control != null;
-
-		int operations = DND.DROP_MOVE | DND.DROP_COPY;
-		DragSource source = new DragSource(control, operations);
-		Transfer[] types = new Transfer[] {TextTransfer.getInstance()};
-		source.setTransfer(types);
-		source.addDragListener(new DragSourceListener() {
-			public void dragStart(DragSourceEvent event) {
-			}
-			public void dragSetData(DragSourceEvent event) {
-				if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
-					event.data = createAccessCommand(index).getJavaInstruction();
-				}
-			}
-
-			public void dragFinished(DragSourceEvent event) {
-				// If a move operation has been performed, remove the data
-				// from the source
-			}
-		});
-	}
+//	
 
 	public void updateFields(Object object) {
 		if(hasExtension) {
@@ -185,4 +143,27 @@ class ArrayRowWidget extends Composite {
 		JavaCommand cmd = new NewReferenceCommand(type, obj, source);
 		return cmd;
 	}
+	
+//	private void addDragSupport(Control control, final Class<?> arrayType, final int index) {
+//		assert control != null;
+//
+//		int operations = DND.DROP_MOVE | DND.DROP_COPY;
+//		DragSource source = new DragSource(control, operations);
+//		Transfer[] types = new Transfer[] {TextTransfer.getInstance()};
+//		source.setTransfer(types);
+//		source.addDragListener(new DragSourceListener() {
+//			public void dragStart(DragSourceEvent event) {
+//			}
+//			public void dragSetData(DragSourceEvent event) {
+//				if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
+//					event.data = createAccessCommand(index).getJavaInstruction();
+//				}
+//			}
+//
+//			public void dragFinished(DragSourceEvent event) {
+//				// If a move operation has been performed, remove the data
+//				// from the source
+//			}
+//		});
+//	}
 }

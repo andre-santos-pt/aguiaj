@@ -28,7 +28,7 @@ import pt.org.aguiaj.core.AguiaJActivator;
  *
  * @param <T> The type of domain object that this widget renders.
  */
-public abstract class ImageVisualizationWidget<T> implements VisualizationWidget<T> {
+public abstract class ImageVisualizationWidget<T> extends VisualizationWidget.Adapter<T> {
 
 	/**
 	 * Returns the file name of the image associated with the given <code>object</code>
@@ -62,10 +62,7 @@ public abstract class ImageVisualizationWidget<T> implements VisualizationWidget
 		relayout = true;
 	}
 
-	public Control getControl() {
-		return imageCanvas;
-	}
-
+	
 	@Override
 	public void update(T object) {				
 		imageCanvas.setVisible(object != null);

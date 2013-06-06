@@ -23,8 +23,8 @@ import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.extensibility.VisualizationWidget;
 
-//@PluggableObjectWidget(char[].class)
-public class StringObjectWidget implements VisualizationWidget<Object> {
+@PluggableObjectWidget(char[].class)
+public class StringObjectWidget extends VisualizationWidget.Adapter<Object> {
 	private Composite section;
 	private Text text;
 
@@ -69,10 +69,7 @@ public class StringObjectWidget implements VisualizationWidget<Object> {
 		}
 	}
 	
-	public Control getControl() {
-		return section;
-	}
-
+	
 	@Override
 	public boolean needsRelayout() {
 		return needsRelayout;

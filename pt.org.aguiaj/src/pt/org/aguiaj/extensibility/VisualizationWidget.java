@@ -39,5 +39,31 @@ public interface VisualizationWidget<T> extends CustomWidget<T> {
 	 * 
 	 * @return a non-null reference to a subtype of Control. Contract: should not return null in any case.
 	 */
-	Control getControl();
+//	Control getControl();
+	
+//	void dispose();
+	
+	
+	boolean include(Class<?> type);
+	
+	public abstract static class Adapter<T> implements VisualizationWidget<T> {
+		@Override
+		public void createSection(Composite parent) {
+			
+		}
+		
+		@Override
+		public boolean needsRelayout() {
+			return true;
+		}
+		
+//		public void dispose() {
+//			
+//		}
+		
+		@Override
+		public boolean include(Class<?> type) {
+			return true;
+		}
+	}
 }

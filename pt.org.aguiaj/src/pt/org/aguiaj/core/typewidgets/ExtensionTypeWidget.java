@@ -15,9 +15,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import pt.org.aguiaj.common.AguiaJColor;
 import pt.org.aguiaj.common.widgets.NullReferenceWidget;
 import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.extensibility.VisualizationWidget;
@@ -36,11 +38,12 @@ public class ExtensionTypeWidget extends AbstractTypeWidget {
 	private Composite extensionWidget;
 
 	public ExtensionTypeWidget(
-			Composite parent, 
-			WidgetProperty type, 
+			Composite parent,
+			Class<?> type,
+			WidgetProperty property, 
 			VisualizationWidget extension) {
 
-		super(parent, SWT.NONE, type, false);
+		super(parent, SWT.NONE, property, false);
 
 		this.extension = extension;
 		text = "null";
@@ -64,12 +67,11 @@ public class ExtensionTypeWidget extends AbstractTypeWidget {
 		setBackground(parent.getBackground());
 
 		extensionWidget = new Composite(parent, SWT.NONE);
-
+		
 		nullWidget = new NullReferenceWidget(parent, SWT.NONE);
 		updateNullWidget();
 
 		stack.topControl = nullWidget;
-		layout();
 	}
 
 	public Object defaultValue() {
