@@ -19,7 +19,10 @@ public class Builder extends IncrementalProjectBuilder {
 		
 		Display.getDefault().syncExec(new Runnable() {
 		    public void run() {
-		    	ExpressionsView.getInstance().refresh();
+		    	ExpressionsView view = ExpressionsView.getInstance();
+		    	
+		    	if(view != null)
+		    		view.refresh();
 		    }
 		});
 		return null;
