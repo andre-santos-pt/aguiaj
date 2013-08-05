@@ -2,7 +2,7 @@
 <feature
       id="pt.org.aguiaj.feature"
       label="AGUIA/J"
-      version="0.9.9.6"
+      version="1.0.1"
       provider-name="aguiaj.org.pt"
       plugin="pt.org.aguiaj.branding">
 
