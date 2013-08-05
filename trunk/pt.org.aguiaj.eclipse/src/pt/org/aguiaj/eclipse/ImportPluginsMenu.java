@@ -80,6 +80,7 @@ public class ImportPluginsMenu extends ContributionItem {
 		if(path != null) {
 			Image img = new Image(Display.getDefault(), path);		
 			submenu.setImage(img);
+			img.dispose();
 		}
 		Menu items = new Menu(menu);
 		submenu.setMenu(items);

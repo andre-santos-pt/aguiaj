@@ -74,6 +74,8 @@ public class OpenAguiaJ extends AbstractHandler implements IViewActionDelegate {
 				Activator.setPerspective(pers.getId());
 
 			workbench.showPerspective(AguiaJContribution.PERSPECTIVE, workbench.getActiveWorkbenchWindow());
+			workbench.getActiveWorkbenchWindow().getShell().setText("AGUIA/J - Inspecting project " + project.getElementName());
+			
 			if(Activator.getProject() == project) {
 				ReloadClassesCommand reloadCommand = new ReloadClassesCommand();
 				reloadCommand.execute(null);
