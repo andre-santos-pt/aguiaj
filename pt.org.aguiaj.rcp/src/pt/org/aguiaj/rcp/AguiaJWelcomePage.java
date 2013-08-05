@@ -12,7 +12,8 @@ package pt.org.aguiaj.rcp;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
+//import org.eclipse.swt.graphics.Font;
+
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
@@ -54,7 +55,7 @@ public class AguiaJWelcomePage extends IntroPart {
 		Link link = new Link(comp, SWT.NONE);
 		FontData data = new FontData("Arial", 24, SWT.ITALIC);
 		link.setText("<a>OK, let me go!</a>");
-		link.setFont(new Font(Display.getDefault(), data));
+
 		link.setBackground(white);
 		link.addListener(SWT.Selection, new Listener () {
 			public void handleEvent(Event event) {
