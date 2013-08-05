@@ -29,7 +29,7 @@ import pt.org.aguiaj.extensibility.VisualizationWidget;
 import aguiaj.cards.Card;
 import aguiaj.cards.CardHand;
 
-public class CardHandWidget implements VisualizationWidget<CardHand> {
+public class CardHandWidget extends VisualizationWidget.Adapter<CardHand> {
 
 	private Composite cardSection;
 	private List<Composite> images;
@@ -98,10 +98,4 @@ public class CardHandWidget implements VisualizationWidget<CardHand> {
 	public boolean needsRelayout() {
 		return true;
 	}
-
-	@Override
-	public Control getControl() {
-		return cardSection;
-	}
-
 }

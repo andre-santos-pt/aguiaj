@@ -24,13 +24,12 @@ import aguiaj.cards.CardStack;
 import pt.org.aguiaj.extensibility.AguiaJHelper;
 import pt.org.aguiaj.extensibility.VisualizationWidget;
 
-public class CardStackWidget 
-implements VisualizationWidget<CardStack> {
+public class CardStackWidget extends VisualizationWidget.Adapter<CardStack> {
 
 	private Composite section;
 	private Card top;
 	private boolean relayout;
-	
+
 	@Override
 	public void update(CardStack stack) {
 		if(!stack.isEmpty()) {
@@ -67,8 +66,4 @@ implements VisualizationWidget<CardStack> {
 		return relayout;
 	}
 
-	@Override
-	public Control getControl() {		
-		return section;
-	}
 }
