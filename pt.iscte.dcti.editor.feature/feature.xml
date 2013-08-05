@@ -2,7 +2,7 @@
 <feature
       id="pt.iscte.dcti.editor.feature"
       label="ISCTE-IUL Java Environment"
-      version="1.0.0"
+      version="1.0.1.2"
       provider-name="pt.org.aguiaj">
 
    <description url="http://dcti.iscte.pt">
@@ -27,16 +27,45 @@
       <import plugin="org.eclipse.jdt.core" version="3.6.2" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.resources" version="3.6.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jdt.launching" version="3.5.200" match="greaterOrEqual"/>
+      <import plugin="pt.org.aguiaj.eclipse" version="0.9.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.console" version="3.5.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jface.text" version="3.6.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.editors" version="3.6.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jdt.ui" version="3.6.2" match="greaterOrEqual"/>
-      <import plugin="pt.org.aguiaj.eclipse" version="0.9.0" match="greaterOrEqual"/>
       <import plugin="pt.org.aguiaj" version="0.8.2" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.ide" version="3.6.2" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.resources" version="3.7.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jdt" version="3.7.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jdt.ui" version="3.7.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.ide" version="3.7.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jdt.core" version="3.7.2" match="greaterOrEqual"/>
+      <import plugin="org.eclipselabs.javainterpreter" version="0.1.0" match="greaterOrEqual"/>
+      <import plugin="org.junit"/>
    </requires>
 
    <plugin
          id="pt.iscte.dcti.editor"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="pt.iscte.dcti.expressionsview"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipselabs.javainterpreter"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipselabs.reflectionutils"
          download-size="0"
          install-size="0"
          version="0.0.0"
