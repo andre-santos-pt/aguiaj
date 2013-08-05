@@ -54,8 +54,15 @@ public class Activator implements BundleActivator {
 		AguiaJHelper.addExceptionListener(new ExceptionListener() {
 			@Override
 			public void newException(ExceptionTrace trace, boolean goToError) {
-
+				
+				
 				if(goToError) {
+					try {
+						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(ExceptionTraceView.ID);
+					} catch (PartInitException e) {
+						e.printStackTrace();
+					}
+					
 					String pers = Activator.getPerspective();
 					if(pers == null)
 						pers = JavaUI.ID_PERSPECTIVE;
@@ -65,16 +72,11 @@ public class Activator implements BundleActivator {
 					} catch (WorkbenchException e) {
 						e.printStackTrace();
 					}
-
-					try {
-						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(ExceptionTraceView.ID);
-					} catch (PartInitException e) {
-						e.printStackTrace();
-					}
+					
 					ExceptionTraceView.getInstance().setInput(trace);
 				}
 				else {
-					ExceptionTraceView.getInstance().clear();
+//					ExceptionTraceView.getInstance().clear();
 				}
 			}
 		});
