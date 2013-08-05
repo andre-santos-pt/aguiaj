@@ -128,6 +128,7 @@ class ExpressionVisitor extends ASTVisitor {
 		Constructor<?> c = match(clazz, args);
 		if(c != null) {
 			try {
+				c.setAccessible(true);
 				return c.newInstance(args);
 			} catch (Exception e) {
 				e.printStackTrace();
