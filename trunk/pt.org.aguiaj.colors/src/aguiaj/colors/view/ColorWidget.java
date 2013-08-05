@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.Display;
 import pt.org.aguiaj.extensibility.VisualizationWidget;
 import aguiaj.colors.Color;
 
-public class ColorWidget implements VisualizationWidget<Color> {
+public class ColorWidget extends VisualizationWidget.Adapter<Color> {
 	private Composite square;
 	private Color color;
 	private boolean relayout;
@@ -50,12 +50,8 @@ public class ColorWidget implements VisualizationWidget<Color> {
 	}
 
 	@Override
-	public Control getControl() {
-		return square;
-	}
-
-	@Override
 	public boolean needsRelayout() {
 		return relayout;
 	}
+
 }
