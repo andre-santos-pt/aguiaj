@@ -118,15 +118,7 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 	}
 
 	void refresh() {
-		if(input != null) {
-//			Class<?> clazz = loadClass();
-//			for(Expression exp : expressions.get(input))
-//				exp.setClass(clazz);
-//
-//			interpreter.clear();
-		}
-
-		if(viewer != null)
+		if(viewer != null && !viewer.getTable().isDisposed())
 			viewer.setInput(input);
 	}
 

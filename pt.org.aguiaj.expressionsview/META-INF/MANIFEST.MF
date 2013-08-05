@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Function test
 Bundle-SymbolicName: pt.iscte.dcti.expressionsview;singleton:=true
-Bundle-Version: 0.1
+Bundle-Version: 0.2
 Bundle-Activator: pt.iscte.dcti.expressionsview.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
