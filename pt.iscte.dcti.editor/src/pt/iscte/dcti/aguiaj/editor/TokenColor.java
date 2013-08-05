@@ -28,6 +28,6 @@ public enum TokenColor {
 	public final Color color;
 	
 	private TokenColor(int r, int g, int b) {
-		color = new Color(Display.getCurrent(), new RGB(r, g, b));
+		color = new Color(Display.getDefault(), new RGB(r, g, b));
 	}
 }
