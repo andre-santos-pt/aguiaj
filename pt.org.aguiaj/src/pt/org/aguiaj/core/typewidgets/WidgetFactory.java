@@ -186,8 +186,8 @@ public enum WidgetFactory {
 			addExtensionWidgets(parent, type, widgets, ownerType, single);	
 		}
 		
-//		if(widgets.isEmpty())
-//			widgets.add(new ExtensionTypeWidget(parent, type, ownerType, new StringObjectWidget()));
+		if(widgets.isEmpty())
+			widgets.add(new ExtensionTypeWidget(parent, type, ownerType, new StringObjectWidget()));
 
 		for(TypeWidget w : widgets)
 			SWTUtils.setTooltipRecursively(w.getControl(), type.getSimpleName());
