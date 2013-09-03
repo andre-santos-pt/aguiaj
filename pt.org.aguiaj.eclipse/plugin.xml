@@ -115,10 +115,10 @@
       <perspectiveExtension
             targetID="org.eclipse.jdt.ui.JavaPerspective">
          <view
-               id="pt.org.aguiaj.eclipse.view1"
+               id="pt.org.aguiaj.eclipse.exceptionview"
                minimized="false"
-               relationship="right"
-               relative="org.eclipse.ui.console.ConsoleView">
+               relationship="stack"
+               relative="org.eclipse.ui.views.ProblemView">
          </view>
       </perspectiveExtension>
    </extension>
