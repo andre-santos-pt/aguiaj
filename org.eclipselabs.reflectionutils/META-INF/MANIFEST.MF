@@ -3,5 +3,5 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Reflection Utils bundle
 Bundle-SymbolicName: org.eclipselabs.reflectionutils
 Bundle-Version: 0.1
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipselabs.reflectionutils.invocation
