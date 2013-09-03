@@ -2,7 +2,6 @@ package org.eclipselabs.javainterpreter;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -23,8 +22,6 @@ import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.InfixExpression;
-import org.eclipse.jdt.core.dom.Initializer;
-import org.eclipse.jdt.core.dom.LineComment;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.NullLiteral;
 import org.eclipse.jdt.core.dom.NumberLiteral;
@@ -85,20 +82,20 @@ class ExpressionVisitor extends ASTVisitor {
 	public boolean visit(InfixExpression e) {
 		throw new RuntimeException("not supported: " + e);
 	}
-	
+
 	public boolean visit(PrefixExpression e) {
 		throw new RuntimeException("not supported: " + e);
 	}
-	
+
 	public boolean visit(PostfixExpression e) {
 		throw new RuntimeException("not supported: " + e);
 	}
-	
+
 	public boolean visit(ParenthesizedExpression e) {
 		throw new RuntimeException("not supported: " + e);
 	}
-	
-	
+
+
 	@Override
 	public void endVisit(Assignment node) {
 		result = argsTable.get(node).get(0);
@@ -106,7 +103,7 @@ class ExpressionVisitor extends ASTVisitor {
 		context.addReference(result == null ? Object.class : result.getClass(), node.getLeftHandSide().toString(), result);
 	}
 
-	
+
 	@Override
 	public void endVisit(ClassInstanceCreation node) {
 		Object r = resolve(node);
@@ -266,7 +263,7 @@ class ExpressionVisitor extends ASTVisitor {
 			methodTarget.put((MethodInvocation) parent, node.getLiteralValue());
 		else
 			argsTable.get(parent).add(node.getLiteralValue());
-		
+
 		return true;
 	}
 
@@ -335,7 +332,7 @@ class ExpressionVisitor extends ASTVisitor {
 			throw new RuntimeException("Null pointer exception");
 
 		Expression exp = node.getExpression();
-		
+
 		String className = methodTarget.containsKey(node) ? 
 				target.getClass().getSimpleName() : exp == null ? null : exp.toString();
 
@@ -355,7 +352,8 @@ class ExpressionVisitor extends ASTVisitor {
 					if(thread.hasFailed()) {
 						Throwable exc = thread.getException();
 						String loc = exc.getStackTrace()[0].getFileName() + ": " + exc.getStackTrace()[0].getLineNumber();
-						throw new RuntimeException(exc.getClass().getSimpleName() + " at " + loc);
+						
+						throw new ExecutionException(exc.getClass().getSimpleName() + " at " + loc, exc.getStackTrace()[0].getLineNumber());
 					}
 					else if(thread.timeoutReached())
 						throw new RuntimeException("Infinite cycle?");
@@ -375,7 +373,7 @@ class ExpressionVisitor extends ASTVisitor {
 				prop instanceof ChildPropertyDescriptor && 
 				((ChildPropertyDescriptor) prop).getId().equals("expression");
 	}
-	
+
 	private static boolean isMethodName(ASTNode node) {
 		StructuralPropertyDescriptor prop = node.getLocationInParent();
 		return 
@@ -383,7 +381,7 @@ class ExpressionVisitor extends ASTVisitor {
 				prop instanceof ChildPropertyDescriptor && 
 				((ChildPropertyDescriptor) prop).getId().equals("name");
 	}
-	
+
 
 	private Method match(String methodName, Object[] args, String className) {
 		if(className != null && context.isClassAvailable(className)) {
