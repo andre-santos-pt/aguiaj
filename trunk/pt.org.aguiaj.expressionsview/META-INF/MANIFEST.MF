@@ -6,11 +6,9 @@ Bundle-Version: 0.2
 Bundle-Activator: pt.iscte.dcti.expressionsview.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.core.resources;bundle-version="3.7.0",
- org.eclipse.jdt;bundle-version="3.7.0",
- org.eclipse.jdt.ui;bundle-version="3.7.0",
- org.eclipse.ui.ide;bundle-version="3.7.0",
- org.eclipse.jdt.core;bundle-version="3.7.2",
- org.eclipselabs.javainterpreter;bundle-version="0.1.0"
+ org.eclipse.core.resources;bundle-version="0.0.0",
+ org.eclipse.ui.ide;bundle-version="0.0.0",
+ org.eclipse.jdt.core;bundle-version="0.0.0",
+ org.eclipselabs.javainterpreter;bundle-version="0.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

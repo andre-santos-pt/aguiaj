@@ -35,5 +35,17 @@
             id="pt.iscte.dcti.expressionsview.functionBuilder">
       </builder>
    </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.jdt.ui.JavaPerspective">
+         <view
+               id="pt.org.aguiaj.expressionsview"
+               minimized="false"
+               relationship="stack"
+               relative="org.eclipse.ui.views.ProblemView">
+         </view>
+      </perspectiveExtension>
+   </extension>
  
 </plugin>

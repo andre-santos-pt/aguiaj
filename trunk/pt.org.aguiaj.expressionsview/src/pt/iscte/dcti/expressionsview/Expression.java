@@ -2,6 +2,7 @@ package pt.iscte.dcti.expressionsview;
 
 import java.lang.reflect.Array;
 
+import org.eclipselabs.javainterpreter.ExecutionException;
 import org.eclipselabs.javainterpreter.JavaInterpreter;
 import org.eclipselabs.javainterpreter.Output;
 
@@ -10,6 +11,7 @@ public class Expression {
 
 	private JavaInterpreter interpreter;
 	private String value;
+	private ExecutionException exception;
 	
 	public Expression(JavaInterpreter interpreter, String value) {
 		this.interpreter = interpreter;
@@ -31,8 +33,13 @@ public class Expression {
 //	}
 	
 	public boolean valid() {
+		exception = null;
 		try { 
 			interpreter.evaluateMethodInvocation(getValue());
+		}
+		catch(ExecutionException ex) {
+			exception = ex;
+			return false;
 		}
 		catch(RuntimeException ex) {
 			return false;
@@ -48,6 +55,9 @@ public class Expression {
 		return !valid() ? "Syntax error" : "";
 	}
 	
+	public ExecutionException getException() {
+		return exception;
+	}
 
 	
 	@Override
