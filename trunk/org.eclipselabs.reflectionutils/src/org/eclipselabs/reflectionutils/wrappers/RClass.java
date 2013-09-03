@@ -1,7 +1,6 @@
 package org.eclipselabs.reflectionutils.wrappers;
 
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +10,7 @@ public class RClass extends TypeR {
 	private static Map<Class<?>, RClass> instances;
 	
 	static {
-		instances = new HashMap<>();
+		instances = new HashMap<Class<?>, RClass>();
 	}
 	
 	private RClass(Class<?> clazz) {
