@@ -397,12 +397,7 @@ public class ReflectionUtils {
 	}
 
 
-	public static void main(String[] args) {
-		System.out.println(arrayDim(Object[][].class));
-		System.out.println(arrayDim(int.class));
-		System.out.println(arrayDim(Object[][][].class));
-
-	}
+	
 
 	public static boolean checkParamTypes(Class<?>[] paramTypes, Object[] args) {
 		if(paramTypes.length != args.length)
