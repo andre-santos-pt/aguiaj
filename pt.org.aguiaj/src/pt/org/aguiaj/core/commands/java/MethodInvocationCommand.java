@@ -16,6 +16,7 @@ import java.lang.reflect.Modifier;
 
 import pt.org.aguiaj.common.MethodInvocationThread2;
 import pt.org.aguiaj.core.ReflectionUtils;
+import pt.org.aguiaj.extensibility.contracts.ContractDecorator;
 import pt.org.aguiaj.objects.ObjectModel;
 
 
@@ -128,7 +129,11 @@ public class MethodInvocationCommand extends JavaCommandWithArgs implements Cont
 
 	@Override
 	public Object getObjectUnderContract() {
-		return object;
+		Object o = object;
+		while(o instanceof ContractDecorator)
+			o = ((ContractDecorator) o).getWrappedObject();
+		
+		return o;
 	}
 
 	@Override

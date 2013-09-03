@@ -4,10 +4,10 @@ Bundle-Name: AGUIA/J
 Bundle-SymbolicName: pt.org.aguiaj;singleton:=true
 Bundle-Version: 0.9.8.6
 Bundle-Activator: pt.org.aguiaj.core.AguiaJActivator
-Require-Bundle: org.eclipse.core.runtime;bundle-version="3.6.0",
- org.eclipse.core.resources;bundle-version="3.6.0",
- org.eclipse.jdt.core;bundle-version="3.6.0",
- org.junit;bundle-version="3.8.2",
+Require-Bundle: org.eclipse.core.runtime;bundle-version="0.0.0",
+ org.eclipse.core.resources;bundle-version="0.0.0",
+ org.eclipse.jdt.core;bundle-version="0.0.0",
+ org.junit;bundle-version="0.0.0",
  org.eclipse.swt;bundle-version="0.0.0",
  org.eclipse.ui;bundle-version="0.0.0",
  com.google.guava;bundle-version="11.0.0"
