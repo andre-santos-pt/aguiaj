@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
@@ -13,13 +14,18 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.core.IClassFile;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -30,8 +36,6 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -39,11 +43,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
@@ -73,10 +74,11 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 
 	public ExpressionsView() {
 		_instance = this;
+
 		expressions = new HashMap<IEditorInput, List<Expression>>();
 		interpreter = new JavaInterpreter(new Context() {
 
-			private Context context = new SimpleContext(null, Math.class, String.class);
+			private Context context = new SimpleContext(null, Math.class, String.class, Random.class);
 
 			@Override
 			public boolean isClassAvailable(String name) {
@@ -84,6 +86,9 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 					if(c.getName().equals(name))
 						return true;
 
+				if(ProjectClassLoader.existsInLibrary(((FileEditorInput) input).getFile().getProject(), name))
+					return true;
+				
 				return context.isClassAvailable(name);
 			}
 
@@ -151,10 +156,10 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 
 
 
+
 	private Class<?> loadClass() {
 		if(input != null) {
 
-			//			IFileEditorInput input = (IFileEditorInput) editorPart.getEditorInput();
 			IResource r = (IResource) input.getAdapter(IResource.class);
 			IProject proj = r.getProject();
 			try {
