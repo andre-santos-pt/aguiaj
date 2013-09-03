@@ -36,7 +36,7 @@ public class ImageContract implements Image, ContractDecorator<Image>{
 		if(constWidth == -1)
 			constWidth = w;
 		
-		int h = dim.getWidth();
+		int h = dim.getHeight();
 		validateHeight(h);
 		
 		if(constHeight == -1)
@@ -92,6 +92,7 @@ public class ImageContract implements Image, ContractDecorator<Image>{
 
 	@Override
 	public void checkInvariant() throws InvariantException {
+	
 		Dimension dim = getDimension();
 		
 		int w = dim.getWidth();
@@ -103,10 +104,10 @@ public class ImageContract implements Image, ContractDecorator<Image>{
 			for(int x = 0; x < w; x++)
 				ColorContract.validate(image.getColor(x, y));
 		
-		if(constWidth != -1 && constWidth != dim.getWidth())
+		if(constWidth != -1 && constWidth != w)
 			throw new InvariantException("Image width must be constant");
 	
-		if(constHeight != -1 && constHeight != dim.getHeight())
+		if(constHeight != -1 && constHeight != h)
 			throw new PostConditionException("Image height must be constant");
 	}
 
