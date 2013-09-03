@@ -83,9 +83,9 @@ class ExpressionVisitor extends ASTVisitor {
 		throw new RuntimeException("not supported: " + e);
 	}
 
-	public boolean visit(PrefixExpression e) {
-		throw new RuntimeException("not supported: " + e);
-	}
+//	public boolean visit(PrefixExpression e) {
+//		throw new RuntimeException("not supported: " + e);
+//	}
 
 	public boolean visit(PostfixExpression e) {
 		throw new RuntimeException("not supported: " + e);
@@ -193,11 +193,16 @@ class ExpressionVisitor extends ASTVisitor {
 	private Class<?> loadClass(Type t) {
 		String className = t.toString();
 
-		if(context.isClassAvailable(className))
+		if(context.isClassAvailable(className)){
 			return context.getClass(className);
-
-		if(t.isPrimitiveType()) {
+		}
+		else if(t.isPrimitiveType()) {
 			return getPrimitiveType(className);
+		}
+		else if(t.isArrayType()) {
+			for(Class<?> primitive : primitiveTypes)
+				if(t.toString().startsWith(primitive.getSimpleName()))
+					return primitive;
 		}
 		else {
 			try {
