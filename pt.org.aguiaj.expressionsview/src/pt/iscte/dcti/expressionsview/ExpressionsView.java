@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
@@ -16,7 +17,10 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
@@ -26,6 +30,8 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -33,15 +39,21 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPartListener2;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartReference;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.javainterpreter.Context;
+import org.eclipselabs.javainterpreter.ExecutionException;
 import org.eclipselabs.javainterpreter.JavaInterpreter;
 import org.eclipselabs.javainterpreter.SimpleContext;
 
@@ -54,7 +66,7 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 
 	private static ExpressionsView _instance;
 
-//	private static final Color BLACK = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+	//	private static final Color BLACK = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
 	private static final Color RED = Display.getDefault().getSystemColor(SWT.COLOR_RED);
 
 	private Map<IEditorInput, List<Expression>> expressions;
@@ -63,44 +75,44 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 		_instance = this;
 		expressions = new HashMap<IEditorInput, List<Expression>>();
 		interpreter = new JavaInterpreter(new Context() {
-			
+
 			private Context context = new SimpleContext(null, Math.class, String.class);
-			
+
 			@Override
 			public boolean isClassAvailable(String name) {
 				for(Class<?> c : getImplicitClasses())
 					if(c.getName().equals(name))
 						return true;
-				
+
 				return context.isClassAvailable(name);
 			}
-			
+
 			@Override
 			public Object getObject(String referenceName) {
 				return context.getObject(referenceName);
 			}
-			
+
 			@Override
 			public Set<Class<?>> getImplicitClasses() {
 				Set<Class<?>> set = new HashSet<Class<?>>(1);
 				set.add(loadClass());
 				return set;
 			}
-			
+
 			@Override
 			public Class<?> getClass(String name) {
 				for(Class<?> c : getImplicitClasses())
 					if(c.getName().equals(name))
 						return c;
-				
+
 				return context.getClass(name);
 			}
-			
+
 			@Override
 			public boolean existsReference(String name) {
 				return context.existsReference(name);
 			}
-			
+
 			@Override
 			public void addReference(Class<?> type, String name, Object object) {
 				context.addReference(type, name, object);
@@ -142,7 +154,7 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 	private Class<?> loadClass() {
 		if(input != null) {
 
-//			IFileEditorInput input = (IFileEditorInput) editorPart.getEditorInput();
+			//			IFileEditorInput input = (IFileEditorInput) editorPart.getEditorInput();
 			IResource r = (IResource) input.getAdapter(IResource.class);
 			IProject proj = r.getProject();
 			try {
@@ -199,7 +211,7 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 	private void createExpressionColumn() {
 		final TableViewerColumn col = new TableViewerColumn(viewer, SWT.NONE);
 		col.getColumn().setText("Function call");
-		col.getColumn().setWidth(400);
+		col.getColumn().setWidth(300);
 		col.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
@@ -273,7 +285,33 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 			}
 		});
 
-		//		Menu menu = new Menu(table.getControl().getShell(), SWT.POP_UP);
+		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				int index = viewer.getTable().getSelectionIndex();
+				Expression exp = (Expression) viewer.getElementAt(index);
+				if(exp != null) {
+					ExecutionException ex = exp.getException();
+					if(ex != null) {
+						int line = ex.getLine();
+						try {
+							IMarker marker = ((FileEditorInput) input).getFile().createMarker(IMarker.TEXT);
+							HashMap<String, Object> map = new HashMap<String, Object>();
+							map.put(IMarker.LINE_NUMBER, new Integer(line));
+							marker.setAttributes(map);
+							IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(); 
+							IDE.openEditor(page, marker); 
+							marker.delete();
+						} catch (CoreException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		});
+
+		//		Menu menu = new Menu(viewer.getControl().getShell(), SWT.POP_UP);
 		//		MenuItem item = new MenuItem(menu, SWT.PUSH);
 		//		item.setText("Add item");
 		//		item.addSelectionListener(new SelectionAdapter() {
@@ -283,13 +321,13 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 		//				refresh();
 		//			}
 		//		});
-		//		table.getTable().setMenu(menu);
+		//		viewer.getTable().setMenu(menu);
 	}
 
 	private void createResultColumn() {
 		TableViewerColumn col = new TableViewerColumn(viewer, SWT.NONE);
 		col.getColumn().setText("Result");
-		col.getColumn().setWidth(400);
+		col.getColumn().setWidth(600);
 		col.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
@@ -327,10 +365,16 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 
 	@Override
 	public void partActivated(IWorkbenchPartReference partRef) {
+		handlePartOpen(partRef);
 	}
 
 	@Override
 	public void partBroughtToTop(IWorkbenchPartReference partRef) {
+		handlePartOpen(partRef);
+
+	}
+
+	private void handlePartOpen(IWorkbenchPartReference partRef) {
 		IWorkbenchPart part = partRef.getPart(true);
 		if(part instanceof IEditorPart) {
 			// TODO: check if java editor
@@ -344,7 +388,6 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 
 			refresh();
 		}
-
 	}
 
 	@Override
@@ -362,6 +405,7 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 
 	@Override
 	public void partOpened(IWorkbenchPartReference partRef) {
+		handlePartOpen(partRef);
 	}
 
 	@Override
