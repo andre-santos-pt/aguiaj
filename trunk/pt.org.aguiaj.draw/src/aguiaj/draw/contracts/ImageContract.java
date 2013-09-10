@@ -1,6 +1,6 @@
 package aguiaj.draw.contracts;
 
-import aguiaj.draw.Color;
+import aguiaj.draw.RGBColor;
 import aguiaj.draw.Dimension;
 import aguiaj.draw.Image;
 import pt.org.aguiaj.extensibility.contracts.ContractDecorator;
@@ -68,7 +68,7 @@ public class ImageContract implements Image, ContractDecorator<Image>{
 //	}
 
 	@Override
-	public Color getColor(int x, int y) {
+	public RGBColor getColor(int x, int y) {
 		Dimension dim = getDimension();
 		
 		if(!dim.isValidPoint(x, y))
@@ -81,7 +81,7 @@ public class ImageContract implements Image, ContractDecorator<Image>{
 //			throw new PreConditionException("Invalid y coordinate: " + y + " (valid range [0, " + (getHeight()-1) + "])");
 		
 		
-		Color color = image.getColor(x, y);
+		RGBColor color = image.getColor(x, y);
 		if(color == null)
 			throw new PostConditionException("The color of a pixel cannot be null");
 		

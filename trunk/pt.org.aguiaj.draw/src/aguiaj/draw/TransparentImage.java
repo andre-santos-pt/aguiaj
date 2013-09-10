@@ -13,7 +13,7 @@ package aguiaj.draw;
 /**
  * Represents images with transparency.
  */
-public interface ImageWithTransparency extends Image {
+public interface TransparentImage extends Image {
 
 	/**
 	 * The opacity level at an image point (100 - fully opaque; 0 - transparent).

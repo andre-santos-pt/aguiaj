@@ -9,7 +9,7 @@ public interface Grid extends TwoDimensional {
 	int getPositionWidth();
 	int getPositionHeight();
 	
-	Color getBackground(int row, int column);
+	RGBColor getBackground(int row, int column);
 	
 	Image getImage(int row, int column);
 }

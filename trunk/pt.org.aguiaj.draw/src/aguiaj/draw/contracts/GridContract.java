@@ -1,6 +1,6 @@
 package aguiaj.draw.contracts;
 
-import aguiaj.draw.Color;
+import aguiaj.draw.RGBColor;
 import aguiaj.draw.Dimension;
 import aguiaj.draw.Grid;
 import aguiaj.draw.Image;
@@ -71,10 +71,10 @@ public final class GridContract implements Grid, ContractDecorator<Grid> {
 	}
 	
 	@Override
-	public Color getBackground(int row, int column) {
+	public RGBColor getBackground(int row, int column) {
 		checkRowColumn(row, column);
 		
-		Color color = grid.getBackground(row, column);
+		RGBColor color = grid.getBackground(row, column);
 		if(color == null)
 			throw new PostConditionException("Background cannot be null");
 		
