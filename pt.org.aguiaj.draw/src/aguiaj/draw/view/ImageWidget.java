@@ -36,7 +36,7 @@ import pt.org.aguiaj.extensibility.canvas.DrawItem;
 import pt.org.aguiaj.extensibility.canvas.ImageDraw;
 import aguiaj.draw.Dimension;
 import aguiaj.draw.Image;
-import aguiaj.draw.ImageWithTransparency;
+import aguiaj.draw.TransparentImage;
 import aguiaj.draw.contracts.ColorContract;
 
 public class ImageWidget implements CanvasVisualizationWidget<Image> {
@@ -48,7 +48,7 @@ public class ImageWidget implements CanvasVisualizationWidget<Image> {
 	private int width;
 	private int height;
 	private ArrayList<Rectangle> toRedraw = new ArrayList<Rectangle>(1);
-	private aguiaj.draw.Color[][] prev;
+	private aguiaj.draw.RGBColor[][] prev;
 	private Color background;
 	
 	private MenuItem zoomInItem;
@@ -74,7 +74,7 @@ public class ImageWidget implements CanvasVisualizationWidget<Image> {
 			height = dim.getHeight();
 
 			if(prev == null)
-				prev = new aguiaj.draw.Color[height][width];
+				prev = new aguiaj.draw.RGBColor[height][width];
 
 			if(toRedraw.isEmpty())
 				toRedraw.add(new Rectangle(0, 0, canvasWidth(), canvasHeight()));
@@ -161,10 +161,10 @@ public class ImageWidget implements CanvasVisualizationWidget<Image> {
 		int i = 0;
 		for(int y = 0; y < height; y++) {
 			for(int x = 0; x < width; x++) {
-				aguiaj.draw.Color pixel = image.getColor(x, y);
+				aguiaj.draw.RGBColor pixel = image.getColor(x, y);
 				v[i] = palette.getPixel(new RGB(pixel.getR(), pixel.getG(), pixel.getB()));
-				if(image instanceof ImageWithTransparency) {
-					int t = ((ImageWithTransparency)image).getOpacity(x, y);
+				if(image instanceof TransparentImage) {
+					int t = ((TransparentImage)image).getOpacity(x, y);
 					alpha[i] = (byte) ((t*255)/100);
 				}
 				else {

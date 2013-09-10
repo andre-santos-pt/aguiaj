@@ -18,22 +18,13 @@ package aguiaj.draw;
  * @author Andre L. Santos
  */
 public interface Image extends TwoDimensional {
-	/**
-	 * The image width in pixels.
-	 */
-	//int getWidth();
-	
-	/**
-	 * The image height in pixels.
-	 */
-	//int getHeight();
 	
 	Dimension getDimension();
 	
 	/**
 	 * The color at image point (<i>x</i>, <i>y</i>).
 	 */
-	Color getColor(int x, int y);
+	RGBColor getColor(int x, int y);
 	
 	Image copy();
 	//Image copy();

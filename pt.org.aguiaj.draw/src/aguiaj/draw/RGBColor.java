@@ -15,7 +15,7 @@ package aguiaj.draw;
  * 
  * @author Andre L. Santos
  */
-public interface Color {
+public interface RGBColor {
 	
 	/**
 	 * Red value.

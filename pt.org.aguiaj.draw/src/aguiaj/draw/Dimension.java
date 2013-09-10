@@ -6,11 +6,15 @@ public class Dimension implements Comparable<Dimension>{
 	private final int height;
 	
 	public Dimension(int width, int height) {
-		if(width < 1 || height < 1)
+		if(!isValidDimension(width, height))
 			throw new IllegalArgumentException("width and height must be greater than zero");
 		
 		this.width = width;
 		this.height = height;
+	}
+	
+	public static boolean isValidDimension(int width, int height) {
+		return width > 0 && height > 0;
 	}
 
 	public int getWidth() {

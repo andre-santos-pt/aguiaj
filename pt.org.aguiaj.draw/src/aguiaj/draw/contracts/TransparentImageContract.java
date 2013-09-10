@@ -1,25 +1,25 @@
 package aguiaj.draw.contracts;
 
-import aguiaj.draw.Color;
+import aguiaj.draw.RGBColor;
 import aguiaj.draw.Dimension;
 import aguiaj.draw.Image;
-import aguiaj.draw.ImageWithTransparency;
+import aguiaj.draw.TransparentImage;
 import pt.org.aguiaj.extensibility.contracts.ContractDecorator;
 import pt.org.aguiaj.extensibility.contracts.InvariantException;
 import pt.org.aguiaj.extensibility.contracts.PostConditionException;
 import pt.org.aguiaj.extensibility.contracts.PreConditionException;
 
-public class TransparentImageContract implements ImageWithTransparency, ContractDecorator<ImageWithTransparency>{
+public class TransparentImageContract implements TransparentImage, ContractDecorator<TransparentImage>{
 
-	private final ImageWithTransparency image;
+	private final TransparentImage image;
 	
 	
-	public TransparentImageContract(ImageWithTransparency image) {
+	public TransparentImageContract(TransparentImage image) {
 		this.image = image;
 	}
 	
 	@Override
-	public ImageWithTransparency getWrappedObject() {
+	public TransparentImage getWrappedObject() {
 		return image;
 	}
 
@@ -39,7 +39,7 @@ public class TransparentImageContract implements ImageWithTransparency, Contract
 	}
 
 	@Override
-	public Color getColor(int x, int y) {
+	public RGBColor getColor(int x, int y) {
 		return image.getColor(x, y);
 	}
 

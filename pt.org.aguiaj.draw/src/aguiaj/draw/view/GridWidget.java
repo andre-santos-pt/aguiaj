@@ -125,7 +125,7 @@ public class GridWidget implements CanvasVisualizationWidget<Grid> {
 	private void addPositions(List<DrawItem> items) {
 		for(int row = 0; row < grid.getNumberOfRows(); row++) {
 			for(int column = 0; column < grid.getNumberOfColumns(); column++) {
-				aguiaj.draw.Color color = grid.getBackground(row, column);
+				aguiaj.draw.RGBColor color = grid.getBackground(row, column);
 				Color swtColor = new org.eclipse.swt.graphics.Color(display, color.getR(), color.getG(), color.getB());
 				items.add(new RectangleDraw(BORDER + (column * WIDTH) + 1, BORDER + (row * WIDTH) + 1, WIDTH - 1, WIDTH - 1, swtColor));
 				

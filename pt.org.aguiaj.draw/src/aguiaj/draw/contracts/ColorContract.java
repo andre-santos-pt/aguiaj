@@ -1,13 +1,13 @@
 package aguiaj.draw.contracts;
 
-import aguiaj.draw.Color;
+import aguiaj.draw.RGBColor;
 import pt.org.aguiaj.extensibility.contracts.AbstractContractDecoractor;
 import pt.org.aguiaj.extensibility.contracts.InvariantException;
 import pt.org.aguiaj.extensibility.contracts.PostConditionException;
 
-public class ColorContract extends AbstractContractDecoractor<Color> implements Color {
+public class ColorContract extends AbstractContractDecoractor<RGBColor> implements RGBColor {
 
-	public ColorContract(Color instance) {
+	public ColorContract(RGBColor instance) {
 		super(instance);
 	}
 
@@ -37,7 +37,7 @@ public class ColorContract extends AbstractContractDecoractor<Color> implements 
 		validate(instance);
 	}
 	
-	public static void validate(Color color) {
+	public static void validate(RGBColor color) {
 		validate(color.getR(), "R");
 		validate(color.getG(), "G");
 		validate(color.getB(), "B");

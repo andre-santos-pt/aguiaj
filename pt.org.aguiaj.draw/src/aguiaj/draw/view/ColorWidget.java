@@ -6,14 +6,14 @@ import java.util.List;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Canvas;
 
-import aguiaj.draw.Color;
+import aguiaj.draw.RGBColor;
 
 import pt.org.aguiaj.extensibility.canvas.CanvasVisualizationWidget;
 import pt.org.aguiaj.extensibility.canvas.DrawItem;
 import pt.org.aguiaj.extensibility.canvas.RectangleDraw;
 import pt.org.aguiaj.extensibility.canvas.TextDraw;
 
-public class ColorWidget implements CanvasVisualizationWidget<Color>{
+public class ColorWidget implements CanvasVisualizationWidget<RGBColor>{
 
 	private org.eclipse.swt.graphics.Color swtColor;
 	private List<DrawItem> list;
@@ -23,7 +23,7 @@ public class ColorWidget implements CanvasVisualizationWidget<Color>{
 	}
 	
 	@Override
-	public void update(Color color) {
+	public void update(RGBColor color) {
 		swtColor = new org.eclipse.swt.graphics.Color(null, color.getR(), color.getG(), color.getB());
 		list.clear();
 		list.add(new RectangleDraw(0, 0, 50, 50, swtColor));

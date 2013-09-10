@@ -27,13 +27,13 @@
          <class
                allowImport="true"
                contractProxy="aguiaj.draw.contracts.ColorContract"
-               id="aguiaj.draw.Color"
+               id="aguiaj.draw.RGBColor"
                viewClass="aguiaj.draw.view.ColorWidget">
          </class>
          <class
                allowImport="true"
                contractProxy="aguiaj.draw.contracts.TransparentImageContract"
-               id="aguiaj.draw.ImageWithTransparency">
+               id="aguiaj.draw.TransparentImage">
          </class>
          <class
                allowImport="true"
@@ -47,18 +47,13 @@
                allowImport="true"
                id="aguiaj.draw.Dimension">
          </class>
-      </group>
-      <group
-            id="Data Structures">
          <class
                allowImport="true"
-               contractProxy="aguiaj.adt.StackContract"
-               id="aguiaj.adt.Stack">
+               id="aguiaj.draw.example.BinaryImage">
          </class>
          <class
                allowImport="true"
-               contractProxy="aguiaj.adt.CollectionContract"
-               id="aguiaj.adt.Collection">
+               id="aguiaj.draw.example.Color">
          </class>
       </group>
    </extension>
