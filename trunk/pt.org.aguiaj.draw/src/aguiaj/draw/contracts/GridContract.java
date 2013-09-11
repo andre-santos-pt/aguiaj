@@ -26,49 +26,52 @@ public final class GridContract implements Grid, ContractDecorator<Grid> {
 	}
 	
 	private void checkRowColumn(int row, int column) {
-		if(row < 0 || row >= getNumberOfRows())
-			throw new PreConditionException("Invalid row: " + row);
+		if(!getDimension().isValidPoint(column, row))
+			throw new PreConditionException("Invalid point: " + row + ", " + column);
 		
-		if(column < 0 || column >= getNumberOfColumns())
-			throw new PreConditionException("Invalid column: " + column);
+//		if(row < 0 || row >= getNumberOfRows())
+//			throw new PreConditionException("Invalid row: " + row);
+//		
+//		if(column < 0 || column >= getNumberOfColumns())
+//			throw new PreConditionException("Invalid column: " + column);
 	}
 	
 	
-	private int constRows = -1;
+//	private int constRows = -1;
+//
+//	@Override
+//	public int getNumberOfRows() {
+//		int n = grid.getNumberOfRows();
+//		
+//		if(n < 1)
+//			throw new PostConditionException("Number of rows must be positive");
+//	
+//		if(constRows != -1 && n != constRows)
+//			throw new PostConditionException("number of rows must be constant");
+//		
+//		if(constRows == -1)
+//			constRows = n;
+//		
+//		return n;
+//	}
 
-	@Override
-	public int getNumberOfRows() {
-		int n = grid.getNumberOfRows();
-		
-		if(n < 1)
-			throw new PostConditionException("Number of rows must be positive");
 	
-		if(constRows != -1 && n != constRows)
-			throw new PostConditionException("number of rows must be constant");
-		
-		if(constRows == -1)
-			constRows = n;
-		
-		return n;
-	}
-
-	
-	private int constCols = -1;
-	
-	@Override
-	public int getNumberOfColumns() {
-		int n = grid.getNumberOfColumns();
-		if(n < 1)
-			throw new PostConditionException("Number of columns must be positive");
-		
-		if(constCols != -1 && n != constCols)
-			throw new PostConditionException("number of columns must be constant");
-		
-		if(constCols == -1)
-			constCols = n;
-		
-		return n;
-	}
+//	private int constCols = -1;
+//	
+//	@Override
+//	public int getNumberOfColumns() {
+//		int n = grid.getNumberOfColumns();
+//		if(n < 1)
+//			throw new PostConditionException("Number of columns must be positive");
+//		
+//		if(constCols != -1 && n != constCols)
+//			throw new PostConditionException("number of columns must be constant");
+//		
+//		if(constCols == -1)
+//			constCols = n;
+//		
+//		return n;
+//	}
 	
 	@Override
 	public RGBColor getBackground(int row, int column) {
@@ -84,19 +87,20 @@ public final class GridContract implements Grid, ContractDecorator<Grid> {
 	
 
 	@Override
-	public Image getImage(int row, int column) {
+	public Image getImageAt(int row, int column) {
 		checkRowColumn(row, column);
 		
-		return grid.getImage(row, column);
+		return grid.getImageAt(row, column);
 	}
 
 	@Override
 	public void checkInvariant() {
-		if(constRows != -1 && constRows != getNumberOfRows())
-			throw new InvariantException("number of rows should be constant");
-	
-		if(constCols != -1 && constCols != getNumberOfColumns())
-			throw new PostConditionException("number of columns must be constant");
+//		if(constRows != -1 && constRows != getNumberOfRows())
+//			throw new InvariantException("number of rows should be constant");
+//	
+//		if(constCols != -1 && constCols != getNumberOfColumns())
+//			throw new PostConditionException("number of columns must be constant");
+		getDimension();
 	}
 
 	@Override
@@ -109,9 +113,17 @@ public final class GridContract implements Grid, ContractDecorator<Grid> {
 		return grid.getPositionHeight();
 	}
 
+	private Dimension constDimension;
+	
 	@Override
 	public Dimension getDimension() {
-		return grid.getDimension();
+		Dimension d = grid.getDimension();
+		if(constDimension != null && !constDimension.equals(d))
+			throw new InvariantException("Grid dimension must be constant");
+		else
+			constDimension = d;
+		
+		return d;
 	}
 
 	

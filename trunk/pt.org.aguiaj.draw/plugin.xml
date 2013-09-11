@@ -15,11 +15,6 @@
          </class>
          <class
                allowImport="true"
-               id="aguiaj.draw.TwoDimensional"
-               viewClass="aguiaj.draw.view.TwoDimensionalWidget">
-         </class>
-         <class
-               allowImport="true"
                contractProxy="aguiaj.draw.contracts.ImageContract"
                id="aguiaj.draw.Image"
                viewClass="aguiaj.draw.view.ImageWidget">
@@ -37,23 +32,7 @@
          </class>
          <class
                allowImport="true"
-               id="aguiaj.draw.GrayscaleImage">
-         </class>
-         <class
-               allowImport="true"
-               id="aguiaj.draw.GrayTone">
-         </class>
-         <class
-               allowImport="true"
                id="aguiaj.draw.Dimension">
-         </class>
-         <class
-               allowImport="true"
-               id="aguiaj.draw.example.BinaryImage">
-         </class>
-         <class
-               allowImport="true"
-               id="aguiaj.draw.example.Color">
          </class>
       </group>
    </extension>

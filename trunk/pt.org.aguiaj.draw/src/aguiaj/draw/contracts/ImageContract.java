@@ -121,9 +121,4 @@ public class ImageContract implements Image, ContractDecorator<Image>{
 			throw new PostConditionException("Height must be positive");
 	}
 
-	@Override
-	public Image copy() {
-		return image.copy();
-	}
-
 }
