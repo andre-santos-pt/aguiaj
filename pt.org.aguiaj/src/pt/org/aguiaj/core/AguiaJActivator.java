@@ -29,6 +29,7 @@ import static pt.org.aguiaj.extensibility.AguiaJContribution.OBJECT_WIDGET_VIEW;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.ServerSocket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,7 +56,13 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.console.ConsolePlugin;
+import org.eclipse.ui.console.IConsole;
+import org.eclipse.ui.console.IConsoleManager;
+import org.eclipse.ui.console.MessageConsole;
+import org.eclipse.ui.console.MessageConsoleStream;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -100,6 +107,10 @@ public class AguiaJActivator extends AbstractUIPlugin {
 
 	private Map<String, Class<? extends AccessorMethodDetectionPolicy>> accessorPolicies;
 
+
+	private MessageConsole console;
+	private MessageConsoleStream out;
+	
 	public AguiaJActivator() {
 		plugin = this;
 
@@ -115,6 +126,9 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		pluginTypeImages = Maps.newHashMap();
 
 		accessorPolicies = Maps.newHashMap();
+				
+		console = findConsole("AGUIA/J");
+		out = console.newMessageStream();
 	}
 
 	public IPath getWorkingDirectory() {
@@ -145,6 +159,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		ClassModel.getInstance().addDefaultClasses();
 	}
 
+	
 
 
 	public void stop(BundleContext context) throws Exception {
@@ -413,7 +428,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 							continue;
 						}
 					}
-					
+
 					ClassModel.getInstance().addPluginClass(clazz, view, contractClass, allowImport, pluginID);
 
 					for(Class<?> inner : clazz.getClasses()) {		
@@ -600,5 +615,27 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		return ret;
 	}
 
+	
+	private static MessageConsole findConsole(String name) {
+		ConsolePlugin plugin = ConsolePlugin.getDefault();
+		IConsoleManager conMan = plugin.getConsoleManager();
+		IConsole[] existing = conMan.getConsoles();
+		for (int i = 0; i < existing.length; i++)
+			if (name.equals(existing[i].getName()))
+				return (MessageConsole) existing[i];
+		//no console found, so create a new one
+		MessageConsole myConsole = new MessageConsole(name, null);
+		myConsole.setFont(new Font(null, "Courier", 14, SWT.NONE));
+		conMan.addConsoles(new IConsole[]{myConsole});
+		return myConsole;
+	}
+	
+	public void writeToConsole(Object obj) {
+		out.println(ReflectionUtils.getTextualRepresentation(obj, true));
+	}
+	
+	
+	public void clearConsole() {
+		console.clearConsole();
+	}
 }
-

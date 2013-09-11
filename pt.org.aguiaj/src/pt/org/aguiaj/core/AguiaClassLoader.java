@@ -19,6 +19,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import aguiaj.console.Console;
+
 import pt.org.aguiaj.classes.ClassModel;
 
 
@@ -63,16 +65,19 @@ public class AguiaClassLoader extends ClassLoader{
 
 		if(clazz == null) {
 			try {
-				if(name.startsWith("java.") || name.startsWith("sun.reflect") || 
-						name.startsWith("org.aspectj")) {
+				if(name.startsWith("java.") || name.startsWith("sun.reflect") || name.startsWith("org.aspectj")) {
 					clazz = getParent().loadClass(name);
+				}
+				else if(name.equals(Console.class.getName())) {
+					return Console.class;
 				}
 				else {		
 					File classFile = classFiles.get(name);
 					// TODO: error handling (class not found)
-					if(classFile == null)
+					if(classFile == null) {
+						System.err.println("ERROR : " + name);
 						throw new ClassNotFoundException(name);
-
+					}
 					byte[] classData = null;
 					try {
 						classData = getBytesFromFile(classFile);
