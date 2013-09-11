@@ -15,9 +15,10 @@ public class RectangleDraw extends DrawItem {
 		this.y1 = y1;
 	}
 
+
 	@Override
 	public void draw(GC gc) {
 		gc.setBackground(color);
-		gc.fillRectangle(x, y, x1, y1);	
+		gc.fillRectangle(x, y, x1, y1);
 	}
 }

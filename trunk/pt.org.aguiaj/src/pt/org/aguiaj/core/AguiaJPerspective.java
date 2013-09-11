@@ -19,6 +19,7 @@ import static pt.org.aguiaj.extensibility.AguiaJContribution.OBJECTS_VIEW;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
+import org.eclipse.ui.console.IConsoleConstants;
 public class AguiaJPerspective implements IPerspectiveFactory {
 
 	
@@ -29,7 +30,7 @@ public class AguiaJPerspective implements IPerspectiveFactory {
 		layout.setFixed(false);
 				
 		layout.addView(CLASSES_VIEW,  IPageLayout.LEFT, 0.7f, editorArea);
-		
+				
 		IFolderLayout objectsFolder = 
 			layout.createFolder("objectsFolder", IPageLayout.RIGHT, 0.3f, CLASSES_VIEW);
 		
@@ -41,6 +42,9 @@ public class AguiaJPerspective implements IPerspectiveFactory {
 		javaBarFolder.addView(JAVABAR_VIEW);		
 		javaBarFolder.addView(HISTORY_VIEW);
 		javaBarFolder.addView(DOCUMENTATION_VIEW);	
+
+		layout.addView(IConsoleConstants.ID_CONSOLE_VIEW, IPageLayout.BOTTOM, 0.8f, CLASSES_VIEW);
+
 		
 		block(layout, OBJECTS_VIEW);
 		block(layout, CLASSES_VIEW);

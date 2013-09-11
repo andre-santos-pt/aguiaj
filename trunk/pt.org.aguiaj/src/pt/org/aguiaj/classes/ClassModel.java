@@ -395,7 +395,7 @@ public class ClassModel {
 
 	public void addDefaultClasses() {
 		addClass(Object.class);		
-
+		
 		for(Class<?> pluginClass : pluginClassSet.keySet())
 			addClass(pluginClass);		
 	}

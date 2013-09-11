@@ -128,6 +128,8 @@ public class ObjectsView extends ViewPart {
 		refStackTable = new IdentityHashMap<Object, ReferenceStackWidget<ObjectWidget>>();
 
 		scrl = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);		
+		scrl.setAlwaysShowScrollBars(true);
+		
 		area = new Composite(scrl, SWT.NONE);
 
 //		GridLayout layout = new org.eclipse.swt.layout.GridLayout(1, true);
