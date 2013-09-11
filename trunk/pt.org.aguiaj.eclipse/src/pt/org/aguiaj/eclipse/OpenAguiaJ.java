@@ -90,6 +90,7 @@ public class OpenAguiaJ extends AbstractHandler implements IViewActionDelegate {
 			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 			try {			
 				page.showView(AguiaJContribution.CLASSES_VIEW);			
+				page.showView(AguiaJContribution.JAVABAR_VIEW);	
 			} 
 			catch (PartInitException e) {
 				e.printStackTrace();
