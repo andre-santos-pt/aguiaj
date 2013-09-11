@@ -16,7 +16,10 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.WorkbenchException;
+
+import pt.org.aguiaj.extensibility.AguiaJContribution;
 
 public class OpenJavaPerspective implements IViewActionDelegate {
 	private IWorkbench workbench;
@@ -28,10 +31,10 @@ public class OpenJavaPerspective implements IViewActionDelegate {
 			pers = JavaUI.ID_PERSPECTIVE;
 
 		try {			
-			workbench.showPerspective(pers, workbench.getActiveWorkbenchWindow());						
+			workbench.showPerspective(pers, workbench.getActiveWorkbenchWindow());	
 		} catch (WorkbenchException e) {
 			e.printStackTrace();
-		}
+		}		
 	}
 
 	@Override
