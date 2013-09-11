@@ -17,7 +17,7 @@ package aguiaj.draw;
  * 
  * @author Andre L. Santos
  */
-public interface Image extends TwoDimensional {
+public interface Image {
 	
 	Dimension getDimension();
 	
@@ -25,8 +25,4 @@ public interface Image extends TwoDimensional {
 	 * The color at image point (<i>x</i>, <i>y</i>).
 	 */
 	RGBColor getColor(int x, int y);
-	
-	Image copy();
-	//Image copy();
-	
 }

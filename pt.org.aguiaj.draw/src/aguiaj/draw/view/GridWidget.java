@@ -16,9 +16,7 @@ import java.util.List;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
@@ -39,12 +37,8 @@ public class GridWidget implements CanvasVisualizationWidget<Grid> {
 	private Grid grid;
 	private Display display;
 
-//	private Image[][] icons;
-//	private Color[][] backgrounds;
-
 	private int width;
 	private int height;
-
 
 
 	@Override
@@ -61,11 +55,9 @@ public class GridWidget implements CanvasVisualizationWidget<Grid> {
 	public void update(Grid grid) {	
 		this.grid = grid;
 		WIDTH = this.grid.getPositionWidth();
-//		icons = new Image[grid.getNumberOfRows()][grid.getNumberOfColumns()];
-//		backgrounds = new Color[grid.getNumberOfRows()][grid.getNumberOfColumns()];
 
-		width = (grid.getNumberOfColumns() * (WIDTH)) + BORDER;
-		height = (grid.getNumberOfRows() * (WIDTH)) + BORDER;
+		width = (grid.getDimension().getWidth() * (WIDTH)) + BORDER;
+		height = (grid.getDimension().getHeight() * (WIDTH)) + BORDER;
 	}
 
 	@Override
@@ -76,7 +68,7 @@ public class GridWidget implements CanvasVisualizationWidget<Grid> {
 			@Override
 			public void mouseMove(MouseEvent e) {
 				if(grid != null) {
-					Rectangle positionArea = new Rectangle(BORDER, BORDER, grid.getNumberOfColumns() * WIDTH, grid.getNumberOfRows() * WIDTH); 
+					Rectangle positionArea = new Rectangle(BORDER, BORDER, grid.getDimension().getWidth() * WIDTH, grid.getDimension().getHeight() * WIDTH); 
 					if(positionArea.contains(e.x, e.y)) {
 						int x = (e.x - BORDER) / WIDTH;
 						int y = (e.y - BORDER) / WIDTH;
@@ -114,80 +106,27 @@ public class GridWidget implements CanvasVisualizationWidget<Grid> {
 		for(int y = BORDER; y < height; y += WIDTH)
 			items.add(new LineDraw(new Point(0, y), new Point(width, y)));
 
-		for(int line = 0; line < grid.getNumberOfRows(); line++)
+		for(int line = 0; line < grid.getDimension().getHeight(); line++)
 			items.add(new TextDraw(Integer.toString(line), new Point(2, BORDER + (line * WIDTH)), 7));
 		
-		for(int column = 0; column < grid.getNumberOfColumns(); column++)
+		for(int column = 0; column < grid.getDimension().getWidth(); column++)
 			items.add(new TextDraw(Integer.toString(column), new Point(BORDER + (column * WIDTH)+3, 0), 7));
 	}
 	
 	
 	private void addPositions(List<DrawItem> items) {
-		for(int row = 0; row < grid.getNumberOfRows(); row++) {
-			for(int column = 0; column < grid.getNumberOfColumns(); column++) {
+		for(int row = 0; row < grid.getDimension().getHeight(); row++) {
+			for(int column = 0; column < grid.getDimension().getWidth(); column++) {
 				aguiaj.draw.RGBColor color = grid.getBackground(row, column);
 				Color swtColor = new org.eclipse.swt.graphics.Color(display, color.getR(), color.getG(), color.getB());
 				items.add(new RectangleDraw(BORDER + (column * WIDTH) + 1, BORDER + (row * WIDTH) + 1, WIDTH - 1, WIDTH - 1, swtColor));
 				
-				Image icon = grid.getImage(row, column);
+				Image icon = grid.getImageAt(row, column);
 				if(icon != null) {
 					items.add(ImageWidget.createImageDraw(icon, new Point(BORDER + (column * WIDTH) + 1, BORDER + (row * WIDTH) + 1), 1));
 				}
-//				icons[row][column] = icon;
 			}	
 		}
 	}
 	
-	
-	
-
-	//	@Override
-	//	public void drawObject(GC gc) {
-	//		if(image != null) {
-	//			Common.drawImage(image, gc, 0, 0, zoom);
-	//			for(int y = 0; y < image.getHeight(); y++) {
-	//				for(int x = 0; x < image.getWidth(); x++) {				
-	//					prev[y][x] = image.getColor(x, y);
-	//				}
-	//			}
-	//		}
-	//	}
-
-
-
-	//	@Override
-	//	public List<Rectangle> toRedraw() {
-	//		if(image != null) {
-	//			Point first = null;
-	//			int lastX = 0;
-	//			int lastY = 0;
-	//			
-	//			for(int y = 0; y < image.getHeight(); y++) {
-	//				for(int x = 0; x < image.getWidth(); x++) {				
-	//					if(!image.getColor(x, y).equals(prev[y][x])) {
-	//						if(first == null)
-	//							first = new Point(x, y);
-	//						if(first.x > x)
-	//							first.x = x;
-	//						
-	//						if(x > lastX)
-	//							lastX = x;
-	//						
-	//						if(y > lastY)
-	//							lastY = y;
-	//					}	
-	//				}
-	//			}
-	//
-	//			toRedraw.clear();
-	//			if(first != null) {
-	//				Rectangle area = new Rectangle(first.x*zoom, first.y*zoom, (lastX - first.x + 1)*zoom, (lastY - first.y + 1)*zoom);
-	//				toRedraw.add(area);
-	//			}
-	//		}
-	//
-	//		return toRedraw;
-	//	}
-
-
 }

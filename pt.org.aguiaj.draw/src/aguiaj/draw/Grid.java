@@ -1,15 +1,14 @@
 package aguiaj.draw;
 
 
-public interface Grid extends TwoDimensional {
+public interface Grid  {
 
-	int getNumberOfRows();
-	int getNumberOfColumns();
+	Dimension getDimension();
 
 	int getPositionWidth();
 	int getPositionHeight();
 	
 	RGBColor getBackground(int row, int column);
 	
-	Image getImage(int row, int column);
+	Image getImageAt(int row, int column);
 }

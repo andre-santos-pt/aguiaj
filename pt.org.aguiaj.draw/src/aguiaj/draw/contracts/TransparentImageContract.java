@@ -77,12 +77,5 @@ public class TransparentImageContract implements TransparentImage, ContractDecor
 		if(op < 0 || op > 100)
 			throw new PostConditionException(op + " : Opacity value must be within [0, 100]");
 	}
-
-	@Override
-	public Image copy() {
-		return image.copy();
-	}
-
-
 	
 }
