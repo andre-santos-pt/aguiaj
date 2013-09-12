@@ -116,12 +116,6 @@ public class BinaryImage implements Image {
 	public Dimension getDimension() {
 		return dimension;
 	}
-
-	@Override
-	public Image copy() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 	private void validatePoint(int x, int y) {
 		if(!dimension.isValidPoint(x, y))
