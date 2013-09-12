@@ -54,15 +54,7 @@ public class GrayscaleImage implements Image {
 				pixels[y][x] = 255 - pixels[y][x];
 	}
 
-	@Override
-	public GrayscaleImage copy() {
-//		int[][] copy = new int[pixels.length][pixels[0].length];
-//		for(int y = 0; y < pixels.length; y++)
-//			for(int x = 0; x < pixels[y].length; x++)
-//				copy[y][x] = pixels[y][x];
-		
-		return new GrayscaleImage(this.pixels);
-	}
+
 
 
 }
