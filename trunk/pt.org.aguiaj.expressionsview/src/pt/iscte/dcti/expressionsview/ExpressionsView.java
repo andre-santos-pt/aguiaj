@@ -14,19 +14,14 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.IClassFile;
-import org.eclipse.jdt.core.IClasspathEntry;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
@@ -88,7 +83,7 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 
 				if(ProjectClassLoader.existsInLibrary(((FileEditorInput) input).getFile().getProject(), name))
 					return true;
-				
+
 				return context.isClassAvailable(name);
 			}
 
@@ -279,21 +274,24 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 			}
 		});
 
+		//		viewer.getTable().addMouseListener(new MouseAdapter() {
+		//			@Override
+		//			public void mouseDoubleClick(MouseEvent e) {
+		//				if(input != null) {
+		//					expressions.get(input).add(new Expression(interpreter, ""));
+		//					refresh();
+		//					viewer.editElement(viewer.getElementAt(viewer.getTable().getItemCount()-1), 0);
+		//				}
+		//			}
+		//		});
+
+		//		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+		//			@Override
+		//			public void selectionChanged(SelectionChangedEvent event) {
 		viewer.getTable().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
-				if(input != null) {
-					expressions.get(input).add(new Expression(interpreter, ""));
-					refresh();
-					viewer.editElement(viewer.getElementAt(viewer.getTable().getItemCount()-1), 0);
-				}
-			}
-		});
-
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-
-			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
 				int index = viewer.getTable().getSelectionIndex();
 				Expression exp = (Expression) viewer.getElementAt(index);
 				if(exp != null) {
@@ -308,13 +306,23 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 							IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(); 
 							IDE.openEditor(page, marker); 
 							marker.delete();
-						} catch (CoreException e) {
-							e.printStackTrace();
+						} catch (CoreException exc) {
+							exc.printStackTrace();
 						}
 					}
 				}
+				else {
+					if(input != null) {
+						expressions.get(input).add(new Expression(interpreter, ""));
+						refresh();
+						viewer.editElement(viewer.getElementAt(viewer.getTable().getItemCount()-1), 0);
+					}
+				}
 			}
+
 		});
+		//			}
+		//		});
 
 		//		Menu menu = new Menu(viewer.getControl().getShell(), SWT.POP_UP);
 		//		MenuItem item = new MenuItem(menu, SWT.PUSH);
@@ -336,12 +344,10 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 		col.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
-				try {
-					return ((Expression) element).evaluate();
-				}
-				catch(RuntimeException ex) {
-					return ex.getMessage();
-				}
+				EvaluateRunnable runnable = new EvaluateRunnable();
+				runnable.expression = (Expression) element;
+				Display.getDefault().syncExec(runnable);
+				return runnable.result;
 			}
 
 			@Override
@@ -352,9 +358,22 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 					return RED;
 			}
 		});
-
-
 	}
+
+	private static class EvaluateRunnable implements Runnable {
+		Expression expression;
+		String result;
+
+		public void run() {
+			try {
+				result = expression.evaluate();
+			}
+			catch(RuntimeException ex) {
+				result = ex.getMessage();
+			}
+		}
+	}
+
 
 	private void createErrorColumn() {
 		TableViewerColumn col = new TableViewerColumn(viewer, SWT.NONE);

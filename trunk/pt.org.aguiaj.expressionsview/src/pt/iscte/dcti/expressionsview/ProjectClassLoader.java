@@ -20,7 +20,7 @@ class ProjectClassLoader extends ClassLoader{
 
 	private Map<String, Class<?>> loaded;
 	
-	ProjectClassLoader(ClassLoader parent, IProject project) {
+	public ProjectClassLoader(ClassLoader parent, IProject project) {
 		super(parent);
 		this.project = project;
 		loaded = new HashMap<String, Class<?>>();
