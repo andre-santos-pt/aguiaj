@@ -10,10 +10,23 @@
  ******************************************************************************/
 package pt.iscte.dcti.aguiaj;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.resources.ICommand;
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -21,6 +34,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
@@ -56,37 +71,60 @@ public class CreateNewJavaProject implements IViewActionDelegate {
 
 			IProjectDescription description = project.getDescription();
 			String[] natures = description.getNatureIds();
-			String[] newNatures = new String[natures.length + 1];
+			String[] newNatures = new String[natures.length + 2];
 			System.arraycopy(natures, 0, newNatures, 0, natures.length);
 			newNatures[natures.length] = JavaCore.NATURE_ID;
+			newNatures[natures.length + 1] = "org.eclipse.pde.PluginNature";
 			description.setNatureIds(newNatures);
+			
+
+		
+
+			final ICommand java = description.newCommand();
+			java.setBuilderName(JavaCore.BUILDER_ID);
+
+			final ICommand manifest = description.newCommand();
+			manifest.setBuilderName("org.eclipse.pde.ManifestBuilder");
+
+			description.setBuildSpec(new ICommand[] { java, manifest});
 			project.setDescription(description, progressMonitor);
-
+			
 			IJavaProject javaProject = JavaCore.create(project);
-			Set<IClasspathEntry> entries = new HashSet<IClasspathEntry>();
-
-			entries.addAll(Arrays.asList(javaProject.getRawClasspath()));
+			List<IClasspathEntry> entries = new ArrayList<IClasspathEntry>();
+			final IClasspathEntry srcClasspathEntry = JavaCore.newSourceEntry(project.getFullPath());
+			
+			entries.add(srcClasspathEntry);
 			entries.add(JavaRuntime.getDefaultJREContainerEntry());
-			
-			IVMInstall vmInstall= JavaRuntime.getDefaultVMInstall();
-
-			LibraryLocation[] locations= JavaRuntime.getLibraryLocations(vmInstall);
-
-			for (LibraryLocation element : locations)
-				entries.add(JavaCore.newLibraryEntry(element.getSystemLibraryPath(), null, null));
-			
-//				if(element.getSystemLibraryPath().toString().indexOf("rt.jar") != -1)
-//				entries.add(JavaCore.newLibraryEntry(element.getSystemLibraryPath(), null, null));
-			//				entries.add(JavaCore.newProjectEntry(element.getSystemLibraryPath()));
-
+			entries.add(JavaCore.newContainerEntry(new Path("org.eclipse.pde.core.requiredPlugins")));
 			javaProject.setRawClasspath(entries.toArray(new IClasspathEntry[entries.size()]), progressMonitor);
+			
+			//			Set<IClasspathEntry> entries = new HashSet<IClasspathEntry>();
+//
+//			entries.addAll(Arrays.asList(javaProject.getRawClasspath()));
+//			entries.add(JavaRuntime.getDefaultJREContainerEntry());
+//			
+//			IVMInstall vmInstall= JavaRuntime.getDefaultVMInstall();
+//			
+//			LibraryLocation[] locations= JavaRuntime.getLibraryLocations(vmInstall);
+//
+//			for (LibraryLocation element : locations)
+//				entries.add(JavaCore.newLibraryEntry(element.getSystemLibraryPath(), null, null));
+//			
+//			javaProject.setRawClasspath(entries.toArray(new IClasspathEntry[entries.size()]), progressMonitor);
 			
 //			Set entries = new HashSet();
 //			entries.addAll(Arrays.asList(javaProject.getRawClasspath()));
 //			entries.add(JavaRuntime.getDefaultJREContainerEntry());
 //			javaProject.setRawClasspath(entries.toArray(new IClasspathEntry[entries.size()]), progressMonitor);
 
-
+			Set<String> bundles = new HashSet<String>();
+			bundles.add("pt.org.aguiaj");
+			bundles.add("pt.org.aguiaj.draw");
+			
+			List<String> list = new ArrayList<String>();
+			createManifest(name, bundles, list, null, project);
+			list.add("/");
+			createBuildProps(null, project, list);
 		}
 		catch(CoreException e) {
 			e.printStackTrace();
@@ -104,4 +142,126 @@ public class CreateNewJavaProject implements IViewActionDelegate {
 
 	}
 
+	public static IFile createFile(final String name, final IContainer container, final String content,
+			final IProgressMonitor progressMonitor) {
+		final IFile file = container.getFile(new Path(name));
+		try {
+			final InputStream stream = new ByteArrayInputStream(content.getBytes(file.getCharset()));
+			if (file.exists()) {
+				file.setContents(stream, true, true, progressMonitor);
+			}
+			else {
+				file.create(stream, true, progressMonitor);
+			}
+			stream.close();
+		}
+		catch (final Exception e) {
+			e.printStackTrace();
+		}
+
+		return file;
+	}
+
+	public static IFile createFile(final String name, final IContainer container, final String content,
+			final String charSet, final IProgressMonitor progressMonitor) throws CoreException {
+		final IFile file = createFile(name, container, content, progressMonitor);
+		if (file != null && charSet != null) {
+			file.setCharset(charSet, progressMonitor);
+		}
+
+		return file;
+	}
+
+	private static void createBuildProps(final IProgressMonitor progressMonitor, final IProject project,
+			final List<String> srcFolders) {
+		final StringBuilder bpContent = new StringBuilder("source.. = ");
+		for (final Iterator<String> iterator = srcFolders.iterator(); iterator.hasNext();) {
+			bpContent.append(iterator.next()).append('/');
+			if (iterator.hasNext()) {
+				bpContent.append(",");
+			}
+		}
+		bpContent.append("\n");
+		bpContent.append("bin.includes = META-INF/,.\n");
+		createFile("build.properties", project, bpContent.toString(), progressMonitor);
+	}
+
+	private static void createManifest(final String projectName, final Set<String> requiredBundles,
+			final List<String> exportedPackages, final IProgressMonitor progressMonitor, final IProject project)
+	throws CoreException {
+		final StringBuilder maniContent = new StringBuilder("Manifest-Version: 1.0\n");
+		maniContent.append("Bundle-ManifestVersion: 2\n");
+		maniContent.append("Bundle-Name: " + projectName + "\n");
+		maniContent.append("Bundle-SymbolicName: " + projectName + "; singleton:=true\n");
+		maniContent.append("Bundle-Version: 1.0.0\n");
+		// maniContent.append("Bundle-Localization: plugin\n");
+		maniContent.append("Require-Bundle: ");
+		Iterator<String> it = requiredBundles.iterator();
+		while (it.hasNext()) {
+			String entry = it.next();
+			maniContent.append(" " + entry);
+			if(it.hasNext())
+				maniContent.append(",\n");
+		}
+		maniContent.append("\n");
+		
+		if (exportedPackages != null && !exportedPackages.isEmpty()) {
+			maniContent.append("Require-Bundle: " + exportedPackages.get(0));
+			for (int i = 1, x = exportedPackages.size(); i < x; i++) {
+				maniContent.append(",\n " + exportedPackages.get(i));
+			}
+			maniContent.append("\n");
+		}
+//		maniContent.append("Bundle-RequiredExecutionEnvironment: J2SE-1.5\r\n");
+		maniContent.append("Bundle-RequiredExecutionEnvironment: J2SE-1.6\r\n");
+
+		final IFolder metaInf = project.getFolder("META-INF");
+		metaInf.create(false, true, null);
+		createFile("MANIFEST.MF", metaInf, maniContent.toString(), progressMonitor);
+	}
+
+	/**
+	 * @param name
+	 *            of the destination file
+	 * @param container
+	 *            directory containing the the destination file
+	 * @param contentUrl
+	 *            Url pointing to the src of the content
+	 * @param progressMonitor
+	 *            used to interact with and show the user the current operation
+	 *            status
+	 * @return
+	 */
+	public static IFile createFile(final String name, final IContainer container, final URL contentUrl,
+			final IProgressMonitor progressMonitor) {
+
+		final IFile file = container.getFile(new Path(name));
+		InputStream inputStream = null;
+		try {
+			inputStream = contentUrl.openStream();
+			if (file.exists()) {
+				file.setContents(inputStream, true, true, progressMonitor);
+			}
+			else {
+				file.create(inputStream, true, progressMonitor);
+			}
+			inputStream.close();
+		}
+		catch (final Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			if (null != inputStream) {
+				try {
+					inputStream.close();
+				}
+				catch (final IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		progressMonitor.worked(1);
+
+		return file;
+	}
 }
