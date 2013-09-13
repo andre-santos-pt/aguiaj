@@ -11,18 +11,18 @@ import aguiaj.draw.RGBColor;
 
 import pt.org.aguiaj.extensibility.canvas.CanvasVisualizationWidget;
 import pt.org.aguiaj.extensibility.canvas.DrawItem;
-import pt.org.aguiaj.extensibility.canvas.RectangleDraw;
 import pt.org.aguiaj.extensibility.canvas.RectangleFill;
+import pt.org.aguiaj.extensibility.canvas.RectangleDraw;
 import pt.org.aguiaj.extensibility.canvas.TextDraw;
 
-public class ColorWidget implements CanvasVisualizationWidget<RGBColor>{
+public class RGBColorWidget implements CanvasVisualizationWidget<RGBColor>{
 
 	private static Color BLACK =  new Color(null, 0, 0, 0);
 	private Color swtColor;
 
 	private List<DrawItem> list;
 	
-	public ColorWidget() {
+	public RGBColorWidget() {
 		list = new ArrayList<DrawItem>(4);
 	}
 	
@@ -30,8 +30,8 @@ public class ColorWidget implements CanvasVisualizationWidget<RGBColor>{
 	public void update(RGBColor color) {
 		swtColor = new Color(null, color.getR(), color.getG(), color.getB());
 		list.clear();
-		list.add(new RectangleDraw(0, 0, 50, 49, swtColor));
-		list.add(new RectangleFill(0, 0, 50, 50, BLACK));
+		list.add(new RectangleFill(0, 0, 50, 50, swtColor));
+		list.add(new RectangleDraw(0, 0, 50, 49, BLACK));
 		list.add(new TextDraw("R: " + color.getR(), new Point(55, 0), 12));
 		list.add(new TextDraw("G: " + color.getG(), new Point(55, 15), 12));
 		list.add(new TextDraw("B: " + color.getB(), new Point(55, 30), 12));

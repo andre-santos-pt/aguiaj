@@ -83,9 +83,9 @@ public class ImageContract implements Image, ContractDecorator<Image>{
 		
 		RGBColor color = image.getColor(x, y);
 		if(color == null)
-			throw new PostConditionException("The color of a pixel cannot be null");
+			throw new PostConditionException("The color of a pixel cannot be null - (" + x + ", " + y + ")");
 		
-		ColorContract.validate(color);
+//		RGBColorContract.validate(color);
 		
 		return color;
 	}
@@ -100,9 +100,9 @@ public class ImageContract implements Image, ContractDecorator<Image>{
 		int h = dim.getHeight();
 		validateHeight(h);
 		
-		for(int y = 0; y < h; y++)
-			for(int x = 0; x < w; x++)
-				ColorContract.validate(image.getColor(x, y));
+//		for(int y = 0; y < h; y++)
+//			for(int x = 0; x < w; x++)
+//				RGBColorContract.validate(image.getColor(x, y));
 		
 		if(constWidth != -1 && constWidth != w)
 			throw new InvariantException("Image width must be constant");

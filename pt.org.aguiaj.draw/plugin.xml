@@ -16,14 +16,27 @@
          <class
                allowImport="true"
                contractProxy="aguiaj.draw.contracts.ImageContract"
+               icon="images/image.png"
                id="aguiaj.draw.Image"
                viewClass="aguiaj.draw.view.ImageWidget">
          </class>
          <class
                allowImport="true"
-               contractProxy="aguiaj.draw.contracts.ColorContract"
+               contractProxy="aguiaj.draw.contracts.RGBColorContract"
+               icon="images/color.png"
                id="aguiaj.draw.RGBColor"
-               viewClass="aguiaj.draw.view.ColorWidget">
+               viewClass="aguiaj.draw.view.RGBColorWidget">
+            <includeFilter>
+               <method
+                     id="getR">
+               </method>
+               <method
+                     id="getG">
+               </method>
+               <method
+                     id="getB">
+               </method>
+            </includeFilter>
          </class>
          <class
                allowImport="true"

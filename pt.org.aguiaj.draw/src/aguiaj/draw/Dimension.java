@@ -1,6 +1,6 @@
 package aguiaj.draw;
 
-public class Dimension implements Comparable<Dimension>{
+public final class Dimension implements Comparable<Dimension>{
 
 	private final int width;
 	private final int height;
