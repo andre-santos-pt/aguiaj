@@ -37,7 +37,7 @@ import pt.org.aguiaj.extensibility.canvas.ImageDraw;
 import aguiaj.draw.Dimension;
 import aguiaj.draw.Image;
 import aguiaj.draw.TransparentImage;
-import aguiaj.draw.contracts.ColorContract;
+import aguiaj.draw.contracts.ImageContract;
 
 public class ImageWidget implements CanvasVisualizationWidget<Image> {
 	private static final int ZOOM_STEP = 3;
@@ -142,7 +142,7 @@ public class ImageWidget implements CanvasVisualizationWidget<Image> {
 	@Override
 	public List<DrawItem> drawItems() {
 		single.clear();
-		single.add(createImageDraw(image, new Point(0, 0), zoom));
+		single.add(createImageDraw(new ImageContract(image), new Point(0, 0), zoom));
 		return single;
 	}
 

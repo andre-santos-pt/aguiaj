@@ -5,30 +5,30 @@ import pt.org.aguiaj.extensibility.contracts.AbstractContractDecoractor;
 import pt.org.aguiaj.extensibility.contracts.InvariantException;
 import pt.org.aguiaj.extensibility.contracts.PostConditionException;
 
-public class ColorContract extends AbstractContractDecoractor<RGBColor> implements RGBColor {
+public class RGBColorContract extends AbstractContractDecoractor<RGBColor> implements RGBColor {
 
-	public ColorContract(RGBColor instance) {
+	public RGBColorContract(RGBColor instance) {
 		super(instance);
 	}
 
 	@Override
 	public int getR() {
 		int r = instance.getR();
-		validate(r);
+		validate(r,"R");
 		return r;
 	}
 
 	@Override
 	public int getG() {
 		int g = instance.getG();
-		validate(g);
+		validate(g,"G");
 		return g;
 	}
 
 	@Override
 	public int getB() {
 		int b = instance.getB();
-		validate(b);
+		validate(b,"B");
 		return b;
 	}
 
@@ -37,7 +37,7 @@ public class ColorContract extends AbstractContractDecoractor<RGBColor> implemen
 		validate(instance);
 	}
 	
-	public static void validate(RGBColor color) {
+	private static void validate(RGBColor color) {
 		validate(color.getR(), "R");
 		validate(color.getG(), "G");
 		validate(color.getB(), "B");

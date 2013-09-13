@@ -13,6 +13,8 @@ package aguiaj.draw.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.crypto.spec.PSource;
+
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.graphics.Color;
@@ -24,10 +26,13 @@ import org.eclipse.swt.widgets.Display;
 import pt.org.aguiaj.extensibility.canvas.CanvasVisualizationWidget;
 import pt.org.aguiaj.extensibility.canvas.DrawItem;
 import pt.org.aguiaj.extensibility.canvas.LineDraw;
-import pt.org.aguiaj.extensibility.canvas.RectangleDraw;
+import pt.org.aguiaj.extensibility.canvas.RectangleFill;
 import pt.org.aguiaj.extensibility.canvas.TextDraw;
+import pt.org.aguiaj.extensibility.contracts.PostConditionException;
 import aguiaj.draw.Grid;
 import aguiaj.draw.Image;
+import aguiaj.draw.contracts.ImageContract;
+import aguiaj.draw.contracts.RGBColorContract;
 
 public class GridWidget implements CanvasVisualizationWidget<Grid> {
 
@@ -117,13 +122,13 @@ public class GridWidget implements CanvasVisualizationWidget<Grid> {
 	private void addPositions(List<DrawItem> items) {
 		for(int row = 0; row < grid.getDimension().getHeight(); row++) {
 			for(int column = 0; column < grid.getDimension().getWidth(); column++) {
-				aguiaj.draw.RGBColor color = grid.getBackground(row, column);
+				aguiaj.draw.RGBColor color = new RGBColorContract(grid.getBackground(row, column));
 				Color swtColor = new org.eclipse.swt.graphics.Color(display, color.getR(), color.getG(), color.getB());
-				items.add(new RectangleDraw(BORDER + (column * WIDTH) + 1, BORDER + (row * WIDTH) + 1, WIDTH - 1, WIDTH - 1, swtColor));
+				items.add(new RectangleFill(BORDER + (column * WIDTH) + 1, BORDER + (row * WIDTH) + 1, WIDTH - 1, WIDTH - 1, swtColor));
 				
 				Image icon = grid.getImageAt(row, column);
 				if(icon != null) {
-					items.add(ImageWidget.createImageDraw(icon, new Point(BORDER + (column * WIDTH) + 1, BORDER + (row * WIDTH) + 1), 1));
+					items.add(ImageWidget.createImageDraw(new ImageContract(icon), new Point(BORDER + (column * WIDTH) + 1, BORDER + (row * WIDTH) + 1), 1));
 				}
 			}	
 		}
