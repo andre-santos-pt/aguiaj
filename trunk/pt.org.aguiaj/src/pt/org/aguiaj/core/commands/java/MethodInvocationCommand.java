@@ -96,15 +96,16 @@ public class MethodInvocationCommand extends JavaCommandWithArgs implements Cont
 	}
 
 	
-	public void execute() throws RuntimeException {
+	public void execute() {
 		
 		thread.executeMethod();
-		if(thread.getException() != null) {
-			Throwable t = thread.getException().getCause();
-			throw new RuntimeException(t != null ? t : thread.getException());
+//		 if(thread.getException() != null) {
+//			Throwable t = thread.getException().getCause();
+//			throw t != null && t instanceof RuntimeException ? (RuntimeException) t : (RuntimeException) thread.getException();
+			
 //			throw t != null ? t : thread.getException();
 //			ExceptionHandler.INSTANCE.handleException(method, argsText, t != null ? t : thread.getException());
-		}
+//		}
 	}
 
 	public String getReference() {
@@ -127,6 +128,15 @@ public class MethodInvocationCommand extends JavaCommandWithArgs implements Cont
 		return thread.hasFailed();
 	}
 
+	
+	public RuntimeException getException() {
+		if(!failed())
+			return null;
+		
+		Throwable t = thread.getException().getCause();
+		return t != null && t instanceof RuntimeException ? (RuntimeException) t : (RuntimeException) thread.getException();
+	}
+	
 	@Override
 	public Object getObjectUnderContract() {
 		Object o = object;

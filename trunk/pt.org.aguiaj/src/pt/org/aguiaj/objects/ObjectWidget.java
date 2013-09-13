@@ -59,6 +59,7 @@ import pt.org.aguiaj.core.UIText;
 import pt.org.aguiaj.core.commands.RemoveObjectCommand;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
+import pt.org.aguiaj.extensibility.contracts.PostConditionException;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 

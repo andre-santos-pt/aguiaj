@@ -27,6 +27,8 @@ public class ConstructorInvocationCommand extends JavaCommandWithArgs implements
 
 	private ConstructorInvocationThread thread;
 	
+	private RuntimeException invariantException;
+	
 	public ConstructorInvocationCommand(final Constructor<?> constructor, Object[] args) {
 		this(constructor, args, null, ObjectModel.getInstance().nextReference(constructor.getDeclaringClass()), constructor.getDeclaringClass());
 	}
@@ -62,10 +64,8 @@ public class ConstructorInvocationCommand extends JavaCommandWithArgs implements
 
 	public void execute() {	
 		thread.executeConstructor();
-		if(thread.getException() != null) {
-			Throwable t = thread.getException().getCause();
-			ExceptionHandler.INSTANCE.handleException(constructor, null, t != null ? t : thread.getException());
-		}		
+		if(thread.getResultingObject() != null)
+			invariantException = ObjectModel.getInstance().verifyInvariantOnCreation(thread.getResultingObject());
 	}
 
 
@@ -78,6 +78,17 @@ public class ConstructorInvocationCommand extends JavaCommandWithArgs implements
 		return thread.getResultingObject();
 	}
 
+	public RuntimeException getException() {
+		if(!failed())
+			return null;
+		
+		if(invariantException != null)
+			return invariantException;
+		
+		Throwable t = thread.getException().getCause();
+		return t != null && t instanceof RuntimeException ? (RuntimeException) t : (RuntimeException) thread.getException();
+	}
+	
 	public Constructor<?> getConstructor() {
 		return constructor;
 	}
@@ -89,7 +100,7 @@ public class ConstructorInvocationCommand extends JavaCommandWithArgs implements
 
 	@Override
 	public boolean failed() {
-		return thread.hasFailed();
+		return thread.hasFailed() || invariantException != null;
 	}
 
 	@Override

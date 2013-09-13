@@ -5,20 +5,20 @@ import org.eclipse.swt.graphics.GC;
 
 public class RectangleFill extends DrawItem {
 	final Color color;
-	final int width;
-	final int height;
+	final int x1;
+	final int y1;
 	
-	public RectangleFill(int x0, int y0, int width, int height, Color color) {
+	public RectangleFill(int x0, int y0, int x1, int y1, Color color) {
 		super(x0, y0);
 		this.color = color;
-		this.width = width;
-		this.height = height;
+		this.x1 = x1;
+		this.y1 = y1;
 	}
 
 
 	@Override
 	public void draw(GC gc) {
-		gc.setForeground(color);
-		gc.drawRectangle(x, y, width, height);
+		gc.setBackground(color);
+		gc.fillRectangle(x, y, x1, y1);
 	}
 }

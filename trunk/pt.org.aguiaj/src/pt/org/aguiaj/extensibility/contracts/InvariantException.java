@@ -1,6 +1,6 @@
 package pt.org.aguiaj.extensibility.contracts;
 
-public class InvariantException extends RuntimeException {
+public class InvariantException extends RuntimeException implements ContractException {
 
 	private static final long serialVersionUID = 1L;
 

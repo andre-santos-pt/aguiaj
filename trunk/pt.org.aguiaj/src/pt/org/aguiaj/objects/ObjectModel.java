@@ -231,16 +231,20 @@ public class ObjectModel {
 		if(!command.failed()) {
 			addToStack(command);
 			
-			if(command instanceof JavaCommandWithReturn) {
-				JavaCommandWithReturn cmd = (JavaCommandWithReturn) command;
+			if(command instanceof JavaCommandWithArgs) {
+				JavaCommandWithArgs cmd = (JavaCommandWithArgs) command;
 
 				Class<?> retType = cmd.getReferenceType();
 				
 				if(!retType.isPrimitive() && !retType.equals(void.class)) {
 					Object object = cmd.getResultingObject();
-					if(object != null && !verifyInvariantOnCreation(object))
-						return;
-					
+					if(object != null) {
+						RuntimeException ex = verifyInvariantOnCreation(object);
+						if(ex != null) {
+							ExceptionHandler.INSTANCE.handleException(cmd.getMember(), cmd.getArgsText(), ex);
+							return;
+						}
+					}
 					addReference(retType, object , cmd.getReference(), true);
 				}
 			}
@@ -542,8 +546,9 @@ public class ObjectModel {
 		ClassModel.getInstance().createContractProxies(contracts, object, methods);
 	}
 
-	private boolean verifyInvariantOnCreation(Object object) {
-		boolean ok = true;
+	
+	public RuntimeException verifyInvariantOnCreation(Object object) {
+//		boolean ok = true;
 		Set<Class<? extends ContractDecorator<?>>> contracts = ClassModel.getInstance().getContractTypes(object.getClass());
 		for(Class<? extends ContractDecorator<?>> clazz : contracts) {
 			ContractDecorator<?> contract = null;
@@ -555,14 +560,22 @@ public class ObjectModel {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				return false;
+				return null;
 			}
 			Method invariantMethod = getInvariantMethod(contract);
 			MethodInvocationCommand cmd = new MethodInvocationCommand(contract, invariantMethod);
-			if(ok)
-				ok = ExceptionHandler.INSTANCE.execute(cmd);
+
+			//		if(ok)
+			//	ok = ExceptionHandler.INSTANCE.execute(cmd);
+			
+			cmd.execute();
+			
+			if(cmd.failed()) {
+				return cmd.getException();
+			}
 		}
-		return ok;
+		return null;
+
 	}
 	
 	private boolean verifyInvariant(Object object) {

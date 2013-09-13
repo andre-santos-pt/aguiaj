@@ -18,6 +18,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Canvas;
@@ -48,8 +49,6 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 	private Object object;
 
 	private final CanvasVisualizationWidget<?> extension;
-
-	//	private MethodInvocationCommand toRedrawCommand;
 
 	private MethodInvocationCommand canvasWidthCommand;
 	private MethodInvocationCommand canvasHeightCommand;
@@ -140,14 +139,21 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 
 	@Override
 	public final void paintControl(PaintEvent e) {
-		e.gc.setBackground(parent.getBackground());
-		e.gc.fillRectangle(e.gc.getClipping());
-		if(getObject() != null) {
-			List<DrawItem> items = drawItems();
-			for(DrawItem item : items) {
-				item.draw(e.gc);
+		if(ok) {
+			e.gc.setBackground(parent.getBackground());
+			e.gc.fillRectangle(e.gc.getClipping());
+			if(getObject() != null) {
+				List<DrawItem> items = drawItems();
+				for(DrawItem item : items) {
+					item.draw(e.gc);
+				}
 			}
 		}
+		else {
+			e.gc.setBackground(new Color(null, 0,0,0));
+			e.gc.fillRectangle(e.gc.getClipping());
+		}
+		
 	}
 
 
@@ -217,8 +223,11 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 		}
 	}
 
+	private boolean ok = true;
 	private List<DrawItem> drawItems() {
-		if(ExceptionHandler.INSTANCE.execute(drawItemsCommand))	{	
+		ok = false;
+		ok = ExceptionHandler.INSTANCE.execute(drawItemsCommand);
+		if(ok) {	
 			stack.topControl = extensionWidget;
 			return (List<DrawItem>) drawItemsCommand.getResultingObject();
 		}
@@ -238,25 +247,5 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 		MethodInvocationCommand updateCommand = new MethodInvocationCommand(extension, null, method, new Object[] { object },  null);
 		return ExceptionHandler.INSTANCE.execute(updateCommand);
 	}
-
-
-	//	private List<Rectangle> toRedraw() {
-	//	if(ExceptionHandler.INSTANCE.execute(toRedrawCommand))		
-	//		return (List<Rectangle>) toRedrawCommand.getResultingObject();
-	//	else
-	//		return Collections.emptyList();
-	//}
-
-
-	//	private void drawObject(GC gc) {
-	//		Method method = null;
-	//		try {
-	//			method = extension.getClass().getMethod("drawObject", GC.class);
-	//		} catch (Exception e) {
-	//			e.printStackTrace();
-	//		}
-	//		MethodInvocationCommand drawObjectCommand = new MethodInvocationCommand(extension, null, method, new Object[] { gc },  null);
-	//		ExceptionHandler.INSTANCE.execute(drawObjectCommand);
-	//	}
 
 }

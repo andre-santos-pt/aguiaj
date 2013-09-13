@@ -15,11 +15,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import pt.org.aguiaj.common.AguiaJColor;
 import pt.org.aguiaj.common.widgets.NullReferenceWidget;
 import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.extensibility.VisualizationWidget;

@@ -36,6 +36,7 @@ public abstract class JavaCommandWithArgs extends JavaCommandWithReturn {
 		return ret + ")";
 	}
 	
+	public abstract RuntimeException getException();
 	public abstract Member getMember();
 	
 }
