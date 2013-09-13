@@ -40,6 +40,11 @@ public class BinaryImage implements Image {
 		dimension = new Dimension(width, height);
 	}
 	
+	public BinaryImage(Dimension dimension) {
+		pixels = new boolean[dimension.getHeight()][dimension.getWidth()];
+		this.dimension = dimension;
+	}
+	
 	/**
 	 * Constructs a binary image from a boolean matrix.
 	 * 1st dimension for row, 2nd dimension for column. 

@@ -198,9 +198,4 @@ public class Color implements RGBColor {
 		result = 31 * result + b;
 		return result;
 	}
-	
-	@Override
-	public String toString() {
-		return r + " " + g + " " + b;
-	}
 }
