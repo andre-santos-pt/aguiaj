@@ -29,8 +29,4 @@ public interface CanvasVisualizationWidget<T> extends CustomWidget<T> {
 	
 	// not null
 	List<DrawItem> drawItems();
-	
-//	void drawObject(GC gc);
-//	List<Rectangle> toRedraw();	
-	
 }

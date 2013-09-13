@@ -75,9 +75,6 @@ public class Activator implements BundleActivator {
 					
 					ExceptionTraceView.getInstance().setInput(trace);
 				}
-				else {
-//					ExceptionTraceView.getInstance().clear();
-				}
 			}
 		});
 	}

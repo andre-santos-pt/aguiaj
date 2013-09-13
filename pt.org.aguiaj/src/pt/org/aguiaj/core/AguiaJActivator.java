@@ -630,8 +630,11 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		return myConsole;
 	}
 	
-	public void writeToConsole(Object obj) {
-		out.println(ReflectionUtils.getTextualRepresentation(obj, true));
+	public void writeToConsole(Object[] objs) {
+		for(int i = 0; i < objs.length; i++)
+			out.print(ReflectionUtils.getTextualRepresentation(objs[i], true) + " ");
+		
+		out.println();
 	}
 	
 	

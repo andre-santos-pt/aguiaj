@@ -60,17 +60,16 @@ public enum ExceptionHandler {
 	}
 
 	public boolean execute(JavaCommandWithArgs cmd) {
-		try {
-			cmd.execute();
-		}
-		catch(Exception e) {
-			handleException(cmd.getMember(), cmd.getArgsText(), e);
+		cmd.execute();
+		
+		if(cmd.failed()) {
+			handleException(cmd.getMember(), cmd.getArgsText(), cmd.getException());
 			return false;
 		}
 		return true;
 	}
 	
-	public synchronized void handleException(Member member, String[] args, Throwable exception) {
+	public void handleException(Member member, String[] args, Throwable exception) {
 		if(exception.getCause() != null)
 			exception = exception.getCause();
 		

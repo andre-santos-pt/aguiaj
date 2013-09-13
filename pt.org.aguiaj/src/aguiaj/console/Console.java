@@ -20,7 +20,7 @@ public class Console {
 		//TODO
 	}
 	
-	public static void print(Object obj) {
-		AguiaJActivator.getDefault().writeToConsole(obj);
+	public static void print(Object ... objs) {
+		AguiaJActivator.getDefault().writeToConsole(objs);
 	}
 }
