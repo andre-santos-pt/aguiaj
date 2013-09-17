@@ -11,27 +11,16 @@
 package aguiaj.draw;
 
 /**
- * Represents RGB colors.
- * 
- * @author Andre L. Santos
+ * Represents images with transparency.
  */
-public interface RGBColor {
-	
+public interface ITransparentImage extends IImage {
+
 	/**
-	 * Red value.
-	 * @return An integer within the range [0-255]
+	 * The opacity level at an image point (100 - fully opaque; 0 - transparent).
+	 * 
+	 * @param x x-axis coordinate
+	 * @param y y-axis coordinate
+	 * @return Opacity (range: 0-100)
 	 */
-	int getR();
-	
-	/**
-	 * Green value.
-	 * @return An integer within the range [0-255]
-	 */
-	public int getG();
-	
-	/**
-	 * Blue value.
-	 * @return An integer within the range [0-255]
-	 */
-	public int getB();
+	int getOpacity(int x, int y);
 }

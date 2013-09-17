@@ -1,19 +1,19 @@
 package aguiaj.draw.contracts;
 
-import aguiaj.draw.RGBColor;
-import aguiaj.draw.Dimension;
-import aguiaj.draw.Grid;
-import aguiaj.draw.Image;
+import aguiaj.draw.IDimension;
+import aguiaj.draw.IColor;
+import aguiaj.draw.IGrid;
+import aguiaj.draw.IImage;
 import pt.org.aguiaj.extensibility.contracts.ContractDecorator;
 import pt.org.aguiaj.extensibility.contracts.InvariantException;
 import pt.org.aguiaj.extensibility.contracts.PostConditionException;
 import pt.org.aguiaj.extensibility.contracts.PreConditionException;
 
-public final class GridContract implements Grid, ContractDecorator<Grid> {
+public final class GridContract implements IGrid, ContractDecorator<IGrid> {
 
-	private final Grid grid;
+	private final IGrid grid;
 	
-	public GridContract(Grid grid) {
+	public GridContract(IGrid grid) {
 		if(grid == null)
 			throw new NullPointerException("wrapped object cannot be null");
 		
@@ -21,7 +21,7 @@ public final class GridContract implements Grid, ContractDecorator<Grid> {
 	}
 	
 	@Override
-	public Grid getWrappedObject() {
+	public IGrid getWrappedObject() {
 		return grid;
 	}
 	
@@ -74,10 +74,10 @@ public final class GridContract implements Grid, ContractDecorator<Grid> {
 //	}
 	
 	@Override
-	public RGBColor getBackground(int row, int column) {
+	public IColor getBackground(int row, int column) {
 		checkRowColumn(row, column);
 		
-		RGBColor color = grid.getBackground(row, column);
+		IColor color = grid.getBackground(row, column);
 		if(color == null)
 			throw new PostConditionException("Background cannot be null");
 		
@@ -87,7 +87,7 @@ public final class GridContract implements Grid, ContractDecorator<Grid> {
 	
 
 	@Override
-	public Image getImageAt(int row, int column) {
+	public IImage getImageAt(int row, int column) {
 		checkRowColumn(row, column);
 		
 		return grid.getImageAt(row, column);
@@ -113,11 +113,11 @@ public final class GridContract implements Grid, ContractDecorator<Grid> {
 		return grid.getPositionHeight();
 	}
 
-	private Dimension constDimension;
+	private IDimension constDimension;
 	
 	@Override
-	public Dimension getDimension() {
-		Dimension d = grid.getDimension();
+	public IDimension getDimension() {
+		IDimension d = grid.getDimension();
 		if(constDimension != null && !constDimension.equals(d))
 			throw new InvariantException("Grid dimension must be constant");
 		else

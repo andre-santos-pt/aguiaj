@@ -8,23 +8,23 @@
             id="Draw">
          <class
                allowImport="true"
-               contractProxy="aguiaj.draw.contracts.GridContract"
+               contractValidator="aguiaj.draw.contracts.GridContract"
                icon="images/grid.png"
-               id="aguiaj.draw.Grid"
+               id="aguiaj.draw.IGrid"
                viewClass="aguiaj.draw.view.GridWidget">
          </class>
          <class
                allowImport="true"
-               contractProxy="aguiaj.draw.contracts.ImageContract"
+               contractValidator="aguiaj.draw.contracts.ImageContract"
                icon="images/image.png"
-               id="aguiaj.draw.Image"
+               id="aguiaj.draw.IImage"
                viewClass="aguiaj.draw.view.ImageWidget">
          </class>
          <class
                allowImport="true"
-               contractProxy="aguiaj.draw.contracts.RGBColorContract"
+               contractValidator="aguiaj.draw.contracts.ColorContract"
                icon="images/color.png"
-               id="aguiaj.draw.RGBColor"
+               id="aguiaj.draw.IColor"
                viewClass="aguiaj.draw.view.RGBColorWidget">
             <includeFilter>
                <method
@@ -40,12 +40,13 @@
          </class>
          <class
                allowImport="true"
-               contractProxy="aguiaj.draw.contracts.TransparentImageContract"
-               id="aguiaj.draw.TransparentImage">
+               contractValidator="aguiaj.draw.contracts.TransparentImageContract"
+               id="aguiaj.draw.ITransparentImage">
          </class>
          <class
                allowImport="true"
-               id="aguiaj.draw.Dimension">
+               contractValidator="aguiaj.draw.contracts.DimensionContract"
+               id="aguiaj.draw.IDimension">
          </class>
       </group>
    </extension>
