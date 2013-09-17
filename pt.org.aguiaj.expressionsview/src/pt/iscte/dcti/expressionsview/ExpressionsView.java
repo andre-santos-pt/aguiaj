@@ -14,10 +14,10 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.EditingSupport;
@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener2;
@@ -67,6 +68,8 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 
 	private Map<IEditorInput, List<Expression>> expressions;
 
+
+	
 	public ExpressionsView() {
 		_instance = this;
 
@@ -123,12 +126,32 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 				return context.referenceType(name);
 			}
 		});
+
 	}
 
 	public static ExpressionsView getInstance() {
 		return _instance;
 	}
 
+	public void addItem(String text) {
+		expressions.get(input).add(new Expression(interpreter, text));
+		refresh();
+		viewer.editElement(viewer.getElementAt(viewer.getTable().getItemCount()-1), 0);
+	}
+	
+	public boolean isItemSelected() {
+		return viewer.getTable().getSelectionIndex() != -1;
+	}
+	
+	public void removeSelectedItem() {
+		int index = viewer.getTable().getSelectionIndex();
+		if(index != -1) {
+			expressions.get(input).remove(index);
+			refresh();
+			viewer.getTable().select(index);
+		}
+	}
+	
 	void refresh() {
 		if(viewer != null && !viewer.getTable().isDisposed())
 			viewer.setInput(input);
@@ -255,12 +278,7 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 						viewer.editElement(viewer.getElementAt(index), 0);
 				}
 				else if(e.keyCode == SWT.DEL || e.keyCode == SWT.BS) {
-					int index = viewer.getTable().getSelectionIndex();
-					if(index != -1) {
-						expressions.get(input).remove(index);
-						refresh();
-						viewer.getTable().select(index);
-					}
+					removeSelectedItem();
 				}
 				else if(e.keyCode == SWT.ARROW_DOWN) {
 					int index = viewer.getTable().getSelectionIndex();

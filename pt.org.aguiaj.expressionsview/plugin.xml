@@ -47,5 +47,37 @@
          </view>
       </perspectiveExtension>
    </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="pt.iscte.dcti.expressionsview.AddLineCommand"
+            id="pt.iscte.dcti.expressionsview.addline"
+            name="Add line">
+      </command>
+      <command
+            defaultHandler="pt.iscte.dcti.expressionsview.RemoveLineCommand"
+            id="pt.iscte.dcti.expressionsview.deleteline"
+            name="Delete line">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="toolbar:pt.org.aguiaj.expressionsview">
+         <command
+               commandId="pt.iscte.dcti.expressionsview.addline"
+               icon="icons/add.gif"
+               label="Add line"
+               style="push">
+         </command>
+         <command
+               commandId="pt.iscte.dcti.expressionsview.deleteline"
+               icon="icons/delete.gif"
+               label="Delete line"
+               style="push">
+         </command>
+      </menuContribution>
+   </extension>
  
 </plugin>
