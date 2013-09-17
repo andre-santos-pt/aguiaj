@@ -74,7 +74,7 @@ public class AguiaJHelper {
 			}
 		}
 		catch(ParseException e) {
-			throw new IllegalArgumentException("Invalid Java instruction");
+			throw new IllegalArgumentException("Invalid Java instruction - " + javaInstruction);
 		}
 	}
 	
