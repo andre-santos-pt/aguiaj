@@ -35,6 +35,7 @@ import pt.org.aguiaj.core.commands.java.ContractAware;
 import pt.org.aguiaj.core.commands.java.JavaCommandWithArgs;
 import pt.org.aguiaj.core.commands.java.JavaCommandWithReturn;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
+import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
 import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 import pt.org.aguiaj.extensibility.JavaCommand;
 import pt.org.aguiaj.extensibility.ObjectEventListener;
@@ -44,6 +45,8 @@ import pt.org.aguiaj.standard.StandardNamePolicy;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+
+
 // singleton
 // observable
 public class ObjectModel {
@@ -59,7 +62,6 @@ public class ObjectModel {
 	private IdentityObjectSet objectSet;
 
 	private Table<Object, Method, ContractDecorator<?>> contracts;
-
 
 	private LinkedList<JavaCommand> activeCommands;
 
@@ -247,6 +249,10 @@ public class ObjectModel {
 					}
 					addReference(retType, object , cmd.getReference(), true);
 				}
+			}
+			else if(command instanceof NewReferenceCommand) {
+				NewReferenceCommand cmd = (NewReferenceCommand) command;
+				addReference(cmd.getReferenceType(), cmd.getResultingObject(), cmd.getReference(), true);
 			}
 			
 			if(command instanceof ContractAware) {
@@ -548,7 +554,6 @@ public class ObjectModel {
 
 	
 	public RuntimeException verifyInvariantOnCreation(Object object) {
-//		boolean ok = true;
 		Set<Class<? extends ContractDecorator<?>>> contracts = ClassModel.getInstance().getContractTypes(object.getClass());
 		for(Class<? extends ContractDecorator<?>> clazz : contracts) {
 			ContractDecorator<?> contract = null;
@@ -564,9 +569,6 @@ public class ObjectModel {
 			}
 			Method invariantMethod = getInvariantMethod(contract);
 			MethodInvocationCommand cmd = new MethodInvocationCommand(contract, invariantMethod);
-
-			//		if(ok)
-			//	ok = ExceptionHandler.INSTANCE.execute(cmd);
 			
 			cmd.execute();
 			

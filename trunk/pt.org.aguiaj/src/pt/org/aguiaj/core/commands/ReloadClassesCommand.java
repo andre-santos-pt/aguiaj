@@ -157,10 +157,6 @@ public class ReloadClassesCommand extends AbstractHandler {
 		
 		objectsView.show();
 
-//		SWTUtils.showView(AguiaJContribution.DOCUMENTATION_VIEW);
-//		SWTUtils.showView(AguiaJContribution.HISTORY_VIEW);
-//		SWTUtils.showView(AguiaJContribution.JAVABAR_VIEW);
-
 		return null;
 	}
 
