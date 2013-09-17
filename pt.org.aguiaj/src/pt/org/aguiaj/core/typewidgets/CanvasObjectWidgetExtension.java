@@ -153,7 +153,6 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 			e.gc.setBackground(new Color(null, 0,0,0));
 			e.gc.fillRectangle(e.gc.getClipping());
 		}
-		
 	}
 
 
