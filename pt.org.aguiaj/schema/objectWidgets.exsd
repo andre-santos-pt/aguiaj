@@ -91,7 +91,7 @@
                </appinfo>
             </annotation>
          </attribute>
-         <attribute name="contractProxy" type="string">
+         <attribute name="contractValidator" type="string">
             <annotation>
                <documentation>
                   
