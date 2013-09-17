@@ -1,32 +1,32 @@
 package aguiaj.draw.contracts;
 
-import aguiaj.draw.RGBColor;
-import aguiaj.draw.Dimension;
-import aguiaj.draw.Image;
+import aguiaj.draw.IDimension;
+import aguiaj.draw.IColor;
+import aguiaj.draw.IImage;
 import pt.org.aguiaj.extensibility.contracts.ContractDecorator;
 import pt.org.aguiaj.extensibility.contracts.InvariantException;
 import pt.org.aguiaj.extensibility.contracts.PostConditionException;
 import pt.org.aguiaj.extensibility.contracts.PreConditionException;
 
-public class ImageContract implements Image, ContractDecorator<Image>{
+public class ImageContract implements IImage, ContractDecorator<IImage>{
 
-	private final Image image;
+	private final IImage image;
 	
 	private int constWidth = -1;
 	private int constHeight = -1;
 	
-	public ImageContract(Image image) {
+	public ImageContract(IImage image) {
 		this.image = image;
 	}
 	
 	@Override
-	public Image getWrappedObject() {
+	public IImage getWrappedObject() {
 		return image;
 	}
 
 	@Override
-	public Dimension getDimension() {
-		Dimension dim = image.getDimension();
+	public IDimension getDimension() {
+		IDimension dim = image.getDimension();
 		if(dim == null)
 			throw new PostConditionException("Dimension cannot be null");
 		
@@ -68,8 +68,8 @@ public class ImageContract implements Image, ContractDecorator<Image>{
 //	}
 
 	@Override
-	public RGBColor getColor(int x, int y) {
-		Dimension dim = getDimension();
+	public IColor getColor(int x, int y) {
+		IDimension dim = getDimension();
 		
 		if(!dim.isValidPoint(x, y))
 			throw new PreConditionException("Invalid coordinate (" + x + ", " + y + ")");
@@ -81,7 +81,7 @@ public class ImageContract implements Image, ContractDecorator<Image>{
 //			throw new PreConditionException("Invalid y coordinate: " + y + " (valid range [0, " + (getHeight()-1) + "])");
 		
 		
-		RGBColor color = image.getColor(x, y);
+		IColor color = image.getColor(x, y);
 		if(color == null)
 			throw new PostConditionException("The color of a pixel cannot be null - (" + x + ", " + y + ")");
 		
@@ -93,7 +93,7 @@ public class ImageContract implements Image, ContractDecorator<Image>{
 	@Override
 	public void checkInvariant() throws InvariantException {
 	
-		Dimension dim = getDimension();
+		IDimension dim = getDimension();
 		
 		int w = dim.getWidth();
 		validateWidth(w);

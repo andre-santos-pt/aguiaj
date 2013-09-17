@@ -1,25 +1,25 @@
 package aguiaj.draw.contracts;
 
-import aguiaj.draw.RGBColor;
-import aguiaj.draw.Dimension;
-import aguiaj.draw.Image;
-import aguiaj.draw.TransparentImage;
+import aguiaj.draw.IDimension;
+import aguiaj.draw.IColor;
+import aguiaj.draw.IImage;
+import aguiaj.draw.ITransparentImage;
 import pt.org.aguiaj.extensibility.contracts.ContractDecorator;
 import pt.org.aguiaj.extensibility.contracts.InvariantException;
 import pt.org.aguiaj.extensibility.contracts.PostConditionException;
 import pt.org.aguiaj.extensibility.contracts.PreConditionException;
 
-public class TransparentImageContract implements TransparentImage, ContractDecorator<TransparentImage>{
+public class TransparentImageContract implements ITransparentImage, ContractDecorator<ITransparentImage>{
 
-	private final TransparentImage image;
+	private final ITransparentImage image;
 	
 	
-	public TransparentImageContract(TransparentImage image) {
+	public TransparentImageContract(ITransparentImage image) {
 		this.image = image;
 	}
 	
 	@Override
-	public TransparentImage getWrappedObject() {
+	public ITransparentImage getWrappedObject() {
 		return image;
 	}
 
@@ -34,18 +34,18 @@ public class TransparentImageContract implements TransparentImage, ContractDecor
 //	}
 	
 	@Override
-	public Dimension getDimension() {
+	public IDimension getDimension() {
 		return image.getDimension();
 	}
 
 	@Override
-	public RGBColor getColor(int x, int y) {
+	public IColor getColor(int x, int y) {
 		return image.getColor(x, y);
 	}
 
 	@Override
 	public int getOpacity(int x, int y) {
-		Dimension dim = getDimension();
+		IDimension dim = getDimension();
 		
 		int w = dim.getWidth();
 		int h = dim.getHeight();
@@ -64,7 +64,7 @@ public class TransparentImageContract implements TransparentImage, ContractDecor
 	
 	@Override
 	public void checkInvariant() throws InvariantException {
-		Dimension dim = getDimension();
+		IDimension dim = getDimension();
 		int w = dim.getWidth();
 		int h = dim.getHeight();
 		

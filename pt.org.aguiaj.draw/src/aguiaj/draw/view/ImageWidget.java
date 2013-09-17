@@ -34,21 +34,21 @@ import pt.org.aguiaj.extensibility.AguiaJHelper;
 import pt.org.aguiaj.extensibility.canvas.CanvasVisualizationWidget;
 import pt.org.aguiaj.extensibility.canvas.DrawItem;
 import pt.org.aguiaj.extensibility.canvas.ImageDraw;
-import aguiaj.draw.Dimension;
-import aguiaj.draw.Image;
-import aguiaj.draw.TransparentImage;
+import aguiaj.draw.IDimension;
+import aguiaj.draw.IImage;
+import aguiaj.draw.ITransparentImage;
 import aguiaj.draw.contracts.ImageContract;
 
-public class ImageWidget implements CanvasVisualizationWidget<Image> {
+public class ImageWidget implements CanvasVisualizationWidget<IImage> {
 	private static final int ZOOM_STEP = 3;
 	
 	private int zoom = 1;
 
-	private Image image;
+	private IImage image;
 	private int width;
 	private int height;
 	private ArrayList<Rectangle> toRedraw = new ArrayList<Rectangle>(1);
-	private aguiaj.draw.RGBColor[][] prev;
+	private aguiaj.draw.IColor[][] prev;
 	private Color background;
 	
 	private MenuItem zoomInItem;
@@ -65,16 +65,16 @@ public class ImageWidget implements CanvasVisualizationWidget<Image> {
 	}
 
 	@Override
-	public void update(Image image) {				
-		this.image = image;
+	public void update(IImage image) {				
+		this.image = new ImageContract(image);
 
 		if(image != null) {
-			Dimension dim = image.getDimension();
+			IDimension dim = image.getDimension();
 			width = dim.getWidth(); 
 			height = dim.getHeight();
 
 			if(prev == null)
-				prev = new aguiaj.draw.RGBColor[height][width];
+				prev = new aguiaj.draw.IColor[height][width];
 
 			if(toRedraw.isEmpty())
 				toRedraw.add(new Rectangle(0, 0, canvasWidth(), canvasHeight()));
@@ -115,8 +115,6 @@ public class ImageWidget implements CanvasVisualizationWidget<Image> {
 				zoomOutItem.setEnabled(true);
 				AguiaJHelper.updateObject(image);
 			}
-
-			
 		});
 		
 		zoomOutItem = new MenuItem(menu, SWT.PUSH);
@@ -146,11 +144,11 @@ public class ImageWidget implements CanvasVisualizationWidget<Image> {
 		return single;
 	}
 
-	static ImageDraw createImageDraw(Image image, Point origin, int zoom) {
+	static ImageDraw createImageDraw(IImage image, Point origin, int zoom) {
 		PaletteData palette = new PaletteData(0xFF0000, 0x00FF00, 0x0000FF);
 //		int height = Math.min(image.getHeight(), maxHeight);
 //		int width = Math.min(image.getWidth(), maxWidth);
-		Dimension dim = image.getDimension();
+		IDimension dim = image.getDimension();
 		int width = dim.getWidth();
 		int height = dim.getHeight();
 		ImageData data = new ImageData(width, height, 24, palette);
@@ -161,10 +159,10 @@ public class ImageWidget implements CanvasVisualizationWidget<Image> {
 		int i = 0;
 		for(int y = 0; y < height; y++) {
 			for(int x = 0; x < width; x++) {
-				aguiaj.draw.RGBColor pixel = image.getColor(x, y);
+				aguiaj.draw.IColor pixel = image.getColor(x, y);
 				v[i] = palette.getPixel(new RGB(pixel.getR(), pixel.getG(), pixel.getB()));
-				if(image instanceof TransparentImage) {
-					int t = ((TransparentImage)image).getOpacity(x, y);
+				if(image instanceof ITransparentImage) {
+					int t = ((ITransparentImage)image).getOpacity(x, y);
 					alpha[i] = (byte) ((t*255)/100);
 				}
 				else {

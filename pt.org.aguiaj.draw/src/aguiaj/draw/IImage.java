@@ -10,17 +10,23 @@
  ******************************************************************************/
 package aguiaj.draw;
 
-/**
- * Represents images with transparency.
- */
-public interface TransparentImage extends Image {
 
+
+/**
+ * Represents images.
+ * 
+ * @author Andre L. Santos
+ */
+public interface IImage {
+	
 	/**
-	 * The opacity level at an image point (100 - fully opaque; 0 - transparent).
-	 * 
-	 * @param x x-axis coordinate
-	 * @param y y-axis coordinate
-	 * @return Opacity (range: 0-100)
+	 * Constant
+	 * @return
 	 */
-	int getOpacity(int x, int y);
+	IDimension getDimension();
+	
+	/**
+	 * The color at image point (<i>x</i>, <i>y</i>).
+	 */
+	IColor getColor(int x, int y);
 }

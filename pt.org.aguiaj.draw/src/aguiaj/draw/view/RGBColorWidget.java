@@ -7,7 +7,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Canvas;
 
-import aguiaj.draw.RGBColor;
+import aguiaj.draw.IColor;
 
 import pt.org.aguiaj.extensibility.canvas.CanvasVisualizationWidget;
 import pt.org.aguiaj.extensibility.canvas.DrawItem;
@@ -15,7 +15,7 @@ import pt.org.aguiaj.extensibility.canvas.RectangleFill;
 import pt.org.aguiaj.extensibility.canvas.RectangleDraw;
 import pt.org.aguiaj.extensibility.canvas.TextDraw;
 
-public class RGBColorWidget implements CanvasVisualizationWidget<RGBColor>{
+public class RGBColorWidget implements CanvasVisualizationWidget<IColor>{
 
 	private static Color BLACK =  new Color(null, 0, 0, 0);
 	private Color swtColor;
@@ -27,7 +27,7 @@ public class RGBColorWidget implements CanvasVisualizationWidget<RGBColor>{
 	}
 	
 	@Override
-	public void update(RGBColor color) {
+	public void update(IColor color) {
 		swtColor = new Color(null, color.getR(), color.getG(), color.getB());
 		list.clear();
 		list.add(new RectangleFill(0, 0, 50, 50, swtColor));
