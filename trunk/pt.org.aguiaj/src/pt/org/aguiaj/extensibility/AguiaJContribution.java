@@ -80,4 +80,14 @@ public interface AguiaJContribution {
 	public static final String ACCESSOR_POLICY_DESCRIPTION = "description";
 	
 	public static final String EXTENSION_LANGUAGES = "pt.org.aguiaj.languages";
+	
+	/**
+	 * Id of the extension point for plugging object visualization widgets into AGUIA/J.
+	 */
+	public static final String EXTENSION_IMPORT_ITEM = "pt.org.aguiaj.importItem";
+	public static final String IMPORT_ITEM_NAME = "name";
+	public static final String IMPORT_ITEM_CLASS = "class";
+	public static final String IMPORT_ITEM_FILE_EXTENSION = "fileExtension";
+	public static final String IMPORT_ITEM_EXTENSION = "extension";
+	
 }

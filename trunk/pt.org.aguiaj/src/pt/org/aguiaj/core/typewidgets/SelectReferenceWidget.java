@@ -86,11 +86,7 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 	private void createContents2(Composite parent) {
 		if(ClassModel.getInstance().isPolymorphic(getType()) &&
 				ClassModel.getInstance().isPluginTypeActive(getType()))
-			IconWidget.createForRowLayout(this, getType());
-
-//		int style = SWT.READ_ONLY;
-//		if(getType().equals(String.class))
-//			style = SWT.DROP_DOWN;
+			IconWidget.createForRowLayout(this, getType()).setToolTipText(getType().getSimpleName());;
 
 		combo = new Combo(this, SWT.DROP_DOWN);
 

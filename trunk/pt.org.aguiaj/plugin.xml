@@ -4,6 +4,7 @@
    <extension-point id="objectWidgets" name="Object Widgets" schema="schema/objectWidgets.exsd"/>
    <extension-point id="accessorDetectionPolicies" name="Accessor Detection Policies" schema="schema/accessorDetectionPolicies.exsd"/>
    <extension-point id="languages" name="Languages" schema="schema/languages.exsd"/>
+   <extension-point id="importItem" name="Import Item" schema="schema/importItem.exsd"/>
 
    <extension
          point="org.eclipse.ui.perspectives">
@@ -103,6 +104,11 @@
             id="AguiaJ.openJavaBar"
             name="Open Java Bar">
       </command>
+      <command
+            defaultHandler="pt.org.aguiaj.core.commands.ImportItemCommand"
+            id="pt.org.aguiaj.importitem"
+            name="Import item">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
@@ -176,6 +182,16 @@
                   style="push">
             </command>
          </menu>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="toolbar:pt.org.aguiaj.objectsView">
+         <command
+               commandId="pt.org.aguiaj.importitem"
+               icon="images/import_wiz.gif"
+               label="Import item"
+               style="push">
+         </command>
       </menuContribution>
    </extension>
    <extension

@@ -510,6 +510,10 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 
 
 	public void updateFields() {
+		System.out.println("OBJ - " + object);
+		for(Method m : methodToWidget.keySet())
+			System.out.println("\t" + m.hashCode() + " - " + m);
+		
 		super.updateFields(object);
 
 		try {
