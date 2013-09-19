@@ -31,6 +31,7 @@ import pt.org.aguiaj.extensibility.canvas.TextDraw;
 import pt.org.aguiaj.extensibility.contracts.PostConditionException;
 import aguiaj.draw.IGrid;
 import aguiaj.draw.IImage;
+import aguiaj.draw.ITransparentImage;
 import aguiaj.draw.contracts.ImageContract;
 import aguiaj.draw.contracts.ColorContract;
 
@@ -128,7 +129,7 @@ public class GridWidget implements CanvasVisualizationWidget<IGrid> {
 				
 				IImage icon = grid.getImageAt(row, column);
 				if(icon != null) {
-					items.add(ImageWidget.createImageDraw(new ImageContract(icon), new Point(BORDER + (column * WIDTH) + 1, BORDER + (row * WIDTH) + 1), 1));
+					items.add(ImageWidget.createImageDraw(new ImageContract(icon), icon instanceof ITransparentImage, new Point(BORDER + (column * WIDTH) + 1, BORDER + (row * WIDTH) + 1), 1));
 				}
 			}	
 		}

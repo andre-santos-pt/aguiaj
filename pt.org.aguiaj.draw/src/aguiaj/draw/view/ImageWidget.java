@@ -11,6 +11,7 @@
 package aguiaj.draw.view;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -34,6 +35,7 @@ import pt.org.aguiaj.extensibility.AguiaJHelper;
 import pt.org.aguiaj.extensibility.canvas.CanvasVisualizationWidget;
 import pt.org.aguiaj.extensibility.canvas.DrawItem;
 import pt.org.aguiaj.extensibility.canvas.ImageDraw;
+import pt.org.aguiaj.extensibility.contracts.ContractDecorator;
 import aguiaj.draw.IDimension;
 import aguiaj.draw.IImage;
 import aguiaj.draw.ITransparentImage;
@@ -44,10 +46,9 @@ public class ImageWidget implements CanvasVisualizationWidget<IImage> {
 	
 	private int zoom = 1;
 
-	private IImage image;
+	private ImageContract image;
 	private int width;
 	private int height;
-	private ArrayList<Rectangle> toRedraw = new ArrayList<Rectangle>(1);
 	private aguiaj.draw.IColor[][] prev;
 	private Color background;
 	
@@ -75,9 +76,6 @@ public class ImageWidget implements CanvasVisualizationWidget<IImage> {
 
 			if(prev == null)
 				prev = new aguiaj.draw.IColor[height][width];
-
-			if(toRedraw.isEmpty())
-				toRedraw.add(new Rectangle(0, 0, canvasWidth(), canvasHeight()));
 		}		
 	}
 
@@ -110,8 +108,6 @@ public class ImageWidget implements CanvasVisualizationWidget<IImage> {
 		zoomInItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				zoom += ZOOM_STEP;
-				toRedraw.clear();
-				toRedraw.add(new Rectangle(0, 0, canvasWidth(), canvasHeight()));
 				zoomOutItem.setEnabled(true);
 				AguiaJHelper.updateObject(image);
 			}
@@ -122,8 +118,6 @@ public class ImageWidget implements CanvasVisualizationWidget<IImage> {
 		zoomOutItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				zoom -= ZOOM_STEP;
-				toRedraw.clear();
-				toRedraw.add(new Rectangle(0, 0, canvasWidth(), canvasHeight()));
 				if(zoom == 1)
 					zoomOutItem.setEnabled(false);
 				
@@ -140,14 +134,12 @@ public class ImageWidget implements CanvasVisualizationWidget<IImage> {
 	@Override
 	public List<DrawItem> drawItems() {
 		single.clear();
-		single.add(createImageDraw(new ImageContract(image), new Point(0, 0), zoom));
+		single.add(createImageDraw(image, image.getWrappedObject() instanceof ITransparentImage, new Point(0,0), zoom));
 		return single;
 	}
 
-	static ImageDraw createImageDraw(IImage image, Point origin, int zoom) {
+	static ImageDraw createImageDraw(ImageContract image, boolean transparency, Point origin, int zoom) {
 		PaletteData palette = new PaletteData(0xFF0000, 0x00FF00, 0x0000FF);
-//		int height = Math.min(image.getHeight(), maxHeight);
-//		int width = Math.min(image.getWidth(), maxWidth);
 		IDimension dim = image.getDimension();
 		int width = dim.getWidth();
 		int height = dim.getHeight();
@@ -155,14 +147,13 @@ public class ImageWidget implements CanvasVisualizationWidget<IImage> {
 		data.alpha = -1;
 		byte[] alpha = new byte[width*height];
 		int[] v = new int[width*height];
-		
 		int i = 0;
 		for(int y = 0; y < height; y++) {
 			for(int x = 0; x < width; x++) {
 				aguiaj.draw.IColor pixel = image.getColor(x, y);
 				v[i] = palette.getPixel(new RGB(pixel.getR(), pixel.getG(), pixel.getB()));
-				if(image instanceof ITransparentImage) {
-					int t = ((ITransparentImage)image).getOpacity(x, y);
+				if(transparency) {
+					int t = ((ITransparentImage)image.getWrappedObject()).getOpacity(x, y);
 					alpha[i] = (byte) ((t*255)/100);
 				}
 				else {
@@ -179,56 +170,5 @@ public class ImageWidget implements CanvasVisualizationWidget<IImage> {
 		
 		return new ImageDraw(data, origin);
 	}
-
-
-
-//	@Override
-//	public void drawObject(GC gc) {
-//		if(image != null) {
-//			Common.drawImage(image, gc, 0, 0, zoom);
-//			for(int y = 0; y < image.getHeight(); y++) {
-//				for(int x = 0; x < image.getWidth(); x++) {				
-//					prev[y][x] = image.getColor(x, y);
-//				}
-//			}
-//		}
-//	}
-
-
-
-//	@Override
-//	public List<Rectangle> toRedraw() {
-//		if(image != null) {
-//			Point first = null;
-//			int lastX = 0;
-//			int lastY = 0;
-//			
-//			for(int y = 0; y < image.getHeight(); y++) {
-//				for(int x = 0; x < image.getWidth(); x++) {				
-//					if(!image.getColor(x, y).equals(prev[y][x])) {
-//						if(first == null)
-//							first = new Point(x, y);
-//						if(first.x > x)
-//							first.x = x;
-//						
-//						if(x > lastX)
-//							lastX = x;
-//						
-//						if(y > lastY)
-//							lastY = y;
-//					}	
-//				}
-//			}
-//
-//			toRedraw.clear();
-//			if(first != null) {
-//				Rectangle area = new Rectangle(first.x*zoom, first.y*zoom, (lastX - first.x + 1)*zoom, (lastY - first.y + 1)*zoom);
-//				toRedraw.add(area);
-//			}
-//		}
-//
-//		return toRedraw;
-//	}
-
 	
 }

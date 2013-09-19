@@ -41,11 +41,13 @@
          <class
                allowImport="true"
                contractValidator="aguiaj.draw.contracts.TransparentImageContract"
+               icon="images/image_t.png"
                id="aguiaj.draw.ITransparentImage">
          </class>
          <class
                allowImport="true"
                contractValidator="aguiaj.draw.contracts.DimensionContract"
+               icon="images/dim.png"
                id="aguiaj.draw.IDimension">
          </class>
       </group>
