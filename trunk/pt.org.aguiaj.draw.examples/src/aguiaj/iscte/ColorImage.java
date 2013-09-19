@@ -12,6 +12,7 @@ package aguiaj.iscte;
 
 import java.util.Arrays;
 
+import aguiaj.draw.IColor;
 import aguiaj.draw.IDimension;
 import aguiaj.draw.ITransparentImage;
 
@@ -40,7 +41,6 @@ public class ColorImage implements ITransparentImage {
 
 		pixels = new Color[height][width];
 		dimension = new Dimension(width, height);
-		ImageUtils.setAll(pixels, Color.WHITE);
 	}
 	
 
@@ -95,7 +95,7 @@ public class ColorImage implements ITransparentImage {
 	}
 	
 	@Override
-	public Color getColor(int x, int y) {
+	public IColor getColor(int x, int y) {
 		dimension.validatePointArguments(x, y);
 		return pixels[y][x];
 	}
@@ -145,7 +145,7 @@ public class ColorImage implements ITransparentImage {
 
 
 	@Override
-	public IDimension getDimension() {
+	public Dimension getDimension() {
 		return dimension;
 	}
 	
