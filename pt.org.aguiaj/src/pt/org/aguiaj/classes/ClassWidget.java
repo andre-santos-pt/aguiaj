@@ -69,7 +69,7 @@ public class ClassWidget extends FieldContainer {
 			.text(StandardNamePolicy.prettyClassName(clazz))
 			.huge()
 			.create(classHeader);
-		
+				
 		DocumentationLinking.add(classNameLabel.getControl(), clazz);
 		
 		if(ClassModel.getInspector().isStaticClass(clazz))
