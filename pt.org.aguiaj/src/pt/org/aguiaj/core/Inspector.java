@@ -194,7 +194,7 @@ public class Inspector {
 //			if(t.isInterface()) {
 				for(Method m : t.getMethods())
 					try {
-						methods.add(type.getMethod(m.getName(), m.getParameterTypes()));
+						methods.add(type.getDeclaredMethod(m.getName(), m.getParameterTypes()));
 					} catch (NoSuchMethodException e) {
 //						e.printStackTrace();
 					} catch (SecurityException e) {
@@ -206,7 +206,10 @@ public class Inspector {
 //				methods.addAll(getCommandMethods(t));
 //			}
 		}
-
+		System.out.println(superType);
+		for(Method m : methods)
+			System.out.println("\t" + m.hashCode() + " - " + m);
+		
 		return methods;
 	}
 
