@@ -3,6 +3,7 @@ package aguiaj.draw.contracts;
 import aguiaj.draw.IDimension;
 import aguiaj.draw.IColor;
 import aguiaj.draw.IImage;
+import aguiaj.draw.ITransparentImage;
 import pt.org.aguiaj.extensibility.contracts.ContractDecorator;
 import pt.org.aguiaj.extensibility.contracts.InvariantException;
 import pt.org.aguiaj.extensibility.contracts.PostConditionException;
@@ -120,5 +121,7 @@ public class ImageContract implements IImage, ContractDecorator<IImage>{
 		if(h < 1)
 			throw new PostConditionException("Height must be positive");
 	}
+
+	
 
 }

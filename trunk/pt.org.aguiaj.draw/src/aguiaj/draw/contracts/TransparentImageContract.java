@@ -2,7 +2,6 @@ package aguiaj.draw.contracts;
 
 import aguiaj.draw.IDimension;
 import aguiaj.draw.IColor;
-import aguiaj.draw.IImage;
 import aguiaj.draw.ITransparentImage;
 import pt.org.aguiaj.extensibility.contracts.ContractDecorator;
 import pt.org.aguiaj.extensibility.contracts.InvariantException;
@@ -23,16 +22,6 @@ public class TransparentImageContract implements ITransparentImage, ContractDeco
 		return image;
 	}
 
-//	@Override
-//	public int getWidth() {
-//		return image.getWidth();
-//	}
-//
-//	@Override
-//	public int getHeight() {
-//		return image.getWidth();
-//	}
-	
 	@Override
 	public IDimension getDimension() {
 		return image.getDimension();
