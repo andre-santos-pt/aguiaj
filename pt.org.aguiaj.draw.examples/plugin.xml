@@ -32,19 +32,64 @@
       </group>
    </extension>
    <extension
-         point="org.eclipse.ui.viewActions">
-      <viewContribution
-            id="pt.org.aguiaj.draw.examples.addImage"
-            targetID="pt.org.aguiaj.objectsView">
-         <action
-               class="aguiaj.iscte.contribution.ImportImageAction"
-               icon="images/image.png"
-               id="AguiaJColorAndImagesPlugin.action1"
-               label="Import image"
-               style="push"
-               toolbarPath="additions">
-         </action>
-      </viewContribution>
+         point="pt.org.aguiaj.importItem">
+      <provider
+            class="aguiaj.iscte.contribution.BinaryImageProvider"
+            name="Binary Image">
+         <fileExtension
+               extension="jpg">
+         </fileExtension>
+         <fileExtension
+               extension="jpeg">
+         </fileExtension>
+         <fileExtension
+               extension="png">
+         </fileExtension>
+         <fileExtension
+               extension="gif">
+         </fileExtension>
+         <fileExtension
+               extension="bmp">
+         </fileExtension>
+      </provider>
+      <provider
+            class="aguiaj.iscte.contribution.GrayscaleImageProvider"
+            name="Grayscale Image">
+         <fileExtension
+               extension="jpg">
+         </fileExtension>
+         <fileExtension
+               extension="jpeg">
+         </fileExtension>
+         <fileExtension
+               extension="png">
+         </fileExtension>
+         <fileExtension
+               extension="gif">
+         </fileExtension>
+         <fileExtension
+               extension="bmp">
+         </fileExtension>
+      </provider>
+      <provider
+            class="aguiaj.iscte.contribution.ColorImageProvider"
+            name="Color Image">
+         <fileExtension
+               extension="jpg">
+         </fileExtension>
+         <fileExtension
+               extension="jpeg">
+         </fileExtension>
+         <fileExtension
+               extension="png">
+         </fileExtension>
+         <fileExtension
+               extension="gif">
+         </fileExtension>
+         <fileExtension
+               extension="bmp">
+         </fileExtension>
+      </provider>
    </extension>
 
 </plugin>

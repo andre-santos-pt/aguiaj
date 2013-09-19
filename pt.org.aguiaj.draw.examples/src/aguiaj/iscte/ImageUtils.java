@@ -10,14 +10,22 @@
  ******************************************************************************/
 package aguiaj.iscte;
 
+import java.util.Arrays;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
+import pt.org.aguiaj.extensibility.canvas.ImageDraw;
 import aguiaj.draw.IColor;
 import aguiaj.draw.IDimension;
 import aguiaj.draw.IImage;
+import aguiaj.draw.ITransparentImage;
 
 
 
@@ -32,30 +40,47 @@ public class ImageUtils {
 	static final int B = 2;
 	
 	public static ColorImage loadColorImage(String filePath) {
-		int[][][] data = fetchData(new org.eclipse.swt.graphics.Image(Display.getDefault(), filePath));
-		return ColorImage.fromMatrix(data);
+		Image image = new Image(Display.getDefault(), filePath);
+		
+		int[][][] data = fetchData(image);
+		ColorImage colorImage = ColorImage.fromMatrix(data);
+
+		int[][] alpha = fetchAlpha(image);
+		if(!allZeros(alpha))
+			colorImage.setOpacity(alpha);
+		
+		return colorImage;
 	}
 
+	private static boolean allZeros(int[][] alpha) {
+		for(int i = 0; i < alpha.length; i++)
+			for(int j = 0; j < alpha[i].length; j++)
+				if(alpha[i][j] != 0)
+					return false;
+		
+		return true;
+	}
+	
 	public static BinaryImage loadBinaryImage(String filePath) {
 		return convertToBinary(loadColorImage(filePath));
 	}
 	
-	public static GrayscaleImage loadBlackWhiteImage(String filePath) {
-		return convertToBlackWhite(loadColorImage(filePath));
+	public static GrayscaleImage loadGrayscaleImage(String filePath) {
+		return convertToGrayscale(loadColorImage(filePath));
 	}
 	
-	public static ColorImage fromSwtImage(org.eclipse.swt.graphics.Image image) {
-		if(image == null)
-			throw new NullPointerException("Image cannot be null");
-		
-		ColorImage img = ColorImage.fromMatrix(fetchData(image));
-		int[][] alphaData = fetchAlpha(image);
-
-		if(alphaData != null)
-			img.setOpacity(alphaData);
-
-		return img;
-	}
+//	public static ColorImage fromSwtImage(org.eclipse.swt.graphics.Image image) {
+//		if(image == null)
+//			throw new NullPointerException("Image cannot be null");
+//		
+//		ColorImage img = ColorImage.fromMatrix(fetchData(image));
+//		int[][] alphaData = fetchAlpha(image);
+//
+//		if(alphaData != null)
+//			img.setOpacity(alphaData);
+//
+//		return img;
+//	}
 
 	private static int getLuminance(IColor color) {
 		return (int) Math.round(0.3*color.getR() + 0.59*color.getG() + 0.11*color.getB());
@@ -73,7 +98,7 @@ public class ImageUtils {
 		return img;
 	}
 	
-	private static GrayscaleImage convertToBlackWhite(IImage image) {
+	private static GrayscaleImage convertToGrayscale(IImage image) {
 		IDimension dim = image.getDimension();
 		GrayscaleImage img = new GrayscaleImage(dim.getWidth(), dim.getHeight());
 		for(int i = 0; i < dim.getWidth(); i++) {
@@ -101,9 +126,9 @@ public class ImageUtils {
 		return pixels;
 	}
 
-	private static int[][] fetchAlpha(org.eclipse.swt.graphics.Image image) {
+	private static int[][] fetchAlpha(Image image) {
 		ImageData data = image.getImageData();
-
+		
 		int[][] alpha = new int[data.height][data.width];
 		int a = 0;
 		for(int y = 0; y < data.height; y++)
@@ -119,13 +144,38 @@ public class ImageUtils {
 		return alpha;
 	}
 	
+ 
+ static ImageDraw createImageDraw(IImage image, Point origin, int zoom) {
+		PaletteData palette = new PaletteData(0xFF0000, 0x00FF00, 0x0000FF);
+		IDimension dim = image.getDimension();
+		int width = dim.getWidth();
+		int height = dim.getHeight();
+		ImageData data = new ImageData(width, height, 24, palette);
+		data.alpha = -1;
+		byte[] alpha = new byte[width*height];
+		int[] v = new int[width*height];
+		
+		int i = 0;
+		for(int y = 0; y < height; y++) {
+			for(int x = 0; x < width; x++) {
+				aguiaj.draw.IColor pixel = image.getColor(x, y);
+				v[i] = palette.getPixel(new RGB(pixel.getR(), pixel.getG(), pixel.getB()));
+				if(image instanceof ITransparentImage) {
+					int t = ((ITransparentImage)image).getOpacity(x, y);
+					alpha[i] = (byte) ((t*255)/100);
+				}
+				else {
+					alpha[i] = (byte) 255;
+				}
+				i++;
+			}
+		}
 
-	static Color[][] setAll(Color[][] data, Color color) {
-		for(Color[] row : data)
-			for(int i = 0; i < row.length; i++)
-				row[i] = color;
-
-		return data;
+		data.setPixels(0, 0, v.length, v, 0); 
+		data.setAlphas(0, 0, alpha.length, alpha, 0); 
+		
+		data = data.scaledTo(width*zoom, height*zoom);
+		
+		return new ImageDraw(data, origin);
 	}
-
 }
