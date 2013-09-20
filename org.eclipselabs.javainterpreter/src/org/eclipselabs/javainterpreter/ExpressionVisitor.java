@@ -83,9 +83,9 @@ class ExpressionVisitor extends ASTVisitor {
 		throw new RuntimeException("not supported: " + e);
 	}
 
-//	public boolean visit(PrefixExpression e) {
-//		throw new RuntimeException("not supported: " + e);
-//	}
+	//	public boolean visit(PrefixExpression e) {
+	//		throw new RuntimeException("not supported: " + e);
+	//	}
 
 	public boolean visit(PostfixExpression e) {
 		throw new RuntimeException("not supported: " + e);
@@ -341,8 +341,14 @@ class ExpressionVisitor extends ASTVisitor {
 		String className = methodTarget.containsKey(node) ? 
 				target.getClass().getSimpleName() : exp == null ? null : exp.toString();
 
-				Method method = match(node.getName().getFullyQualifiedName(), args, className);
-
+				Method method = null;
+				try {
+					method = match(node.getName().getFullyQualifiedName(), args, className);
+				}
+				catch(java.lang.NoClassDefFoundError e) {
+					
+				}
+				
 				if(method != null && !Modifier.isAbstract(method.getModifiers())) {
 
 					if(method.getReturnType().equals(void.class))
@@ -357,7 +363,7 @@ class ExpressionVisitor extends ASTVisitor {
 					if(thread.hasFailed()) {
 						Throwable exc = thread.getException();
 						String loc = exc.getStackTrace()[0].getFileName() + ": " + exc.getStackTrace()[0].getLineNumber();
-						
+
 						throw new ExecutionException(exc.getClass().getSimpleName() + " at " + loc, exc.getStackTrace()[0].getLineNumber());
 					}
 					else if(thread.timeoutReached())
