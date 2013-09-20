@@ -65,7 +65,10 @@ public class JavaInterpreter {
 		parser.setStatementsRecovery(false);
 		parser.setSource(expression.toCharArray());
 		ASTNode node = parser.createAST(null);
-
+	
+		if((node.getFlags() & ASTNode.MALFORMED) == ASTNode.MALFORMED)
+			throw new IllegalArgumentException("Parse error");
+		
 		if(node.getNodeType() == ASTNode.METHOD_INVOCATION || 
 		   node.getNodeType() == ASTNode.ASSIGNMENT || 
 		   node.getNodeType() == ASTNode.CLASS_INSTANCE_CREATION ||
@@ -79,7 +82,7 @@ public class JavaInterpreter {
 				if(ex.getCause() != null)
 					ex.printStackTrace();
 				
-				throw ex;
+				throw  new IllegalArgumentException("Parse error");
 			}
 			
 			return visitor.resolve();
