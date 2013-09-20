@@ -120,6 +120,7 @@ public class CreateNewJavaProject implements IViewActionDelegate {
 			Set<String> bundles = new HashSet<String>();
 			bundles.add("pt.org.aguiaj");
 			bundles.add("pt.org.aguiaj.draw");
+			bundles.add("pt.org.aguiaj.draw.examples");
 			
 			List<String> list = new ArrayList<String>();
 			createManifest(name, bundles, list, null, project);
