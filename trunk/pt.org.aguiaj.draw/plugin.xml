@@ -2,7 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         name="Standard"
+         name="Draw"
          point="pt.org.aguiaj.objectWidgets">         
       <group
             id="Draw">
