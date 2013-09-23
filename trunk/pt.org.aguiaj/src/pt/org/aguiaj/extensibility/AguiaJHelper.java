@@ -20,6 +20,7 @@ import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 import pt.org.aguiaj.core.interpreter.Instruction;
 import pt.org.aguiaj.core.interpreter.ParseException;
 import pt.org.aguiaj.core.interpreter.Parser;
+import pt.org.aguiaj.extensibility.contracts.ContractDecorator;
 import pt.org.aguiaj.objects.ObjectModel;
 import pt.org.aguiaj.objects.ObjectWidget;
 import pt.org.aguiaj.objects.ObjectsView;
@@ -60,6 +61,8 @@ public class AguiaJHelper {
 	
 	
 	public static void updateObject(Object object) {
+		if(object instanceof ContractDecorator<?>)
+			object = ((ContractDecorator<?>) object).getWrappedObject();
 		ObjectWidget widget = ObjectsView.getInstance().getObjectWidget(object);
 		widget.updateFields();
 		ObjectsView.getInstance().updateLayout(null);

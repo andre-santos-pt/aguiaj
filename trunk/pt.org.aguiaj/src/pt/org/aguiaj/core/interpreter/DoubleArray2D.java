@@ -10,21 +10,21 @@
  ******************************************************************************/
 package pt.org.aguiaj.core.interpreter;
 
-public class IntArray2DLiteral extends ArrayLiteral {
+public class DoubleArray2D extends ArrayLiteral {
 	
-	protected IntArray2DLiteral() {
-		super(int[][].class);		
+	protected DoubleArray2D() {
+		super(double[][].class);		
 	}	
 
 	@Override
 	protected Object accept(String[] parts) {
-		int[][] matrix = new int[parts.length][];
+		double[][] matrix = new double[parts.length][];
 		for(int i = 0; i < matrix.length; i++) {
-			IntArray intArray = new IntArray();
-			if(!intArray.accept(parts[i]))
+			DoubleArray doubleArray = new DoubleArray();
+			if(!doubleArray.accept(parts[i]))
 				return null;
 			
-			matrix[i] = (int[]) intArray.resolve();					
+			matrix[i] = (double[]) doubleArray.resolve();					
 		}
 		return matrix;
 	}

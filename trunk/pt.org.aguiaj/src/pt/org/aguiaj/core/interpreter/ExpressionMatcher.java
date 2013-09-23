@@ -27,7 +27,10 @@ public enum ExpressionMatcher {
 	BOOLEAN_ARRAY(BooleanArray.class),
 	CHAR_ARRAY(CharArray.class),
 	
-	INT_ARRAY_2D(IntArray2DLiteral.class),
+	INT_ARRAY_2D(IntArray2D.class),
+	DOUBLE_ARRAY_2D(DoubleArray2D.class),
+	CHAR_ARRAY_2D(CharArray2D.class),
+	BOOLEAN_ARRAY_2D(BooleanArray2D.class),
 	
 	NULL(Null.class),
 	STRING(StringLiteral.class),

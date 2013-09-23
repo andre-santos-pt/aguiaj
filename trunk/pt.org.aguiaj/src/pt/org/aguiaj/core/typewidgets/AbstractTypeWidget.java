@@ -25,6 +25,7 @@ import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.ArrayPositionAssignmentCommand;
 import pt.org.aguiaj.core.commands.java.AttributeAssignmentCommand;
 import pt.org.aguiaj.extensibility.JavaCommand;
+import pt.org.aguiaj.extensibility.Reference;
 import pt.org.aguiaj.objects.ObjectModel;
 
 
@@ -32,29 +33,29 @@ public abstract class AbstractTypeWidget extends Composite implements TypeWidget
 
 	private final WidgetProperty type;
 	private final boolean modifiable;
-	
+
 	private Field attributeField;
 	private Object attributeOwner;
 
 	private Object arrayObject;
 	private int lineArray;
-	
+
 	public AbstractTypeWidget(Composite parent, int style, WidgetProperty type, boolean modifiable) {
 		super(parent, style);
-		
+
 		RowLayout layout = new RowLayout(SWT.HORIZONTAL);
 		setLayout(layout);
-		
+
 		this.type = type;
 		this.modifiable = modifiable;
-		
+
 		lineArray = -1;	
-		
+
 		createContents(this);
 	}
-	
+
 	protected abstract void createContents(Composite parent);
-	
+
 	public void setAttribute(Field attributeField, Object attributeOwner) {
 		this.attributeField = attributeField;
 		this.attributeField.setAccessible(true);
@@ -69,11 +70,11 @@ public abstract class AbstractTypeWidget extends Composite implements TypeWidget
 	public WidgetProperty getUsageType() {
 		return type;
 	}
-	
+
 	public boolean isModifiable() {
 		return modifiable;
 	}
-	
+
 	protected final void modifyAttribute() {
 		modifyAttribute(null);
 	}
@@ -88,17 +89,20 @@ public abstract class AbstractTypeWidget extends Composite implements TypeWidget
 			e.printStackTrace();
 		} 
 	}
-	
+
 	protected final void modifyArrayPosition(String expression) {
-		String ref = ObjectModel.getFirstReference(arrayObject).name;
-		JavaCommand cmd = new ArrayPositionAssignmentCommand(arrayObject, ref, new int[] {lineArray}, getObject(), expression);
-		ObjectModel.getInstance().execute(cmd);
+		Reference ref = ObjectModel.getFirstReference(arrayObject);
+		if(ref != null) {
+			String refName = ref.name;
+			JavaCommand cmd = new ArrayPositionAssignmentCommand(arrayObject, refName, new int[] {lineArray}, getObject(), expression);
+			ObjectModel.getInstance().execute(cmd);
+		}
 	}
 
 
 	protected final void addEnterKeyListener(final Control control) {
 		control.addKeyListener(new KeyAdapter() {
-			
+
 			public void keyPressed(KeyEvent event) {
 				if(event.keyCode == SWT.CR) {
 					switch(type) {
@@ -113,20 +117,20 @@ public abstract class AbstractTypeWidget extends Composite implements TypeWidget
 			}
 		});
 	}
-	
+
 	protected boolean isFinalAttribute() {
 		return attributeField != null && Modifier.isFinal(attributeField.getModifiers());
 	}
-	
+
 	public void setToolTipText(String text) {
 		if(getControl() != null)
 			getControl().setToolTipText(text);
 	}
-	
+
 	public String getToolTipText() {
 		if(getControl() != null)
 			return getControl().getToolTipText();
-		
+
 		return null;
 	}	
 }

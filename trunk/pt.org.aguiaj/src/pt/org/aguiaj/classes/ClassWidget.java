@@ -39,6 +39,8 @@ import pt.org.aguiaj.common.widgets.MethodWidget;
 import pt.org.aguiaj.core.UIText;
 import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
 import pt.org.aguiaj.core.documentation.DocumentationLinking;
+import pt.org.aguiaj.extensibility.JavaCommand;
+import pt.org.aguiaj.extensibility.ObjectEventListenerAdapter;
 import pt.org.aguiaj.objects.ObjectModel;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
@@ -48,17 +50,24 @@ public class ClassWidget extends FieldContainer {
 	private List<Field> staticFields;
 	private Map<Constructor<?>, ConstructorWidget> constructorMap;
 	private Map<Method, MethodWidget> methodMap;
-	
+
+	private class CommandListener extends ObjectEventListenerAdapter {
+		@Override
+		public void commandExecuted(JavaCommand cmd) {
+			updateFields(null);
+		}	
+	}
+
 	public ClassWidget(Composite parent, final Class<?> clazz) {
 		super(parent, SWT.NONE);
-		
+
 		constructorMap = new HashMap<Constructor<?>, ConstructorWidget>();
 		methodMap = new HashMap<Method, MethodWidget>();
-		
+
 		FormLayout layout = new FormLayout();
 		layout.marginBottom = 5;
 		setLayout(layout);
-		
+
 		Composite classHeader = new Composite(this, SWT.NONE);
 		classHeader.setLayout(new RowLayout(SWT.HORIZONTAL));
 
@@ -66,26 +75,26 @@ public class ClassWidget extends FieldContainer {
 			IconWidget.createForRowLayout(classHeader, clazz);
 
 		LabelWidget classNameLabel = new LabelWidget.Builder()
-			.text(StandardNamePolicy.prettyClassName(clazz))
-			.huge()
-			.create(classHeader);
-				
+		.text(StandardNamePolicy.prettyClassName(clazz))
+		.huge()
+		.create(classHeader);
+
 		DocumentationLinking.add(classNameLabel.getControl(), clazz);
-		
+
 		if(ClassModel.getInspector().isStaticClass(clazz))
 			new LabelWidget.Builder()
-				.text("(static)")
-				.small()
-				.create(classHeader);
-				
+		.text("(static)")
+		.small()
+		.create(classHeader);
+
 		FormData labelData = new FormData();
 		labelData.top = new FormAttachment(0, 5);
 		labelData.left = new FormAttachment(0, 5);
 		labelData.right = new FormAttachment(100, -5);
 		classHeader.setLayoutData(labelData);
-		
+
 		staticFields = ClassModel.getInspector().getVisibleStaticAttributes(clazz);
-			
+
 		Composite constructorsOrContantsGroup = null;
 		if(clazz.isEnum())
 			constructorsOrContantsGroup = createConstantsGroup(this, clazz);
@@ -99,7 +108,7 @@ public class ClassWidget extends FieldContainer {
 			data.right = new FormAttachment(100, -5);
 			constructorsOrContantsGroup.setLayoutData(data);
 		}
-		
+
 		Composite staticFieldsGroup = createStaticFieldsGroup(this, clazz);		
 		if(staticFieldsGroup != null) {
 			FormData data = new FormData();
@@ -108,7 +117,7 @@ public class ClassWidget extends FieldContainer {
 			data.right = new FormAttachment(100, -5);
 			staticFieldsGroup.setLayoutData(data);
 		}
-		
+
 		Composite staticMethodsGroup = createStaticMethodsGroup(this, clazz);
 		if(staticMethodsGroup != null) {
 			FormData data = new FormData();
@@ -117,10 +126,11 @@ public class ClassWidget extends FieldContainer {
 			data.right = new FormAttachment(100, -5);
 			staticMethodsGroup.setLayoutData(data);
 		}
-		
+
 		SWTUtils.setColorRecursively(this, AguiaJColor.WHITE.getColor());
-		
-		updateFields();	
+
+		updateFields(null);
+		ObjectModel.getInstance().addEventListener(new CommandListener());
 	}
 
 	private Composite createConstantsGroup(Composite parent, final Class<?> clazz) {
@@ -130,14 +140,14 @@ public class ClassWidget extends FieldContainer {
 			if(field.isEnumConstant()) {
 				field.setAccessible(true);
 				LabelWidget label = new LabelWidget.Builder()
-					.text(field.getName())
-					.medium()
-					.toolTip(clazz.getSimpleName() + "." + field.getName())
-					.link()
-					.create(constantsGroup);
-				
+				.text(field.getName())
+				.medium()
+				.toolTip(clazz.getSimpleName() + "." + field.getName())
+				.link()
+				.create(constantsGroup);
+
 				DocumentationLinking.add(label.getControl(), field);
-				
+
 				label.addHyperlinkAction(new Listener () {
 					public void handleEvent(Event event) {
 						try {
@@ -150,9 +160,9 @@ public class ClassWidget extends FieldContainer {
 						} 
 					}
 				});
-				
+
 				label.addObjectHighlightCapability(new ObjectToHighlightProvider() {
-					
+
 					@Override
 					public Object getObjectToHighlight() {
 						try {
@@ -165,7 +175,7 @@ public class ClassWidget extends FieldContainer {
 				});
 			}
 		}
-		
+
 		return constantsGroup;
 	}
 
@@ -174,7 +184,7 @@ public class ClassWidget extends FieldContainer {
 			Composite staticAttributesGroup = CompositeFrame.create(parent, UIText.STATIC_FIELDS.get());
 			GridLayout layout = new GridLayout(2, false);			
 			staticAttributesGroup.setLayout(layout);
-			
+
 			for(Field field : staticFields)	
 				new AttributeWidget(staticAttributesGroup, field, null, this, true, false);
 			return staticAttributesGroup;
@@ -187,7 +197,7 @@ public class ClassWidget extends FieldContainer {
 		List<Constructor<?>> constructors = ClassModel.getInspector().getVisibleConstructors(clazz);
 		if(constructors.size() > 0) {
 			Composite constructorsGroup = CompositeFrame.create(parent, UIText.CONSTRUCTORS.get());
-			
+
 			GridLayout layout = new GridLayout(2, false);			
 			constructorsGroup.setLayout(layout);
 			for(Constructor<?> constructor : constructors) {
@@ -216,16 +226,14 @@ public class ClassWidget extends FieldContainer {
 			return null;
 	}
 
-	public void updateFields() {
-		updateFields(null);
-	}
+	
 
 	void updateConstructorArgs(Map<Constructor<?>, Object[]> constructors) {
 		for(Constructor<?> c : constructorMap.keySet())
 			if(constructors.containsKey(c))
 				constructorMap.get(c).setArgs(constructors.get(c));
 	}
-	
+
 	void updateMethodArgs(Map<Method, Object[]> methods) {
 		for(Method m : methodMap.keySet())
 			if(methods.containsKey(m))

@@ -45,6 +45,7 @@ import pt.org.aguiaj.extensibility.AguiaJContribution;
 import pt.org.aguiaj.extensibility.JavaCommand;
 import pt.org.aguiaj.extensibility.ObjectEventListenerAdapter;
 import pt.org.aguiaj.extensibility.Reference;
+import pt.org.aguiaj.extensibility.contracts.ContractDecorator;
 
 public class ObjectsView extends ViewPart {
 
@@ -248,7 +249,7 @@ public class ObjectsView extends ViewPart {
 
 
 
-	public ObjectWidget getObjectWidget(Object object) {		
+	public ObjectWidget getObjectWidget(Object object) {
 		return widgetsTable.get(object);
 	}
 

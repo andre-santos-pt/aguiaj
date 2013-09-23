@@ -209,9 +209,10 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 		}			
 
 		if(command != null) {
-			ObjectModel.getInstance().execute(command);
+			
 			try {
-				command.execute();
+				ObjectModel.getInstance().execute(command);
+//				command.execute();
 			}
 			catch(ParseException e) {
 				SWTUtils.showMessage(e.cause, e.detail, SWT.ERROR);

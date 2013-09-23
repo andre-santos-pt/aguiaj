@@ -33,7 +33,12 @@ public enum InstructionMatcher {
 	INT_ARRAY(IntArray.class),
 	DOUBLE_ARRAY(DoubleArray.class),
 	BOOLEAN_ARRAY(BooleanArray.class),
-	CHAR_ARRAY(CharArray.class);
+	CHAR_ARRAY(CharArray.class),
+	
+	INT_ARRAY_2D(IntArray2D.class),
+	DOUBLE_ARRAY_2D(DoubleArray2D.class),
+	CHAR_ARRAY_2D(CharArray2D.class),
+	BOOLEAN_ARRAY_2D(BooleanArray2D.class);
 
 
 	private Class<? extends Instruction> instructionClass;

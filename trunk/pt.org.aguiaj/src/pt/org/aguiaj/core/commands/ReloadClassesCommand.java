@@ -152,7 +152,7 @@ public class ReloadClassesCommand extends AbstractHandler {
 		}
 
 		restoreExpanded();
-		classView.updateClassWidgets();	
+		//classView.updateClassWidgets();	
 		classView.setArgs(constructorArgs, methodArgs);
 		
 		objectsView.show();
