@@ -112,7 +112,11 @@ public class ConstructorCall extends Expression implements Instruction {
 	public ConstructorInvocationCommand getCommand() {		
 		args = Common.resolveArgs(argsExp);
 		
-		return new ConstructorInvocationCommand(constructor, args);
+		String[] argsText = new String[argsExp.size()];
+		for(int i = 0; i < argsText.length; i++)
+			argsText[i] = argsExp.get(i).getText();
+		
+		return new ConstructorInvocationCommand(constructor, args, argsText);
 	}
 
 }

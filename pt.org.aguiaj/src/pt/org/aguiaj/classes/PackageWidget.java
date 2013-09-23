@@ -139,10 +139,10 @@ class PackageWidget extends Composite {
 		}
 	}
 
-	public void updateClassWidgets() {
-		for(ClassWidget widget : classWidgets)
-			widget.updateFields();
-	}
+//	public void updateClassWidgets() {
+//		for(ClassWidget widget : classWidgets)
+//			widget.updateFields();
+//	}
 
 	public boolean isPluginPackage() {
 		return pluginId != null;

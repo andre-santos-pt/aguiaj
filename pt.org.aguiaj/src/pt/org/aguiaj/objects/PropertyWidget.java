@@ -60,16 +60,19 @@ public class PropertyWidget implements Highlightable {
 
 		boolean hasContract = ObjectModel.getInstance().hasContract(object, method);
 		Contract contract = hasContract ? ObjectModel.getInstance().getContract(object, method) : null;
-		
+
 		final Object target = hasContract ? contract.decorator : object;
 		final Method targetMethod = hasContract ? contract.wrappedMethod : method;
-		
+
 		if(returnsReferenceType) {		
 			label.addHyperlinkAction(new Listener () {
 				public void handleEvent(Event event) {
-					String ref = ObjectModel.getFirstReference(target).name;
-					MethodInvocationCommand command = new MethodInvocationCommand(target, ref, targetMethod, new Object[0], new String[0]);
-					ObjectModel.getInstance().execute(command);
+					Reference ref = ObjectModel.getFirstReference(target);
+					if(ref != null) {
+						String refName = ref.name;
+						MethodInvocationCommand command = new MethodInvocationCommand(target, refName, targetMethod, new Object[0], new String[0]);
+						ObjectModel.getInstance().execute(command);
+					}
 				}
 			});
 
@@ -82,7 +85,7 @@ public class PropertyWidget implements Highlightable {
 						MethodInvocationCommand cmd = new MethodInvocationCommand(target, ref.name, targetMethod);
 						ExceptionHandler.INSTANCE.execute(cmd);
 
-//						cmd.execute();
+						//						cmd.execute();
 						obj = cmd.getResultingObject();
 					}
 					return obj;	
@@ -92,7 +95,7 @@ public class PropertyWidget implements Highlightable {
 
 		Composite row = new Composite(parent, SWT.NONE);
 		row.setLayout(new RowLayout(SWT.HORIZONTAL));
-		
+
 		List<TypeWidget> widgets = WidgetFactory.INSTANCE.createWidgets(
 				row, 
 				method.getReturnType(),

@@ -231,10 +231,10 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 		refreshLayout();
 	}
 
-	public void updateClassWidgets() {
-		for(PackageWidget widget : classAreaWidgets)
-			widget.updateClassWidgets();
-	}
+//	public void updateClassWidgets() {
+//		for(PackageWidget widget : classAreaWidgets)
+//			widget.updateClassWidgets();
+//	}
 
 	public void setArgs(Map<Constructor<?>, Object[]> constructors, Map<Method, Object[]> methods) {
 		for(PackageWidget packageWidget : classAreaWidgets)

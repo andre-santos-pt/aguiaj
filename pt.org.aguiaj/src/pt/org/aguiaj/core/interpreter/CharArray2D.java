@@ -10,24 +10,22 @@
  ******************************************************************************/
 package pt.org.aguiaj.core.interpreter;
 
-public class DoubleArray extends ArrayLiteral {
+public class CharArray2D extends ArrayLiteral {
 	
-	protected DoubleArray() {
-		super(double[].class);		
+	protected CharArray2D() {
+		super(char[][].class);		
 	}	
 
 	@Override
 	protected Object accept(String[] parts) {
-		double[] array = new double[parts.length];
-		for(int i = 0; i < array.length; i++) {
-			try {
-				array[i] = Double.parseDouble(parts[i]);					
-			}
-			catch(NumberFormatException e) {
+		char[][] matrix = new char[parts.length][];
+		for(int i = 0; i < matrix.length; i++) {
+			CharArray charArray = new CharArray();
+			if(!charArray.accept(parts[i]))
 				return null;
-			}
+			
+			matrix[i] = (char[]) charArray.resolve();					
 		}
-		return array;
+		return matrix;
 	}
-	
 }

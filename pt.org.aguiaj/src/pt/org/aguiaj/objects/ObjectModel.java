@@ -233,17 +233,18 @@ public class ObjectModel {
 		if(!command.failed()) {
 			addToStack(command);
 			
-			if(command instanceof JavaCommandWithArgs) {
-				JavaCommandWithArgs cmd = (JavaCommandWithArgs) command;
+			if(command instanceof JavaCommandWithReturn) {
+				JavaCommandWithReturn cmd = (JavaCommandWithReturn) command;
 
 				Class<?> retType = cmd.getReferenceType();
 				
 				if(!retType.isPrimitive() && !retType.equals(void.class)) {
 					Object object = cmd.getResultingObject();
-					if(object != null) {
+					if(object != null && cmd instanceof JavaCommandWithArgs) {
+						JavaCommandWithArgs cmdArgs = (JavaCommandWithArgs) cmd;
 						RuntimeException ex = verifyInvariantOnCreation(object);
 						if(ex != null) {
-							ExceptionHandler.INSTANCE.handleException(cmd.getMember(), cmd.getArgsText(), ex);
+							ExceptionHandler.INSTANCE.handleException(cmdArgs.getMember(), cmdArgs.getArgsText(), ex);
 							return;
 						}
 					}

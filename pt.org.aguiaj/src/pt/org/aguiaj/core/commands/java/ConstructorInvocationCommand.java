@@ -29,8 +29,8 @@ public class ConstructorInvocationCommand extends JavaCommandWithArgs implements
 	
 	private RuntimeException invariantException;
 	
-	public ConstructorInvocationCommand(final Constructor<?> constructor, Object[] args) {
-		this(constructor, args, null, ObjectModel.getInstance().nextReference(constructor.getDeclaringClass()), constructor.getDeclaringClass());
+	public ConstructorInvocationCommand(final Constructor<?> constructor, Object[] args, String[] argsText) {
+		this(constructor, args, argsText, ObjectModel.getInstance().nextReference(constructor.getDeclaringClass()), constructor.getDeclaringClass());
 	}
 	
 	public ConstructorInvocationCommand(final Constructor<?> constructor, Object[] args, String[] argsText, String reference, Class<?> referenceType) {

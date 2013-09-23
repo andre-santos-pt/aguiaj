@@ -26,6 +26,7 @@ import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.extensibility.VisualizationWidget;
 import pt.org.aguiaj.extensibility.canvas.CanvasVisualizationWidget;
+import pt.org.aguiaj.standard.extensions.ArrayObjectWidget;
 import pt.org.aguiaj.standard.extensions.StringObjectWidget;
 import pt.org.aguiaj.standard.extensions.TableArrayObjectWidget;
 
@@ -99,12 +100,17 @@ public enum WidgetFactory {
 
 
 
-	private List<Constructor<? extends VisualizationWidget<?>>> compatibleExtensions(Class<?> clazz) {
+	private List<Constructor<? extends VisualizationWidget<?>>> compatibleExtensions(Class<?> clazz, WidgetProperty ownerType) {
 		List<Constructor<? extends VisualizationWidget<?>>> list = new ArrayList<Constructor<? extends VisualizationWidget<?>>>();
 
 		for(Class<?> key : objectWidgetTypeTable.keySet()) {
 			if(compatible(key, clazz))
-				list.addAll(objectWidgetTypeTable.get(key));
+				for(Constructor<? extends VisualizationWidget<?>> c : objectWidgetTypeTable.get(key)) {
+					if(c.getDeclaringClass().equals(ArrayObjectWidget.class) && ownerType == WidgetProperty.PROPERTY)
+						continue;
+					else
+						list.add(c);
+				}
 		}
 
 		return list;
@@ -169,16 +175,15 @@ public enum WidgetFactory {
 			if(properties.contains(WidgetProperty.MODIFIABLE) && ownerType != WidgetProperty.PROPERTY) {
 				widgets.add(new SelectReferenceWidget(parent, type, ownerType));	
 			}
-			else if(type.isArray() &&					
-					!type.getComponentType().isArray()) {
+			else if(type.isArray() && !type.getComponentType().isArray()) {
 //					ownerType.equals(WidgetProperty.PROPERTY)) {
 
 				if(type.getComponentType().isPrimitive() && ownerType.equals(WidgetProperty.ARRAYPOSITION)) {
 					widgets.add(new ExtensionTypeWidget(parent, type, ownerType,  new StringObjectWidget()));
 				}
-				else if(ownerType.equals(WidgetProperty.PROPERTY)) {
-					widgets.add(new ExtensionTypeWidget(parent, type, ownerType,  new TableArrayObjectWidget()));
-				}
+//				else if(ownerType.equals(WidgetProperty.PROPERTY)) {
+//					widgets.add(new ExtensionTypeWidget(parent, type, ownerType,  new TableArrayObjectWidget()));
+//				}
 			}
 		}
 
@@ -199,7 +204,8 @@ public enum WidgetFactory {
 	private void addExtensionWidgets(Composite parent, Class<?> type,
 			List<TypeWidget> widgets, WidgetProperty ownerType, boolean single) {
 		
-		for(Constructor<? extends VisualizationWidget<?>> constructor : compatibleExtensions(type)) {
+		for(Constructor<? extends VisualizationWidget<?>> constructor : compatibleExtensions(type, ownerType)) {
+			
 			if(CanvasVisualizationWidget.class.isAssignableFrom(constructor.getDeclaringClass()) && 
 					ownerType != WidgetProperty.PARAMETER) {
 
