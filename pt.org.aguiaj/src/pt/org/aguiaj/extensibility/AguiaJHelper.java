@@ -10,8 +10,11 @@
  ******************************************************************************/
 package pt.org.aguiaj.extensibility;
 
+import java.util.Set;
+
 import org.eclipse.swt.graphics.Image;
 
+import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.classes.ClassesView;
 import pt.org.aguiaj.common.AguiaJImage;
 import pt.org.aguiaj.core.AguiaJActivator;
@@ -49,6 +52,10 @@ public class AguiaJHelper {
 	
 	public static String getPluginJarLocation(String pluginId) {
 		return AguiaJActivator.getDefault().getPluginJarLocation(pluginId);
+	}
+	
+	public static Set<String> getPluginPackages() {
+		return AguiaJActivator.getDefault().getPluginPackages();
 	}
 	
 	public static void showInDocumentation(String url) {
