@@ -83,5 +83,33 @@
             name="Java">
       </perspective>
    </extension>
+   <extension
+         point="org.eclipse.jdt.ui.javaElementFilters">
+      <filter
+            description=",META-INF,build.properties,JRE*"
+            enabled="true"
+            id="pt.iscte.dcti.filter1"
+            name="Plug-in folder"
+            pattern="Plug-in*">
+      </filter>
+      <filter
+            enabled="true"
+            id="pt.iscte.dcti.filter2"
+            name="META-INF folder"
+            pattern="META-INF">
+      </filter>
+      <filter
+            enabled="true"
+            id="pt.iscte.dcti.filter3"
+            name="build.properties file"
+            pattern="build.properties">
+      </filter>
+      <filter
+            enabled="true"
+            id="pt.iscte.dcti.filter4"
+            name="JRE libs folder"
+            pattern="JRE*">
+      </filter>
+   </extension>
 
 </plugin>

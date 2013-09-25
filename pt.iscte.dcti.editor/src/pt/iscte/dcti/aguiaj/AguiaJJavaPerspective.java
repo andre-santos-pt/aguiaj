@@ -14,6 +14,8 @@ import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 
+import pt.iscte.dcti.expressionsview.service.FunctionTest;
+
 
 public class AguiaJJavaPerspective implements IPerspectiveFactory {
 
@@ -26,9 +28,12 @@ public class AguiaJJavaPerspective implements IPerspectiveFactory {
 //		String projExplorer = "org.eclipse.ui.navigator.ProjectExplorer";
 		
 		
-		layout.addView(JavaUI.ID_PACKAGES,  IPageLayout.LEFT, 0.3f, editorArea);
+		layout.addView(JavaUI.ID_PACKAGES,  IPageLayout.LEFT, 0.2f, editorArea);
 		layout.getViewLayout(JavaUI.ID_PACKAGES).setMoveable(false);
 		layout.getViewLayout(JavaUI.ID_PACKAGES).setCloseable(false);
+		
+		layout.addView(FunctionTest.PLUGIN_ID,  IPageLayout.BOTTOM, 0.8f, editorArea);
+		
 		
 		
 //		layout.addView(ELearningView.ID, IPageLayout.BOTTOM, 0.7f, editorArea);
