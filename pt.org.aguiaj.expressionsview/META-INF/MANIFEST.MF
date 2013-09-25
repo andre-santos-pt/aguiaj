@@ -12,3 +12,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipselabs.javainterpreter;bundle-version="0.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: pt.iscte.dcti.expressionsview.service
