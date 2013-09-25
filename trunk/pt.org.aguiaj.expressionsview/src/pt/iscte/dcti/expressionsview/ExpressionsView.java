@@ -15,9 +15,6 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.EditingSupport;
@@ -69,7 +66,7 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 	private Map<IEditorInput, List<Expression>> expressions;
 
 
-	
+
 	public ExpressionsView() {
 		_instance = this;
 
@@ -98,7 +95,9 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 			@Override
 			public Set<Class<?>> getImplicitClasses() {
 				Set<Class<?>> set = new HashSet<Class<?>>(1);
-				set.add(loadClass());
+				Class<?> clazz = loadClass();
+				if(clazz != null)
+					set.add(clazz);
 				return set;
 			}
 
@@ -126,7 +125,10 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 				return context.referenceType(name);
 			}
 		});
-
+		
+		IEditorPart part = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+		if(part != null)
+			handlePartOpen(part);
 	}
 
 	public static ExpressionsView getInstance() {
@@ -134,15 +136,17 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 	}
 
 	public void addItem(String text) {
-		expressions.get(input).add(new Expression(interpreter, text));
-		refresh();
-		viewer.editElement(viewer.getElementAt(viewer.getTable().getItemCount()-1), 0);
+		if(input != null) {
+			expressions.get(input).add(new Expression(interpreter, text));
+			refresh();
+			viewer.editElement(viewer.getElementAt(viewer.getTable().getItemCount()-1), 0);
+		}
 	}
-	
+
 	public boolean isItemSelected() {
 		return viewer.getTable().getSelectionIndex() != -1;
 	}
-	
+
 	public void removeSelectedItem() {
 		int index = viewer.getTable().getSelectionIndex();
 		if(index != -1) {
@@ -151,7 +155,15 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 			viewer.getTable().select(index);
 		}
 	}
-	
+
+	public void removeAllItems() {
+		List<Expression> list = expressions.get(input);
+		if(list != null) {
+			list.clear();
+			refresh();
+		}
+	}
+
 	void refresh() {
 		if(viewer != null && !viewer.getTable().isDisposed())
 			viewer.setInput(input);
@@ -165,7 +177,6 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 	@Override
 	public void createPartControl(Composite parent) {
 		getSite().getWorkbenchWindow().getPartService().addPartListener(this);
-
 		createTable(parent);		
 		createExpressionColumn();
 		createResultColumn();
@@ -177,7 +188,6 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 
 	private Class<?> loadClass() {
 		if(input != null) {
-
 			IResource r = (IResource) input.getAdapter(IResource.class);
 			IProject proj = r.getProject();
 			try {
@@ -187,7 +197,9 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 					return loader.loadClass(name);
 				}
 			}
-			catch(Exception e) {
+			catch(ClassNotFoundException e) {
+
+			} catch (CoreException e) {
 				e.printStackTrace();
 			}
 		}
@@ -407,19 +419,17 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 
 	@Override
 	public void partActivated(IWorkbenchPartReference partRef) {
-		handlePartOpen(partRef);
+		handlePartOpen(partRef.getPart(true));
 	}
 
 	@Override
 	public void partBroughtToTop(IWorkbenchPartReference partRef) {
-		handlePartOpen(partRef);
+		handlePartOpen(partRef.getPart(true));
 
 	}
 
-	private void handlePartOpen(IWorkbenchPartReference partRef) {
-		IWorkbenchPart part = partRef.getPart(true);
+	private void handlePartOpen(IWorkbenchPart part) {
 		if(part instanceof IEditorPart) {
-			// TODO: check if java editor
 			input = ((IEditorPart) part).getEditorInput();
 			if(input instanceof FileEditorInput) {
 				IProject proj = ((FileEditorInput) input).getFile().getProject();
@@ -447,7 +457,7 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 
 	@Override
 	public void partOpened(IWorkbenchPartReference partRef) {
-		handlePartOpen(partRef);
+		handlePartOpen(partRef.getPart(true));
 	}
 
 	@Override
@@ -456,10 +466,12 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 
 	@Override
 	public void partVisible(IWorkbenchPartReference partRef) {
+		handlePartOpen(partRef.getPart(true));
 	}
 
 	@Override
 	public void partInputChanged(IWorkbenchPartReference partRef) {
+
 	}
 
 	private void toggleNature(IProject project) {

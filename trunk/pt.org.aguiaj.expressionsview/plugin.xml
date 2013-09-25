@@ -3,10 +3,10 @@
 <plugin>
    <extension point="org.eclipse.ui.views">
       <view
-            category="pt.org.aguiaj.viewCategory"
+            category="org.eclipse.ui"
             class="pt.iscte.dcti.expressionsview.ExpressionsView"
             icon="icons/watch_exp.gif"
-            id="pt.org.aguiaj.expressionsview"
+            id="pt.iscte.dcti.expressionsview"
             name="Function test"
             restorable="true">
       </view>
@@ -57,14 +57,19 @@
       <command
             defaultHandler="pt.iscte.dcti.expressionsview.RemoveLineCommand"
             id="pt.iscte.dcti.expressionsview.deleteline"
-            name="Delete line">
+            name="Remove line">
+      </command>
+      <command
+            defaultHandler="pt.iscte.dcti.expressionsview.RemoveAllCommand"
+            id="pt.iscte.dcti.expressionsview.removeall"
+            name="Remove all">
       </command>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
             allPopups="false"
-            locationURI="toolbar:pt.org.aguiaj.expressionsview">
+            locationURI="toolbar:pt.iscte.dcti.expressionsview">
          <command
                commandId="pt.iscte.dcti.expressionsview.addline"
                icon="icons/add.gif"
@@ -74,7 +79,13 @@
          <command
                commandId="pt.iscte.dcti.expressionsview.deleteline"
                icon="icons/delete.gif"
-               label="Delete line"
+               label="Remove line"
+               style="push">
+         </command>
+         <command
+               commandId="pt.iscte.dcti.expressionsview.removeall"
+               icon="icons/trash.gif"
+               label="Remove all"
                style="push">
          </command>
       </menuContribution>
