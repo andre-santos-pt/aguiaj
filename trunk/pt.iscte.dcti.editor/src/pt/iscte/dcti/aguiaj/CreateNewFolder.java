@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.ui.packageview.PackageExplorerPart;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -46,17 +47,20 @@ public class CreateNewFolder implements IViewActionDelegate {
 		} catch (CoreException e1) {
 			e1.printStackTrace();
 		}
-		NameDialog dialog = new NameDialog(Display.getDefault().getActiveShell(), "newfolder", existingNames, false, false);
+		TextDialog dialog = new TextDialog(Display.getDefault().getActiveShell(), "Name", "folder", existingNames, false, false);
 		dialog.open();
 		String name = dialog.getName();
+		IFolder newFolder = null;
 		if(name != null) {
-			IFolder newFolder = container.getFolder(new Path(name));
+			newFolder = container.getFolder(new Path(name));
 			try {
 				newFolder.create(true, true, null);
 			} catch (CoreException e) {
 				e.printStackTrace();
 			}
 		}
+		PackageExplorerPart part = PackageExplorerPart.getFromActivePerspective();
+		part.selectAndReveal(newFolder);
 	}
 
 	@Override

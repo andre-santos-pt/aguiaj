@@ -16,6 +16,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.RowData;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -23,24 +26,34 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.TreeItem;
 
-public class NameDialog extends Dialog {		
+public class TextDialog extends Dialog {		
 	private String name;
 	private final Set<String> existing;
 	private final Shell shell;
 	private final boolean dots;
 	private final boolean spaces;
 	
-	public NameDialog(Shell parent, String path, Set<String> existingNames, boolean allowDots, boolean allowSpaces) {
+	public TextDialog(Shell parent, String title, String path, Set<String> existingNames, boolean allowDots, boolean allowSpaces) {
 		super(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		this.existing = existingNames;
 		this.dots = allowDots;
 		this.spaces = allowSpaces;
-		
+			
 		shell = new Shell(parent, getStyle());
-		shell.setLayout(new FillLayout());
+		RowLayout layout = new RowLayout(SWT.HORIZONTAL);
+		layout.marginLeft = 10;
+		layout.marginRight = 10;
+		layout.marginBottom = 10;
+		layout.marginTop = 10;
+		
+		shell.setLayout(layout);
+		
 		shell.setSize(250, 30);
-		setText("Name?");
+		setText(title);
 		
 		final Text text = new Text(shell, SWT.BORDER);
 		text.setText(path);
@@ -48,13 +61,15 @@ public class NameDialog extends Dialog {
 		text.addListener(SWT.Verify, new Listener() {				
 			@Override
 			public void handleEvent(Event event) {
-				if(!Character.isLetterOrDigit(event.character) && 
-				   !directionChar(event.character) &&
-				   !dots && event.character == '.' &&
-				   !spaces && event.character == ' ')
-					event.doit = false;
+				if(dots && event.character == '.') return;
+				if(spaces && event.character == ' ') return;		
+				if(directionChar(event.character)) return;
+				if(Character.isLetterOrDigit(event.character)) return;
+
+				event.doit = false;
 			}
 		});
+		text.setLayoutData(new RowData(200, 15));
 
 		text.addKeyListener(new KeyListener() {
 			@Override
@@ -77,12 +92,10 @@ public class NameDialog extends Dialog {
 
 			}
 		});
-		FillLayout layout = new FillLayout();
-		layout.marginHeight = 10;
-		layout.marginWidth = 10;
-		shell.setLayout(layout);
+
 		shell.setText(getText());
-		shell.setLocation(getParent().getBounds().x + 170, getParent().getBounds().y + 220);
+		shell.setLocation(getParent().getBounds().width / 2, getParent().getBounds().height  / 2);
+//		shell.setLocation(getParent().getBounds().x + 170, getParent().getBounds().y + 220);
 	}
 
 	private boolean directionChar(char character) {

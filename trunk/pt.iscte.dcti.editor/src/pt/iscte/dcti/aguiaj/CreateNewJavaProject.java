@@ -15,9 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -35,13 +32,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
-import org.eclipse.jdt.launching.LibraryLocation;
+import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
+import org.eclipse.jdt.ui.actions.FindAction;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Display;
@@ -52,23 +48,28 @@ public class CreateNewJavaProject implements IViewActionDelegate {
 
 	@Override
 	public void run(IAction action) {
-		IProgressMonitor progressMonitor = new NullProgressMonitor();
+		IProgressMonitor monitor = new NullProgressMonitor();
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		Set<String> existing = new HashSet<String>();
 		for(IProject proj : root.getProjects())
 			existing.add(proj.getName());
 
-		NameDialog dialog = new NameDialog(Display.getDefault().getActiveShell(), "Project", existing, false, true);
+		TextDialog dialog = new TextDialog(Display.getDefault().getActiveShell(), "Name", "Project", existing, false, false);
 		dialog.open();
 		String name = dialog.getName();
 		if(name == null)
 			return;
-		
+
 		IProject project = root.getProject(name);
 		try {
-			project.create(progressMonitor);
-			project.open(progressMonitor);
-
+			monitor.beginTask("create project", 1);
+			project.create(monitor);
+			monitor.worked(1);
+			
+			monitor.beginTask("initialize project", 5);
+			project.open(monitor);
+			monitor.worked(1);
+			
 			IProjectDescription description = project.getDescription();
 			String[] natures = description.getNatureIds();
 			String[] newNatures = new String[natures.length + 2];
@@ -76,10 +77,8 @@ public class CreateNewJavaProject implements IViewActionDelegate {
 			newNatures[natures.length] = JavaCore.NATURE_ID;
 			newNatures[natures.length + 1] = "org.eclipse.pde.PluginNature";
 			description.setNatureIds(newNatures);
+			monitor.worked(1);
 			
-
-		
-
 			final ICommand java = description.newCommand();
 			java.setBuilderName(JavaCore.BUILDER_ID);
 
@@ -87,41 +86,22 @@ public class CreateNewJavaProject implements IViewActionDelegate {
 			manifest.setBuilderName("org.eclipse.pde.ManifestBuilder");
 
 			description.setBuildSpec(new ICommand[] { java, manifest});
-			project.setDescription(description, progressMonitor);
-			
+			project.setDescription(description, monitor);
+
 			IJavaProject javaProject = JavaCore.create(project);
 			List<IClasspathEntry> entries = new ArrayList<IClasspathEntry>();
 			final IClasspathEntry srcClasspathEntry = JavaCore.newSourceEntry(project.getFullPath());
-			
+
 			entries.add(srcClasspathEntry);
 			entries.add(JavaRuntime.getDefaultJREContainerEntry());
 			entries.add(JavaCore.newContainerEntry(new Path("org.eclipse.pde.core.requiredPlugins")));
-			javaProject.setRawClasspath(entries.toArray(new IClasspathEntry[entries.size()]), progressMonitor);
+			javaProject.setRawClasspath(entries.toArray(new IClasspathEntry[entries.size()]), monitor);
 			
-			//			Set<IClasspathEntry> entries = new HashSet<IClasspathEntry>();
-//
-//			entries.addAll(Arrays.asList(javaProject.getRawClasspath()));
-//			entries.add(JavaRuntime.getDefaultJREContainerEntry());
-//			
-//			IVMInstall vmInstall= JavaRuntime.getDefaultVMInstall();
-//			
-//			LibraryLocation[] locations= JavaRuntime.getLibraryLocations(vmInstall);
-//
-//			for (LibraryLocation element : locations)
-//				entries.add(JavaCore.newLibraryEntry(element.getSystemLibraryPath(), null, null));
-//			
-//			javaProject.setRawClasspath(entries.toArray(new IClasspathEntry[entries.size()]), progressMonitor);
-			
-//			Set entries = new HashSet();
-//			entries.addAll(Arrays.asList(javaProject.getRawClasspath()));
-//			entries.add(JavaRuntime.getDefaultJREContainerEntry());
-//			javaProject.setRawClasspath(entries.toArray(new IClasspathEntry[entries.size()]), progressMonitor);
-
 			Set<String> bundles = new HashSet<String>();
 			bundles.add("pt.org.aguiaj");
 			bundles.add("pt.org.aguiaj.draw");
 			bundles.add("pt.org.aguiaj.draw.examples");
-			
+
 			List<String> list = new ArrayList<String>();
 			createManifest(name, bundles, list, null, project);
 			list.add("/");
@@ -131,6 +111,33 @@ public class CreateNewJavaProject implements IViewActionDelegate {
 			e.printStackTrace();
 		}
 
+
+		//		Set<IClasspathEntry> entries = new HashSet<IClasspathEntry>();
+		//
+		//		entries.addAll(Arrays.asList(javaProject.getRawClasspath()));
+		//		entries.add(JavaRuntime.getDefaultJREContainerEntry());
+		//		
+		//		IVMInstall vmInstall= JavaRuntime.getDefaultVMInstall();
+		//		
+		//		LibraryLocation[] locations= JavaRuntime.getLibraryLocations(vmInstall);
+		//
+		//		for (LibraryLocation element : locations)
+		//			entries.add(JavaCore.newLibraryEntry(element.getSystemLibraryPath(), null, null));
+		//		
+		//		javaProject.setRawClasspath(entries.toArray(new IClasspathEntry[entries.size()]), progressMonitor);
+
+		//		Set entries = new HashSet();
+		//		entries.addAll(Arrays.asList(javaProject.getRawClasspath()));
+		//		entries.add(JavaRuntime.getDefaultJREContainerEntry());
+		//		javaProject.setRawClasspath(entries.toArray(new IClasspathEntry[entries.size()]), progressMonitor);
+	}
+
+	private static String findJavaExecutionEnvironment() {
+		for(IExecutionEnvironment env : JavaRuntime.getExecutionEnvironmentsManager().getExecutionEnvironments())
+			if(env.isStrictlyCompatible(JavaRuntime.getDefaultVMInstall()))
+				return env.getId();
+
+		return "JavaSE-1.6"; 
 	}
 
 	@Override
@@ -189,7 +196,7 @@ public class CreateNewJavaProject implements IViewActionDelegate {
 
 	private static void createManifest(final String projectName, final Set<String> requiredBundles,
 			final List<String> exportedPackages, final IProgressMonitor progressMonitor, final IProject project)
-	throws CoreException {
+					throws CoreException {
 		final StringBuilder maniContent = new StringBuilder("Manifest-Version: 1.0\n");
 		maniContent.append("Bundle-ManifestVersion: 2\n");
 		maniContent.append("Bundle-Name: " + projectName + "\n");
@@ -205,7 +212,7 @@ public class CreateNewJavaProject implements IViewActionDelegate {
 				maniContent.append(",\n");
 		}
 		maniContent.append("\n");
-		
+
 		if (exportedPackages != null && !exportedPackages.isEmpty()) {
 			maniContent.append("Require-Bundle: " + exportedPackages.get(0));
 			for (int i = 1, x = exportedPackages.size(); i < x; i++) {
@@ -213,8 +220,8 @@ public class CreateNewJavaProject implements IViewActionDelegate {
 			}
 			maniContent.append("\n");
 		}
-//		maniContent.append("Bundle-RequiredExecutionEnvironment: J2SE-1.5\r\n");
-		maniContent.append("Bundle-RequiredExecutionEnvironment: J2SE-1.6\r\n");
+
+		maniContent.append("Bundle-RequiredExecutionEnvironment: " + findJavaExecutionEnvironment() + "\r\n");
 
 		final IFolder metaInf = project.getFolder("META-INF");
 		metaInf.create(false, true, null);
