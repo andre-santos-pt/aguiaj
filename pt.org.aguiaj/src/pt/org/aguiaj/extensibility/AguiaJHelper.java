@@ -14,7 +14,6 @@ import java.util.Set;
 
 import org.eclipse.swt.graphics.Image;
 
-import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.classes.ClassesView;
 import pt.org.aguiaj.common.AguiaJImage;
 import pt.org.aguiaj.core.AguiaJActivator;

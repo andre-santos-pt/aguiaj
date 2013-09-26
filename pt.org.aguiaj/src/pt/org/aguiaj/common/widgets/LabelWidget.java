@@ -13,7 +13,6 @@ package pt.org.aguiaj.common.widgets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseTrackListener;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -33,21 +32,18 @@ public class LabelWidget implements Highlightable {
 	private Control control;
 	private Highlighter highlighter;
 	
-	private LabelWidget(Composite parent, AguiaJParam fontFace, AguiaJParam size, String text, int style, boolean link, 
+	private LabelWidget(Composite parent, AguiaJParam fontFace, AguiaJParam size, String text, int fontStyle, int labelStyle, boolean link, 
 			String tooltip, AguiaJColor color) {
 		
-//		super(parent, SWT.NONE);
-//		setLayout(new FillLayout());
-			
 		if(link) {
-			Link linkWidget = new Link(parent, style);
-			Fonts.set(linkWidget, fontFace, size, style);
+			Link linkWidget = new Link(parent, labelStyle);
+			Fonts.set(linkWidget, fontFace, size, fontStyle);
 			linkWidget.setText("<a>" + text + "</a>");
 			control = linkWidget;
 		}
 		else {
-			Label labelWidget = new Label(parent, style);
-			Fonts.set(labelWidget, fontFace, size, style);
+			Label labelWidget = new Label(parent, labelStyle);
+			Fonts.set(labelWidget, fontFace, size, fontStyle);
 			labelWidget.setText(text);
 			control = labelWidget;
 		}
@@ -102,7 +98,8 @@ public class LabelWidget implements Highlightable {
 		private boolean link = false;
 		private AguiaJParam size = AguiaJParam.MEDIUM_FONT;
 		private AguiaJParam fontFace = AguiaJParam.FONT;
-		private int style = SWT.NORMAL;
+		private int fontStyle = SWT.NORMAL;
+		private int labelStyle = SWT.NONE;
 		private String tooltip = "";
 		private AguiaJColor color = AguiaJColor.BLACK;
 		
@@ -151,7 +148,7 @@ public class LabelWidget implements Highlightable {
 //		}
 		
 		public Builder italic() {
-			style |= SWT.ITALIC;
+			fontStyle |= SWT.ITALIC;
 			return this;
 		}
 		
@@ -160,7 +157,7 @@ public class LabelWidget implements Highlightable {
 		}
 		
 		public Builder bold() {
-			style |= SWT.BOLD;
+			fontStyle |= SWT.BOLD;
 			return this;
 		}
 		
@@ -169,7 +166,7 @@ public class LabelWidget implements Highlightable {
 		}
 		
 		public Builder border() {
-			style |= SWT.BORDER;
+			labelStyle |= SWT.BORDER;
 			return this;
 		}
 
@@ -184,7 +181,7 @@ public class LabelWidget implements Highlightable {
 		}
 		
 		public LabelWidget create(Composite parent) {
-			LabelWidget label = new LabelWidget(parent, fontFace, size, text, style, link, tooltip, color);
+			LabelWidget label = new LabelWidget(parent, fontFace, size, text, fontStyle, labelStyle, link, tooltip, color);
 			return label;
 		}
 	}

@@ -10,7 +10,11 @@
  ******************************************************************************/
 package pt.org.aguiaj.core.commands;
 
-import static pt.org.aguiaj.extensibility.AguiaJContribution.*;
+import static pt.org.aguiaj.extensibility.AguiaJContribution.EXTENSION_IMPORT_ITEM;
+import static pt.org.aguiaj.extensibility.AguiaJContribution.IMPORT_ITEM_CLASS;
+import static pt.org.aguiaj.extensibility.AguiaJContribution.IMPORT_ITEM_EXTENSION;
+import static pt.org.aguiaj.extensibility.AguiaJContribution.IMPORT_ITEM_FILE_EXTENSION;
+import static pt.org.aguiaj.extensibility.AguiaJContribution.IMPORT_ITEM_NAME;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,19 +25,14 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IViewActionDelegate;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
-import pt.org.aguiaj.extensibility.AguiaJContribution;
 import pt.org.aguiaj.extensibility.AguiaJHelper;
 import pt.org.aguiaj.extensibility.ImportItemProvider;
 

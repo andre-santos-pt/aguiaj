@@ -88,8 +88,8 @@ public class ClassModel {
 		pluginClassesForImport = newHashSet();
 
 		visibleConstructors = newHashMap();
-		invisibleAttributes = newHashMap();
-		visibleAttributes = newHashMap();
+		invisibleAttributes = Maps.newLinkedHashMap();
+		visibleAttributes = Maps.newLinkedHashMap();
 		queryMethods = newHashMap();
 		commandMethods = newHashMap();
 		allAvailableMethods = newHashMap();
@@ -340,7 +340,6 @@ public class ClassModel {
 
 	private List<Method> filteredCommandMethods(Class<?> clazz, List<Method> queryMethods) {
 		List<Method> methods = inspector.getCommandMethods(clazz);
-		
 		
 		for(Iterator<Method> it = methods.iterator(); it.hasNext(); ) {
 			Method method = it.next();

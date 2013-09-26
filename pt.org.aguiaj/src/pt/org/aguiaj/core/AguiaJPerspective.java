@@ -19,7 +19,6 @@ import static pt.org.aguiaj.extensibility.AguiaJContribution.OBJECTS_VIEW;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
-import org.eclipse.ui.console.IConsoleConstants;
 public class AguiaJPerspective implements IPerspectiveFactory {
 
 	

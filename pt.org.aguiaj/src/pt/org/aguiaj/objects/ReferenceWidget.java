@@ -23,7 +23,6 @@ import org.eclipse.swt.widgets.MenuItem;
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.AguiaJColor;
 import pt.org.aguiaj.common.AguiaJImage;
-import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.common.widgets.IconWidget;
 import pt.org.aguiaj.common.widgets.LabelWidget;
 import pt.org.aguiaj.common.widgets.TypeMemberMouseTrackAdapter;
