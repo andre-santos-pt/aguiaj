@@ -76,7 +76,7 @@ public abstract class ImageVisualizationWidget<T> extends VisualizationWidget.Ad
 				relayout = false;
 			}
 			else if(file != null)  {
-				image = AguiaJActivator.getDefault().getImageRegistry().get(file);	
+				image = AguiaJActivator.getInstance().getImageRegistry().get(file);	
 				imageCanvas.setLayoutData(new RowData(image.getBounds().width, image.getBounds().height));	
 				imageCanvas.update();
 				imageCanvas.redraw();

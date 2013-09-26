@@ -29,10 +29,10 @@ import static pt.org.aguiaj.extensibility.AguiaJContribution.OBJECT_WIDGET_VIEW;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.net.ServerSocket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -86,6 +86,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 /**
  * The activator class controls the plug-in life cycle
@@ -94,23 +95,21 @@ public class AguiaJActivator extends AbstractUIPlugin {
 	// The shared instance
 	private static AguiaJActivator plugin;
 
-	private static final AccessorMethodDetectionPolicy defaultPolicy = 
-			new GetIsAccessorPolicy();
-
 	private Multimap<String, Class<?>> packagesClasses;
 	private IPath workingDir;
 
 	private Multimap<String, Class<?>> plugins; // id -> class[]
-	private Map<String, String> pluginNames; // id -> name
+	
+	private Set<String> pluginIds; // id -> name
 
+	private Map<String, File> pluginClassFiles = new HashMap<String, File>();
+	
 	private Map<Class<?>, Image> pluginTypeImages;
 
+	
+	private static final AccessorMethodDetectionPolicy defaultPolicy = new GetIsAccessorPolicy();
 	private Map<String, Class<? extends AccessorMethodDetectionPolicy>> accessorPolicies;
 
-
-	private MessageConsole console;
-	private MessageConsoleStream out;
-	
 	public AguiaJActivator() {
 		plugin = this;
 
@@ -122,13 +121,9 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		ActiveExceptionHandler.loadExceptionHandlers();
 
 		plugins = ArrayListMultimap.create();
-		pluginNames = Maps.newHashMap();
 		pluginTypeImages = Maps.newHashMap();
 
 		accessorPolicies = Maps.newHashMap();
-				
-		console = findConsole("AGUIA/J");
-		out = console.newMessageStream();
 	}
 
 	public IPath getWorkingDirectory() {
@@ -136,7 +131,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 	}	
 
 	public Multimap<String, Class<?>> getPackagesClasses() {
-		return packagesClasses;
+		return Multimaps.unmodifiableMultimap(packagesClasses);
 	}
 
 	public void start(BundleContext context) throws Exception {
@@ -154,12 +149,9 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		});
 		loadObjectWidgetPlugins();
 		loadAccessorPolicyPlugins();
-		//KeyShortcuts.addKeyShortcuts();
-
+		
 		ClassModel.getInstance().addDefaultClasses();
 	}
-
-	
 
 
 	public void stop(BundleContext context) throws Exception {
@@ -172,7 +164,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 	 *
 	 * @return the shared instance
 	 */
-	public static AguiaJActivator getDefault() {
+	public static AguiaJActivator getInstance() {
 		return plugin;
 	}
 
@@ -256,10 +248,10 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		return url;
 	}
 
-	private Map<String, File> pluginClassFiles = new HashMap<String, File>();
+	
 
 	public Map<String, File> getPluginClassFiles() {
-		return pluginClassFiles;
+		return Collections.unmodifiableMap(pluginClassFiles);
 	}
 
 	public String getPluginLocation(Class<?> aClass) {
@@ -294,7 +286,12 @@ public class AguiaJActivator extends AbstractUIPlugin {
 
 
 	public Set<String> getPluginIds() {
-		return plugins.keySet();
+		Set<String> ids = Sets.newHashSet();
+		for(String id : plugins.keySet())
+			if(!id.equals(AguiaJContribution.AGUIAJ_PLUGIN))
+				ids.add(id);
+		
+		return ids;
 	}
 
 	public Set<String> getPluginPackages() {
@@ -325,19 +322,19 @@ public class AguiaJActivator extends AbstractUIPlugin {
 	}
 
 	public Collection<Class<?>> getPluginClasses(String pluginId) {
-		return plugins.get(pluginId);		
+		return Collections.unmodifiableCollection(plugins.get(pluginId));		
 	}
 
-	public String getPluginName(String pluginId) {
-		return pluginNames.get(pluginId);
-	}
+//	public String getPluginName(String pluginId) {
+//		return pluginNames.get(pluginId);
+//	}
 
-	public Set<String> getAccessorPolicies() {
+	Set<String> getAccessorPolicies() {
 		return accessorPolicies.keySet();
 	}
 
 
-	public AccessorMethodDetectionPolicy getAccessorPolicy() {
+	AccessorMethodDetectionPolicy getAccessorPolicy() {
 		String name = AguiaJParam.ACCESSOR_POLICY.getString();
 		Class<? extends AccessorMethodDetectionPolicy> policyClass = accessorPolicies.get(name);
 		if(policyClass != null) {			
@@ -357,13 +354,11 @@ public class AguiaJActivator extends AbstractUIPlugin {
 				Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_OBJECT_WIDGET);
 
 		for (final IConfigurationElement e : config) {
-
 			String pluginName = e.getDeclaringExtension().getLabel();			
 			String pluginID = e.getContributor().getName();
 
-			if(!pluginNames.containsKey(pluginID)) {
-				pluginNames.put(pluginID, !"".equals(pluginName) ? pluginName : pluginID);
-			}
+//			if(!pluginNames.containsKey(pluginID))
+//				pluginNames.put(pluginID, !"".equals(pluginName) ? pluginName : pluginID);
 
 			if(e.getName().equals(OBJECT_WIDGET_GROUP))
 				handleObjectWidgets(e, pluginID);			
@@ -441,9 +436,8 @@ public class AguiaJActivator extends AbstractUIPlugin {
 				}
 				plugins.put(pluginID, clazz);
 
-				for(Class<?> inner : clazz.getClasses()) {							
+				for(Class<?> inner : clazz.getClasses())						
 					plugins.put(pluginID, inner);							
-				}
 
 				pluginClassFiles.put(className, path.toFile());
 
@@ -598,7 +592,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		}
 	}
 
-	// TODO: to ClassModel
+	
 
 	private static Multimap<String, Class<?>> readClasses(List<IPath> workingDirs) {
 		Multimap<String, Class<?>> ret = ArrayListMultimap.create();
@@ -614,31 +608,5 @@ public class AguiaJActivator extends AbstractUIPlugin {
 
 		return ret;
 	}
-
 	
-	private static MessageConsole findConsole(String name) {
-		ConsolePlugin plugin = ConsolePlugin.getDefault();
-		IConsoleManager conMan = plugin.getConsoleManager();
-		IConsole[] existing = conMan.getConsoles();
-		for (int i = 0; i < existing.length; i++)
-			if (name.equals(existing[i].getName()))
-				return (MessageConsole) existing[i];
-		//no console found, so create a new one
-		MessageConsole myConsole = new MessageConsole(name, null);
-		myConsole.setFont(new Font(null, "Courier", 14, SWT.NONE));
-		conMan.addConsoles(new IConsole[]{myConsole});
-		return myConsole;
-	}
-	
-	public void writeToConsole(Object[] objs) {
-		for(int i = 0; i < objs.length; i++)
-			out.print(ReflectionUtils.getTextualRepresentation(objs[i], true) + " ");
-		
-		out.println();
-	}
-	
-	
-	public void clearConsole() {
-		console.clearConsole();
-	}
 }

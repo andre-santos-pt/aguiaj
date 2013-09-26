@@ -151,7 +151,7 @@ public class Inspector {
 		Collection<Method> allMethods = ReflectionUtils.getAllMethods(clazz);
 
 		List<Method> queryMethods = new ArrayList<Method>();
-		AccessorMethodDetectionPolicy accessorPolicy = AguiaJActivator.getDefault().getAccessorPolicy();
+		AccessorMethodDetectionPolicy accessorPolicy = AguiaJActivator.getInstance().getAccessorPolicy();
 
 		for(Method method : allMethods) {
 			if(StandardInspectionPolicy.isVisible(method) &&

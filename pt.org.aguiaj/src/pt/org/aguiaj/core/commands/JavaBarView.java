@@ -106,14 +106,14 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 				updateFont();
 			}
 		}; 
-		AguiaJActivator.getDefault().getPreferenceStore().addPropertyChangeListener(propertyListener);
+		AguiaJActivator.getInstance().getPreferenceStore().addPropertyChangeListener(propertyListener);
 
 		bar.addDisposeListener(new DisposeListener() {
 
 			@Override
 			public void widgetDisposed(DisposeEvent e) {
 				model.removeEventListener(listener);
-				AguiaJActivator.getDefault().getPreferenceStore().removePropertyChangeListener(propertyListener);	
+				AguiaJActivator.getInstance().getPreferenceStore().removePropertyChangeListener(propertyListener);	
 			}
 		});
 

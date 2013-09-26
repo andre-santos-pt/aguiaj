@@ -43,8 +43,7 @@ public class AguiaJPerspective implements IPerspectiveFactory {
 		javaBarFolder.addView(HISTORY_VIEW);
 		javaBarFolder.addView(DOCUMENTATION_VIEW);	
 
-		layout.addView(IConsoleConstants.ID_CONSOLE_VIEW, IPageLayout.BOTTOM, 0.8f, CLASSES_VIEW);
-
+		//layout.addView(IConsoleConstants.ID_CONSOLE_VIEW, IPageLayout.BOTTOM, 0.8f, CLASSES_VIEW);
 		
 		block(layout, OBJECTS_VIEW);
 		block(layout, CLASSES_VIEW);

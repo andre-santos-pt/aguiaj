@@ -90,7 +90,7 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 
 		combo = new Combo(this, SWT.DROP_DOWN);
 
-		if(getType().equals(String.class))
+		if(getType().equals(String.class) || getType().equals(Object.class))
 			combo.addModifyListener(new ModifyListener() {
 
 				@Override
@@ -204,22 +204,16 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 
 
 	public Object getObject() {
-//		int selectionIndex = -1;
-
-//		if(combo != null && !combo.isDisposed())
-//			selectionIndex = combo.getSelectionIndex();
-
 		if(combo.isDisposed())
 			return null;
 		
-		if(getType().equals(String.class)) {
+		if(getType().equals(String.class) || getType().equals(Object.class)) {
 			String text = combo.getText();
-			if(text.matches("\"(.)*\""))
+			if(text.matches(STRING_REGEX))
 				return text.substring(1, text.length()-1);
 		}
 
 		return combo.getData(combo.getText());
-		//		return selectionIndex <= 0 ? null : combo.getData(combo.getItem(selectionIndex));
 	}
 
 

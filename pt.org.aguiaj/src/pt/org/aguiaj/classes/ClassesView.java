@@ -46,10 +46,12 @@ import pt.org.aguiaj.core.commands.ChangeWorkingDirCommand;
 import pt.org.aguiaj.core.commands.ReloadClassesCommand;
 import pt.org.aguiaj.extensibility.AguiaJContribution;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 
 public class ClassesView extends ViewPart implements ISizeProvider {
@@ -128,11 +130,11 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 	private MenuManager createImportMenu() {
 		MenuManager importMenu = new MenuManager("Import package", null);
 
-		List<String> packageNames = new ArrayList<String>(AguiaJActivator.getDefault().getPluginPackages());
+		List<String> packageNames = new ArrayList<String>(AguiaJActivator.getInstance().getPluginPackages());
 		Collections.sort(packageNames);
 
 		for(final String packageName : packageNames) {
-			final Collection<Class<?>> classes = AguiaJActivator.getDefault().getPackageClasses(packageName);
+			final Collection<Class<?>> classes = AguiaJActivator.getInstance().getPackageClasses(packageName);
 
 			boolean toImport = false;			
 			for(Class<?> c : classes)
@@ -180,7 +182,7 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 				removeTab(packageName);					
 			}
 		});
-		DragNDrop.addFileDragNDropSupport(packageTabs);		
+	//	DragNDrop.addFileDragNDropSupport(packageTabs);		
 		if(firstTime) {
 			createActions();
 			firstTime = false;
@@ -190,7 +192,7 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 	}
 
 	private void createTabs() {
-		packagesClasses = AguiaJActivator.getDefault().getPackagesClasses();
+		packagesClasses = ArrayListMultimap.create(AguiaJActivator.getInstance().getPackagesClasses());
 
 		addActivePluginClasses();
 		
@@ -200,7 +202,7 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 		Collections.sort(packageNames);
 
 		cleanUpOldPackages(packageNames);
-		filterPluginPackages(packageNames); // no point to redo the UI		
+		filterPluginPackages(packageNames); // no point to redo the UI
 		
 		createTabClassAreas(packageNames);
 		
@@ -283,7 +285,7 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 	private void filterPluginPackages(List<String> packageNames) {
 		for(Iterator<String> it = packageNames.iterator(); it.hasNext(); ) {
 			String pckName = it.next();
-			if(AguiaJActivator.getDefault().isPluginPackage(pckName) &&
+			if(AguiaJActivator.getInstance().isPluginPackage(pckName) &&
 				packageMapping.containsKey(pckName))
 				
 				it.remove();							
@@ -291,12 +293,12 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 	}
 
 	private CTabItem createTab(String packageName) {
-		int style = AguiaJActivator.getDefault().isPluginPackage(packageName) 
+		int style = AguiaJActivator.getInstance().isPluginPackage(packageName) 
 				? SWT.CLOSE : SWT.NONE;
 	
 		CTabItem tab = new CTabItem(packageTabs, style);
 		tab.setText(packageName.equals("") ? "default" : packageName);	
-		if(AguiaJActivator.getDefault().isPluginPackage(packageName)) {
+		if(AguiaJActivator.getInstance().isPluginPackage(packageName)) {
 			tab.setImage(AguiaJImage.IMPORTED_PACKAGE.getImage());
 		}
 		else
@@ -312,7 +314,7 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 			packageMapping.remove(packageName).dispose();
 			packagesClasses.removeAll(packageName);
 			packageTabs.layout();
-			if(AguiaJActivator.getDefault().isPluginPackage(packageName))
+			if(AguiaJActivator.getInstance().isPluginPackage(packageName))
 				importActionMap.get(packageName).setEnabled(true);	
 			ClassModel.getInstance().deactivatePackage(packageName);
 			reload(null);

@@ -19,7 +19,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import aguiaj.console.Console;
+//import aguiaj.console.Console;
 
 import pt.org.aguiaj.classes.ClassModel;
 
@@ -34,7 +34,7 @@ public class AguiaClassLoader extends ClassLoader{
 	private AguiaClassLoader(ClassLoader parent) {
 		super(parent);
 		classFiles = new HashMap<String, File>();
-		classFiles.putAll(AguiaJActivator.getDefault().getPluginClassFiles());
+		classFiles.putAll(AguiaJActivator.getInstance().getPluginClassFiles());
 		loaded = new HashMap<String, Class<?>>();
 		packages = new HashSet<String>();
 	}
@@ -68,9 +68,9 @@ public class AguiaClassLoader extends ClassLoader{
 				if(name.startsWith("java.") || name.startsWith("sun.reflect") || name.startsWith("org.aspectj")) {
 					clazz = getParent().loadClass(name);
 				}
-				else if(name.equals(Console.class.getName())) {
-					return Console.class;
-				}
+//				else if(name.equals(Console.class.getName())) {
+//					return Console.class;
+//				}
 				else {		
 					File classFile = classFiles.get(name);
 					// TODO: error handling (class not found)

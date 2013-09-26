@@ -134,7 +134,7 @@ public class ClassModel {
 		Map<String, Image> previousMapping = new HashMap<String, Image>(iconMapping);
 		//		iconMapping.clear();
 
-		userClasses.addAll(AguiaJActivator.getDefault().getPackagesClasses().values());		
+		userClasses.addAll(AguiaJActivator.getInstance().getPackagesClasses().values());		
 
 		for(Class<?> c : userClasses) {
 			String key = c.getName();
@@ -210,7 +210,7 @@ public class ClassModel {
 
 			pluginClassSet.put(clazz, pluginId);
 
-			iconMapping.put(clazz.getName(), AguiaJActivator.getDefault().getPluginTypeIcon(clazz));
+			iconMapping.put(clazz.getName(), AguiaJActivator.getInstance().getPluginTypeIcon(clazz));
 
 			if(contract != null)
 				contracts.put(clazz, contract);

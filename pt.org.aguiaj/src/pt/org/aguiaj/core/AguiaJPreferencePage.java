@@ -49,7 +49,7 @@ public class AguiaJPreferencePage extends FieldEditorPreferencePage implements I
 	
 	@Override
 	public void init(IWorkbench workbench) {
-		IPreferenceStore store = AguiaJActivator.getDefault().getPreferenceStore();
+		IPreferenceStore store = AguiaJActivator.getInstance().getPreferenceStore();
 		setPreferenceStore(store);
 	}
 
@@ -90,7 +90,7 @@ public class AguiaJPreferencePage extends FieldEditorPreferencePage implements I
 
 	private void addAccessorPolicies() {
 		Set<String> accessorPolicies = 
-			AguiaJActivator.getDefault().getAccessorPolicies();
+			AguiaJActivator.getInstance().getAccessorPolicies();
 		String[][] inspectorValues = new String[accessorPolicies.size()][2];
 		int i = 0;
 		for(String policy : accessorPolicies) {
