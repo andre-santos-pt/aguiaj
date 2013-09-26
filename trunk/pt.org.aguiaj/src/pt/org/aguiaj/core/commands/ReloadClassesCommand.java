@@ -69,11 +69,11 @@ public class ReloadClassesCommand extends AbstractHandler {
 		ObjectModel.getInstance().clearAll();
 
 		if(workingDir == null)
-			AguiaJActivator.getDefault().reloadClasses();
+			AguiaJActivator.getInstance().reloadClasses();
 		else
-			AguiaJActivator.getDefault().loadClasses(workingDir);
+			AguiaJActivator.getInstance().loadClasses(workingDir);
 
-		Collection<Class<?>> allClasses = AguiaJActivator.getDefault().getPackagesClasses().values();
+		Collection<Class<?>> allClasses = AguiaJActivator.getInstance().getPackagesClasses().values();
 
 		for(Class<?> c : allClasses)
 			ClassModel.getInstance().addClass(c);

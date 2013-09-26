@@ -18,6 +18,7 @@ import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.classes.ClassesView;
 import pt.org.aguiaj.common.AguiaJImage;
 import pt.org.aguiaj.core.AguiaJActivator;
+import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.documentation.DocumentationView;
 import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 import pt.org.aguiaj.core.interpreter.Instruction;
@@ -33,11 +34,11 @@ import pt.org.aguiaj.objects.ObjectsView;
  */
 public class AguiaJHelper {
 	public static String getWorkingDirectory() {
-		return AguiaJActivator.getDefault().getWorkingDirectory().toOSString();
+		return AguiaJActivator.getInstance().getWorkingDirectory().toOSString();
 	}
 	
 	public static Image getPluginImage(String key) {
-		Image img = AguiaJActivator.getDefault().getImageRegistry().get(key);
+		Image img = AguiaJActivator.getInstance().getImageRegistry().get(key);
 		if(img == null) {
 			img = AguiaJImage.NA.getImage();
 		}
@@ -51,11 +52,15 @@ public class AguiaJHelper {
 	
 	
 	public static String getPluginJarLocation(String pluginId) {
-		return AguiaJActivator.getDefault().getPluginJarLocation(pluginId);
+		return AguiaJActivator.getInstance().getPluginJarLocation(pluginId);
+	}
+	
+	public static Set<String> getPluginIds() {
+		return AguiaJActivator.getInstance().getPluginIds();
 	}
 	
 	public static Set<String> getPluginPackages() {
-		return AguiaJActivator.getDefault().getPluginPackages();
+		return AguiaJActivator.getInstance().getPluginPackages();
 	}
 	
 	public static void showInDocumentation(String url) {
@@ -70,6 +75,7 @@ public class AguiaJHelper {
 	public static void updateObject(Object object) {
 		if(object instanceof ContractDecorator<?>)
 			object = ((ContractDecorator<?>) object).getWrappedObject();
+		
 		ObjectWidget widget = ObjectsView.getInstance().getObjectWidget(object);
 		widget.updateFields();
 		ObjectsView.getInstance().updateLayout(null);
@@ -113,6 +119,10 @@ public class AguiaJHelper {
 	
 	public static void hide(String objectReference) {
 		ObjectsView.getInstance().hide(objectReference);
+	}
+	
+	public static String getTextualRepresentation(Object o) {
+		return ReflectionUtils.getTextualRepresentation(o, true);
 	}
 	
 //	public static void addObject(Object object) {

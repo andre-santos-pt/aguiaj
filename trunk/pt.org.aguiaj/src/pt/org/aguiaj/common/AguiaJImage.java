@@ -73,13 +73,13 @@ public enum AguiaJImage {
 	}
 
 	public Image getImage() {
-		AbstractUIPlugin plugin = AguiaJActivator.getDefault();
+		AbstractUIPlugin plugin = AguiaJActivator.getInstance();
 		ImageRegistry imageRegistry = plugin.getImageRegistry();		
 		return imageRegistry.get(name());
 	}
 	
 	public ImageDescriptor getImageDescriptor() {
-		AbstractUIPlugin plugin = AguiaJActivator.getDefault();
+		AbstractUIPlugin plugin = AguiaJActivator.getInstance();
 		ImageRegistry imageRegistry = plugin.getImageRegistry();		
 		return imageRegistry.getDescriptor(name());
 	}

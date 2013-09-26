@@ -161,7 +161,7 @@ class PackageWidget extends Composite {
 		Composite comp = new Composite(area, SWT.NONE);
 		comp.setLayout(new RowLayout(SWT.VERTICAL));
 
-		final String jarLocation = AguiaJActivator.getDefault().getPluginJarLocation(pluginId);
+		final String jarLocation = AguiaJActivator.getInstance().getPluginJarLocation(pluginId);
 
 		new LabelWidget.Builder()
 		.text("This package is provided by a plugin.")

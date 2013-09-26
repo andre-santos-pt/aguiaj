@@ -28,7 +28,7 @@ public class AguiaJPreferenceInitializer extends AbstractPreferenceInitializer {
 
 	@Override
 	public void initializeDefaultPreferences() {
-		IPreferenceStore store = AguiaJActivator.getDefault().getPreferenceStore();
+		IPreferenceStore store = AguiaJActivator.getInstance().getPreferenceStore();
 		
 		store.setDefault(ACCESSOR_POLICY.name(), ACCESSOR_POLICY.getString());
 		

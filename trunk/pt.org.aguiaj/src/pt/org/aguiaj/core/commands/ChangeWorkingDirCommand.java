@@ -30,7 +30,7 @@ public class ChangeWorkingDirCommand extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
 		if(workingDir == null) {
-			WorkingDirectoryDialog dia = new WorkingDirectoryDialog(Display.getDefault().getActiveShell(), AguiaJActivator.getDefault().getWorkingDirectory());
+			WorkingDirectoryDialog dia = new WorkingDirectoryDialog(Display.getDefault().getActiveShell(), AguiaJActivator.getInstance().getWorkingDirectory());
 			workingDir = dia.open();
 		}
 		

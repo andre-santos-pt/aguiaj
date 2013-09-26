@@ -59,12 +59,12 @@ public enum AguiaJParam {
 	},
 	FONT("Arial") {
 		public String getString() {
-			return AguiaJActivator.getDefault().getPreferenceStore().getString(PreferencesParam.FONTFACE.name());
+			return AguiaJActivator.getInstance().getPreferenceStore().getString(PreferencesParam.FONTFACE.name());
 		}
 	},
 	INSPECTION_POLICY(StandardInspectionPolicy.class.getName()) {
 		public String getString() {
-			IPreferenceStore prefStore = AguiaJActivator.getDefault().getPreferenceStore();
+			IPreferenceStore prefStore = AguiaJActivator.getInstance().getPreferenceStore();
 			String className = prefStore.getString(name());
 			if(className == null || className.isEmpty())
 				className = INSPECTION_POLICY.value.toString();
@@ -73,7 +73,7 @@ public enum AguiaJParam {
 	},
 	ACCESSOR_POLICY(GetIsAccessorPolicy.class.getName())  {
 		public String getString() {
-			IPreferenceStore prefStore = AguiaJActivator.getDefault().getPreferenceStore();
+			IPreferenceStore prefStore = AguiaJActivator.getInstance().getPreferenceStore();
 			String className = prefStore.getString(name());
 			if(className == null || className.isEmpty())
 				className = ACCESSOR_POLICY.value.toString();
@@ -88,7 +88,7 @@ public enum AguiaJParam {
 	
 	
 	private int getPreferenceInt(String key) {
-		AguiaJActivator activator = AguiaJActivator.getDefault();
+		AguiaJActivator activator = AguiaJActivator.getInstance();
 		if(activator == null)
 			return (Integer) value;
 		else {
