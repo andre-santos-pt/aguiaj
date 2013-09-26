@@ -52,7 +52,7 @@ public class Inspector {
 		Collections.sort(constructors,new Comparator<Constructor<?>>() {
 			@Override
 			public int compare(Constructor<?> c1, Constructor<?> c2) {
-				return new Integer(c1.getParameterTypes().length).compareTo(c1.getParameterTypes().length);
+				return new Integer(c1.getParameterTypes().length).compareTo(c2.getParameterTypes().length);
 			}
 		});
 		return constructors;
@@ -191,7 +191,6 @@ public class Inspector {
 		types.addAll(superType.isInterface() ? superInterfaces(superType) : superClasses(superType));
 		
 		for(Class<?> t : types) {
-//			if(t.isInterface()) {
 				for(Method m : t.getMethods())
 					try {
 						methods.add(type.getDeclaredMethod(m.getName(), m.getParameterTypes()));
@@ -200,15 +199,7 @@ public class Inspector {
 					} catch (SecurityException e) {
 //						e.printStackTrace();
 					}
-//			}
-//			else {
-//				methods.addAll(getAccessorMethods(t));
-//				methods.addAll(getCommandMethods(t));
-//			}
 		}
-		System.out.println(superType);
-		for(Method m : methods)
-			System.out.println("\t" + m.hashCode() + " - " + m);
 		
 		return methods;
 	}
@@ -298,23 +289,7 @@ public class Inspector {
 			return super.hashCode();
 		}
 	}
-	
-	public static void main(String[] args) throws NoSuchMethodException, SecurityException {
-//		System.out.println(A.class.getMethod("m").isBridge());
-//		System.out.println(A.class.getMethod("t").isBridge());
-//		
-//		System.out.println(B.class.getMethod("m").isBridge());
-//		System.out.println(B.class.getMethod("z").isBridge());
-//		System.out.println(B.class.getMethod("t").isBridge());
-//		
-//		
-//		System.out.println(isInherited(B.class, B.class.getMethod("m")));
-//		System.out.println(isInherited(B.class, B.class.getMethod("z")));
-//		System.out.println(isInherited(B.class, B.class.getMethod("t")));
-		
-		System.out.println(isOverriding(A.class, A.class.getMethod("m")));
-		System.out.println(isOverriding(B.class, B.class.getMethod("m")));
-	}
+
 
 	public static boolean isOverriding(Class<?> clazz, Method method) {
 		return

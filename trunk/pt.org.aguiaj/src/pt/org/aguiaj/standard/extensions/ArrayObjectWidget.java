@@ -15,7 +15,6 @@ import java.lang.reflect.Array;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.common.widgets.FieldContainer;

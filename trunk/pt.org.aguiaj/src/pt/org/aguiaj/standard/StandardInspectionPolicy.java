@@ -29,30 +29,20 @@ public class StandardInspectionPolicy implements InspectionPolicy {
 	}
 
 	public static boolean isVisible(Method method) {
-		return isOnDefaultPackage(method.getDeclaringClass()) ?
-				!Modifier.isPrivate(method.getModifiers()) 
-				: 
-					Modifier.isPublic(method.getModifiers());
+		return 
+				!method.isBridge() &&
+				!method.isSynthetic() && 
+				isVisibleOnDefaultPackage(method);
 	}
 
 	private static boolean isOnDefaultPackage(Class<?> clazz) {
 		return clazz.getPackage() == null;
 	}
-
-
-
-	//	private static boolean isVisible(int modifiers) {
-	//		boolean visible = Modifier.isPublic(modifiers);
-
-	//		if(!visible && AguiaJParam.PROTECTED_VISIBLE.getBoolean())
-	//			visible = Modifier.isProtected(modifiers);
-	//			
-	//		if(!visible && AguiaJParam.PACKAGEDEF_VISIBLE.getBoolean())
-	//			visible = isPackageDefault(modifiers);
-
-	//		return visible;
-	//	}
-
+	
+	private static boolean isVisibleOnDefaultPackage(Method method) {
+		return isOnDefaultPackage(method.getDeclaringClass()) ? 
+				!Modifier.isPrivate(method.getModifiers()) : Modifier.isPublic(method.getModifiers());
+	}
 
 
 
@@ -121,7 +111,7 @@ public class StandardInspectionPolicy implements InspectionPolicy {
 
 	public boolean isCommandMethod(Method method) {
 		return 
-				(!method.isSynthetic() || method.isBridge()) &&
+//				(!method.isSynthetic() || method.isBridge()) &&
 				!Modifier.isStatic(method.getModifiers()) &&		
 				isVisible(method) &&
 				!method.getDeclaringClass().equals(Object.class) &&	

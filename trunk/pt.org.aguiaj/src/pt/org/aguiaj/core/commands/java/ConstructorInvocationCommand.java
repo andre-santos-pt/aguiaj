@@ -15,7 +15,6 @@ import java.lang.reflect.Member;
 
 import pt.org.aguiaj.common.ConstructorInvocationThread;
 import pt.org.aguiaj.core.ReflectionUtils;
-import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 import pt.org.aguiaj.objects.ObjectModel;
 
 public class ConstructorInvocationCommand extends JavaCommandWithArgs implements ContractAware {

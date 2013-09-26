@@ -11,7 +11,6 @@
 package pt.org.aguiaj.extensibility;
 
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 
 
 /**

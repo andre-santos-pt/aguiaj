@@ -18,9 +18,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 //import aguiaj.console.Console;
-
 import pt.org.aguiaj.classes.ClassModel;
 
 

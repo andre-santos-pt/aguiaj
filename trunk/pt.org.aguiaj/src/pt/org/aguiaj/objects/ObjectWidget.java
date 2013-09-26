@@ -19,9 +19,10 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import org.eclipse.swt.SWT;
@@ -54,12 +55,12 @@ import pt.org.aguiaj.common.widgets.TypeMemberMouseTrackAdapter;
 import pt.org.aguiaj.core.AguiaJActivator;
 import pt.org.aguiaj.core.Highlightable;
 import pt.org.aguiaj.core.Inspector;
+import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.UIText;
 import pt.org.aguiaj.core.commands.RemoveObjectCommand;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
-import pt.org.aguiaj.extensibility.contracts.PostConditionException;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 
@@ -175,11 +176,19 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 	}
 
 	public void highlight(Method method) {
-		if(methodToWidget.containsKey(method))
-			methodToWidget.get(method).highlight();
+		Method m = matchMethod(method);
+		if(m != null)
+			methodToWidget.get(m).highlight();
 	}
 
-
+	private Method matchMethod(Method method) {
+		for(Method m : methodToWidget.keySet())
+			if(ReflectionUtils.isSame(m, method))
+				return m;
+		
+		return null;
+	}
+	
 	public void unhighlight() {
 //		if(!isDisposed()) {
 //			setBackground(AguiaJColor.OBJECT.getColor());
@@ -191,8 +200,9 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 	}
 
 	public void unhighlight(Method method) {
-		if(methodToWidget.containsKey(method))
-			methodToWidget.get(method).unhighlight();
+		Method m = matchMethod(method);
+		if(m != null)
+			methodToWidget.get(m).unhighlight();
 	}
 
 
@@ -203,16 +213,9 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 			Composite privateAttributesGroup = createSection();
 			sectionMap.put(Section.INTERNALS, privateAttributesGroup);
 
-//			RowLayout layout = new RowLayout(SWT.VERTICAL);
-//			layout.spacing = PADDING;
-//			privateAttributesGroup.setLayout(layout);
-
-			ReverseIterator<Field> it = new ReverseIterator<Field>(invisibleAttributes);
-
 			Class<?> owner = null;
 
-			while(it.hasNext())	 {
-				Field field = it.next();
+			for(Field field : invisibleAttributes) {
 				if(owner == null)
 					owner = field.getDeclaringClass();
 
@@ -225,33 +228,6 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 			SWTUtils.setColorRecursively(privateAttributesGroup, AguiaJColor.PRIVATES.getColor());
 
 			createShowHide(UIText.SHOW_PRIVATE_FIELDS, UIText.HIDE_PRIVATE_FIELDS, privateAttributesGroup, Section.INTERNALS);
-		}
-	}
-
-	static class ReverseIterator<E> implements Iterator<E> {
-		private List<E> collection;
-		private int next;		
-
-		public ReverseIterator(List<E> list) {
-			this.collection = list;
-			next = list.size();
-		}
-
-		@Override
-		public boolean hasNext() {
-			return next != 0;
-		}
-
-		@Override
-		public E next() {
-			return collection.get(--next);
-		}
-
-		@Override
-		public void remove() {
-			collection.remove(next);
-			if(next > 0)
-				next--;
 		}
 	}
 
@@ -349,7 +325,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		List<Class<?>> types = Inspector.getAllCompatibleTypes(objectClass);
 
 		for(final Class<?> type : types) {
-			if(ClassModel.getInstance().isClassInUse(type) && !type.equals(Enum.class) && !type.isEnum()) {
+			if(!type.equals(objectClass) && ClassModel.getInstance().isClassInUse(type) && !type.equals(Enum.class) && !type.isEnum()) {
 				IconWidget icon = IconWidget.createForRowLayout(classHeader, type);
 				String toolTip = type.isInterface() ?
 						type.getSimpleName() + " (interface)" :
@@ -510,10 +486,6 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 
 
 	public void updateFields() {
-		System.out.println("OBJ - " + object);
-		for(Method m : methodToWidget.keySet())
-			System.out.println("\t" + m.hashCode() + " - " + m);
-		
 		super.updateFields(object);
 
 		try {

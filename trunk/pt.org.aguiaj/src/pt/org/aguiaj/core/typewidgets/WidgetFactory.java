@@ -28,7 +28,6 @@ import pt.org.aguiaj.extensibility.VisualizationWidget;
 import pt.org.aguiaj.extensibility.canvas.CanvasVisualizationWidget;
 import pt.org.aguiaj.standard.extensions.ArrayObjectWidget;
 import pt.org.aguiaj.standard.extensions.StringObjectWidget;
-import pt.org.aguiaj.standard.extensions.TableArrayObjectWidget;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;

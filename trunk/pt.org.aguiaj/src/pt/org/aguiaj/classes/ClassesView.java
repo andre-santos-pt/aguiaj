@@ -39,7 +39,6 @@ import org.eclipse.ui.ISizeProvider;
 import org.eclipse.ui.part.ViewPart;
 
 import pt.org.aguiaj.common.AguiaJImage;
-import pt.org.aguiaj.common.DragNDrop;
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.core.AguiaJActivator;
 import pt.org.aguiaj.core.commands.ChangeWorkingDirCommand;
@@ -51,7 +50,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 
 public class ClassesView extends ViewPart implements ISizeProvider {

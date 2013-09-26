@@ -125,17 +125,26 @@ public class ReflectionUtils {
 	}
 
 	public static Collection<Method> getAllMethods(Class<?> clazz) {
-		Set<Method> all = new HashSet<Method>();
-		getAllMethods_rec(clazz, all);
-		return all;
+//		Set<Method> all = new HashSet<Method>();
+//		getAllMethods_rec(clazz, all);
+		//		return all;
+		Collection<Method> methods = new HashSet<Method>();
+		for(Method m : clazz.getMethods())
+			methods.add(m);
+
+		for(Method m : clazz.getDeclaredMethods())
+			methods.add(m);
+
+		return methods;
 	}
 
 
 
 	private static void getAllMethods_rec(Class<?> clazz, Collection<Method> all) {
+
 		for(Method m : clazz.getDeclaredMethods()) {
-			if(!exists(m, all))
-				all.add(m);
+			//			if(!exists(m, all))
+			all.add(m);
 		}
 		Class<?> superClass = clazz.getSuperclass();
 		if(superClass != null)
@@ -166,8 +175,8 @@ public class ReflectionUtils {
 			return false;
 		}
 	}
-	
-	
+
+
 	public static void loadClass(Class<?> clazz) {
 		loadClass(clazz.getName());		
 	}
@@ -231,7 +240,7 @@ public class ReflectionUtils {
 		for(Class<?> inner : clazz.getClasses()) {
 			if(classes.contains(inner))
 				return;
-			
+
 			classes.add(inner);
 			addInnerClasses(inner, classes);
 		}
@@ -314,25 +323,25 @@ public class ReflectionUtils {
 
 			}	
 			else {
-//				Method toStringMethod = getToStringMethod(object.getClass());
-//
-//				if(!toStringMethod.getDeclaringClass().equals(Object.class)) {
-//					MethodInvocationCommand command = new MethodInvocationCommand(object, "na", toStringMethod, new Object[0], new String[0]);
-//					command.execute();
-//
-//					if(command.failed())
-//						return null;
-//
-//					ret = (String) command.getResultingObject();
-//				}		
+				//				Method toStringMethod = getToStringMethod(object.getClass());
+				//
+				//				if(!toStringMethod.getDeclaringClass().equals(Object.class)) {
+				//					MethodInvocationCommand command = new MethodInvocationCommand(object, "na", toStringMethod, new Object[0], new String[0]);
+				//					command.execute();
+				//
+				//					if(command.failed())
+				//						return null;
+				//
+				//					ret = (String) command.getResultingObject();
+				//				}		
 				ret = getToStringResult(object);
 			}
 
 			// in case of an array or collection, crop the result
-//			if(clazz.isArray() || Collection.class.isAssignableFrom(clazz)) {
-				if(ret != null && !complete && ret.length() > 20)
-					ret = ret.substring(0, 20) + "...";
-//			}
+			//			if(clazz.isArray() || Collection.class.isAssignableFrom(clazz)) {
+			if(ret != null && !complete && ret.length() > 20)
+				ret = ret.substring(0, 20) + "...";
+			//			}
 		}
 
 		return ret;
@@ -346,7 +355,7 @@ public class ReflectionUtils {
 			MethodInvocationCommand cmd = new MethodInvocationCommand(object, null, toStringMethod);
 			ExceptionHandler.INSTANCE.execute(cmd);
 
-//			command.execute();
+			//			command.execute();
 
 			if(cmd.failed())
 				return null;
@@ -369,7 +378,7 @@ public class ReflectionUtils {
 					}
 					if(!ret.isEmpty())
 						ret += nl;
-					
+
 					ret += f.getName() + ": " + (get == null ? "null" : get.toString());
 				}
 			}
@@ -397,7 +406,7 @@ public class ReflectionUtils {
 	}
 
 
-	
+
 
 	public static boolean checkParamTypes(Class<?>[] paramTypes, Object[] args) {
 		if(paramTypes.length != args.length)
@@ -440,8 +449,8 @@ public class ReflectionUtils {
 		}
 		return true;
 	}
-	
-	
+
+
 
 
 }

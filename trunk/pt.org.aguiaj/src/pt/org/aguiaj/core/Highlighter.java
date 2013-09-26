@@ -25,10 +25,10 @@ public class Highlighter implements Highlightable {
 	@Override
 	public void unhighlight() {
 		if(!control.isDisposed()) {
-			if(prevColor != null)
+			if(prevColor != null) {
 				control.setBackground(prevColor);
-
-			prevColor = null;
+				prevColor = null;
+			}
 		}
 	}
 

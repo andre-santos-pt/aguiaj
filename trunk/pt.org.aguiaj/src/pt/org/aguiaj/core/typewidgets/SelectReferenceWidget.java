@@ -22,6 +22,8 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -110,7 +112,7 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 				}
 			});
 
-		combo.setLayoutData(new RowData(75, 22));	
+		combo.setLayoutData(new RowData(50, 22));	
 
 		if(type == WidgetProperty.ATTRIBUTE || type == WidgetProperty.ARRAYPOSITION) {
 			combo.addSelectionListener(new SelectionAdapter() {
@@ -184,13 +186,25 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 		if(type != WidgetProperty.PARAMETER)
 			combo.add(NA_KEY, NA_INDEX);
 
+		String max = "null";
 		boolean containsSelected = false;
 		for(Reference ref : newReferences) {
 			combo.add(ref.name);			
 			combo.setData(ref.name, ref.object);
+			if(ref.name.length() > max.length())
+				max = ref.name;
+			
 			if(ref.name.equals(selected))
 				containsSelected = true;
 		}
+		
+		GC gc = new GC(combo);
+		Point size = gc.textExtent(max);
+		gc.dispose ();
+		combo.setLayoutData(new RowData(size.x + 20, 22));
+		getParent().pack();
+		getParent().layout();
+		
 
 		for(int i = 0; i < combo.getItemCount(); i++) {
 			if(containsSelected && combo.getItem(i).equals(selected) ||
@@ -262,8 +276,10 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 					combo.setData(NA_KEY, object);
 					lastSelectionIndex = NA_INDEX;
 				}
-			}
+			}	
 		}
+		
+		
 	}
 
 	public Control getControl() {

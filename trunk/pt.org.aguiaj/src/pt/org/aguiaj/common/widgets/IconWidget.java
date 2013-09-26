@@ -14,10 +14,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.ISizeProvider;
 
 import pt.org.aguiaj.classes.ClassModel;
-import pt.org.aguiaj.common.AguiaJImage;
 
 public class IconWidget extends Composite {
 

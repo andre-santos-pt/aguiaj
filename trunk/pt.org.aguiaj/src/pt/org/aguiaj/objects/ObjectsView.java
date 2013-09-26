@@ -45,7 +45,6 @@ import pt.org.aguiaj.extensibility.AguiaJContribution;
 import pt.org.aguiaj.extensibility.JavaCommand;
 import pt.org.aguiaj.extensibility.ObjectEventListenerAdapter;
 import pt.org.aguiaj.extensibility.Reference;
-import pt.org.aguiaj.extensibility.contracts.ContractDecorator;
 
 public class ObjectsView extends ViewPart {
 

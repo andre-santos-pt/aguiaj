@@ -47,6 +47,7 @@ public class EnumConstant extends Expression implements Instruction {
 		for(Field f : enumType.getFields()) {
 			if(f.isEnumConstant() && f.getName().equals(fieldName)) {
 				try {
+					f.setAccessible(true);
 					value = f.get(null);
 					break;
 				} catch (IllegalArgumentException e) {

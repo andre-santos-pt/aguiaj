@@ -28,6 +28,8 @@ import static pt.org.aguiaj.extensibility.AguiaJContribution.OBJECT_WIDGET_VIEW;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
@@ -44,25 +46,23 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.console.ConsolePlugin;
-import org.eclipse.ui.console.IConsole;
-import org.eclipse.ui.console.IConsoleManager;
-import org.eclipse.ui.console.MessageConsole;
-import org.eclipse.ui.console.MessageConsoleStream;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -99,14 +99,12 @@ public class AguiaJActivator extends AbstractUIPlugin {
 	private IPath workingDir;
 
 	private Multimap<String, Class<?>> plugins; // id -> class[]
-	
-	private Set<String> pluginIds; // id -> name
 
 	private Map<String, File> pluginClassFiles = new HashMap<String, File>();
-	
+
 	private Map<Class<?>, Image> pluginTypeImages;
 
-	
+
 	private static final AccessorMethodDetectionPolicy defaultPolicy = new GetIsAccessorPolicy();
 	private Map<String, Class<? extends AccessorMethodDetectionPolicy>> accessorPolicies;
 
@@ -124,6 +122,22 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		pluginTypeImages = Maps.newHashMap();
 
 		accessorPolicies = Maps.newHashMap();
+
+		Platform.addLogListener(new ILogListener() {
+
+			@Override
+			public void logging(IStatus status, String plugin) {
+				if(status.getException() != null) {
+					StringWriter sw = new StringWriter();
+					PrintWriter pw = new PrintWriter(sw);
+					status.getException().printStackTrace(pw);
+					String trace = sw.toString();
+					if(trace.contains("aguiaj")) {
+						MessageDialog.openWarning(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Error", trace);
+					}
+				}
+			}
+		});
 	}
 
 	public IPath getWorkingDirectory() {
@@ -149,7 +163,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		});
 		loadObjectWidgetPlugins();
 		loadAccessorPolicyPlugins();
-		
+
 		ClassModel.getInstance().addDefaultClasses();
 	}
 
@@ -248,7 +262,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		return url;
 	}
 
-	
+
 
 	public Map<String, File> getPluginClassFiles() {
 		return Collections.unmodifiableMap(pluginClassFiles);
@@ -290,7 +304,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		for(String id : plugins.keySet())
 			if(!id.equals(AguiaJContribution.AGUIAJ_PLUGIN))
 				ids.add(id);
-		
+
 		return ids;
 	}
 
@@ -325,9 +339,9 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		return Collections.unmodifiableCollection(plugins.get(pluginId));		
 	}
 
-//	public String getPluginName(String pluginId) {
-//		return pluginNames.get(pluginId);
-//	}
+	//	public String getPluginName(String pluginId) {
+	//		return pluginNames.get(pluginId);
+	//	}
 
 	Set<String> getAccessorPolicies() {
 		return accessorPolicies.keySet();
@@ -354,12 +368,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 				Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_OBJECT_WIDGET);
 
 		for (final IConfigurationElement e : config) {
-			String pluginName = e.getDeclaringExtension().getLabel();			
 			String pluginID = e.getContributor().getName();
-
-//			if(!pluginNames.containsKey(pluginID))
-//				pluginNames.put(pluginID, !"".equals(pluginName) ? pluginName : pluginID);
-
 			if(e.getName().equals(OBJECT_WIDGET_GROUP))
 				handleObjectWidgets(e, pluginID);			
 		}
@@ -454,6 +463,8 @@ public class AguiaJActivator extends AbstractUIPlugin {
 			if(imgDesc != null)
 				pluginTypeImages.put(clazz, imgDesc.createImage());
 		}
+		else
+			pluginTypeImages.put(clazz, AguiaJImage.nextTypeIcon().getImage());
 	}
 
 	private List<Method> createPromotionsToAccessor(IConfigurationElement objWidget, Class<?> clazz) {
@@ -511,7 +522,6 @@ public class AguiaJActivator extends AbstractUIPlugin {
 	}
 
 	public void loadClasses(IPath workingDir) {
-
 		assert workingDir.toFile().exists() && workingDir.toFile().isDirectory();
 
 		this.workingDir = workingDir;
@@ -528,6 +538,8 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		AguiaClassLoader.newClassLoader();
 
 		packagesClasses = readClasses(workingDirs);
+
+
 
 		// try bin directory, if exists		
 		if(packagesClasses.isEmpty()) {
@@ -592,7 +604,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		}
 	}
 
-	
+
 
 	private static Multimap<String, Class<?>> readClasses(List<IPath> workingDirs) {
 		Multimap<String, Class<?>> ret = ArrayListMultimap.create();
@@ -605,8 +617,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 				}
 			}
 		}
-
 		return ret;
 	}
-	
+
 }

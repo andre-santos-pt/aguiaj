@@ -18,7 +18,6 @@ import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 
 import pt.org.aguiaj.common.AguiaJColor;
 import pt.org.aguiaj.core.AguiaJActivator;
