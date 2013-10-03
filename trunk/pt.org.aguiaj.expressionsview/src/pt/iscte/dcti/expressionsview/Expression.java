@@ -1,7 +1,5 @@
 package pt.iscte.dcti.expressionsview;
 
-import java.lang.reflect.Array;
-
 import org.eclipselabs.javainterpreter.ExecutionException;
 import org.eclipselabs.javainterpreter.JavaInterpreter;
 import org.eclipselabs.javainterpreter.Output;

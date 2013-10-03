@@ -15,17 +15,20 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 
+
 class ProjectClassLoader extends ClassLoader{
 	private IProject project;
 
-	private Map<String, Class<?>> loaded;
+	private Map<String, Class<?>> map;
 	
-	public ProjectClassLoader(ClassLoader parent, IProject project) {
+	public ProjectClassLoader(ClassLoader parent, IProject project, Map<String, Class<?>> map) {
 		super(parent);
 		this.project = project;
-		loaded = new HashMap<String, Class<?>>();
+		this.map = new HashMap<String, Class<?>>(map);
 	}
 
+	
+	
 	public static boolean existsInLibrary(IProject project, String name) {
 		try {
 			IJavaProject javaProj = (IJavaProject) project.getNature(JavaCore.NATURE_ID);
@@ -44,11 +47,15 @@ class ProjectClassLoader extends ClassLoader{
 		return false;
 	}
 	
+
 	
 	public Class<?> loadClass(String name) throws ClassNotFoundException {	
 		if(name.startsWith("java.") || name.startsWith("sun."))
 			return getParent().loadClass(name);
-
+		
+		if(map.containsKey(name))
+			return map.get(name);
+		
 		byte[] classData = null;
 		try {
 			File file = project.getLocation().append("bin").append(name.replace('.', '/')+".class").toFile();
@@ -85,7 +92,9 @@ class ProjectClassLoader extends ClassLoader{
 
 		Class<?> clazz = defineClass(name, classData, 0, classData.length);
 	
-		loaded.put(name, clazz);
+		if(!map.containsKey(name))
+			map.put(name, clazz);
+		
 		return clazz;
 	}
 

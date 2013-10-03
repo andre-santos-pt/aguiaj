@@ -2,6 +2,7 @@ package pt.iscte.dcti.expressionsview;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,6 +15,10 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -35,7 +40,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener2;
@@ -51,6 +55,8 @@ import org.eclipselabs.javainterpreter.ExecutionException;
 import org.eclipselabs.javainterpreter.JavaInterpreter;
 import org.eclipselabs.javainterpreter.SimpleContext;
 
+import pt.org.aguiaj.extensibility.AguiaJHelper;
+
 
 public class ExpressionsView extends ViewPart implements IPartListener2 {
 
@@ -65,70 +71,88 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 
 	private Map<IEditorInput, List<Expression>> expressions;
 
+	private Map<String, Class<?>> aguiajClassMap;
 
+	private VarContext context;
+
+	private class VarContext implements Context {
+		private Context context;
+		private Set<Class<?>> set;
+
+		public VarContext() {
+			context = new SimpleContext(null, Math.class, String.class, Random.class);
+			set = new HashSet<Class<?>>(1);
+		}
+
+		@Override
+		public boolean isClassAvailable(String name) {
+			for(Class<?> c : getImplicitClasses())
+				if(c.getName().equals(name))
+					return true;
+
+			if(ProjectClassLoader.existsInLibrary(((FileEditorInput) input).getFile().getProject(), name))
+				return true;
+
+			return context.isClassAvailable(name);
+		}
+
+		@Override
+		public Object getObject(String referenceName) {
+			return context.getObject(referenceName);
+		}
+
+		@Override
+		public Set<Class<?>> getImplicitClasses() {
+			return Collections.unmodifiableSet(set);
+		}
+
+		@Override
+		public Class<?> getClass(String name) {
+			for(Class<?> c : getImplicitClasses())
+				if(c.getName().equals(name))
+					return c;
+
+			return context.getClass(name);
+		}
+
+		@Override
+		public boolean existsReference(String name) {
+			return context.existsReference(name);
+		}
+
+		@Override
+		public void addReference(Class<?> type, String name, Object object) {
+			context.addReference(type, name, object);
+		}
+
+		@Override
+		public Class<?> referenceType(String name) {
+			return context.referenceType(name);
+		}
+
+		public void setImplicitClass(Class<?> c) {
+			set.clear();
+			set.add(c);
+		}
+	}
 
 	public ExpressionsView() {
 		_instance = this;
 
 		expressions = new HashMap<IEditorInput, List<Expression>>();
-		interpreter = new JavaInterpreter(new Context() {
 
-			private Context context = new SimpleContext(null, Math.class, String.class, Random.class);
+		context = new VarContext();
+		interpreter = new JavaInterpreter(context);
 
-			@Override
-			public boolean isClassAvailable(String name) {
-				for(Class<?> c : getImplicitClasses())
-					if(c.getName().equals(name))
-						return true;
-
-				if(ProjectClassLoader.existsInLibrary(((FileEditorInput) input).getFile().getProject(), name))
-					return true;
-
-				return context.isClassAvailable(name);
-			}
-
-			@Override
-			public Object getObject(String referenceName) {
-				return context.getObject(referenceName);
-			}
-
-			@Override
-			public Set<Class<?>> getImplicitClasses() {
-				Set<Class<?>> set = new HashSet<Class<?>>(1);
-				Class<?> clazz = loadClass();
-				if(clazz != null)
-					set.add(clazz);
-				return set;
-			}
-
-			@Override
-			public Class<?> getClass(String name) {
-				for(Class<?> c : getImplicitClasses())
-					if(c.getName().equals(name))
-						return c;
-
-				return context.getClass(name);
-			}
-
-			@Override
-			public boolean existsReference(String name) {
-				return context.existsReference(name);
-			}
-
-			@Override
-			public void addReference(Class<?> type, String name, Object object) {
-				context.addReference(type, name, object);
-			}
-
-			@Override
-			public Class<?> referenceType(String name) {
-				return context.referenceType(name);
-			}
-		});
-		
 		IEditorPart part = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
 		if(part != null)
 			handlePartOpen(part);
+
+		aguiajClassMap = new HashMap<String, Class<?>>();
+
+		for(Class<?> c : AguiaJHelper.getAllPluginClasses())
+			aguiajClassMap.put(c.getName(), c);
+
 	}
 
 	public static ExpressionsView getInstance() {
@@ -165,8 +189,10 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 	}
 
 	void refresh() {
-		if(viewer != null && !viewer.getTable().isDisposed())
+		if(viewer != null && !viewer.getTable().isDisposed()) {
 			viewer.setInput(input);
+			context.setImplicitClass(loadClass());
+		}
 	}
 
 	@Override
@@ -189,18 +215,31 @@ public class ExpressionsView extends ViewPart implements IPartListener2 {
 	private Class<?> loadClass() {
 		if(input != null) {
 			IResource r = (IResource) input.getAdapter(IResource.class);
-			IProject proj = r.getProject();
-			try {
-				if(proj.hasNature(JavaCore.NATURE_ID)) {
-					ProjectClassLoader loader = new ProjectClassLoader(getClass().getClassLoader(), proj);
-					String name = ((FileEditorInput) input).getFile().getLocation().removeFileExtension().lastSegment();
-					return loader.loadClass(name);
+			if(r != null) {
+				IProject proj = r.getProject();
+				try {
+					if(proj.hasNature(JavaCore.NATURE_ID)) {
+						IJavaProject javaProj = JavaCore.create(proj);
+						ProjectClassLoader loader = new ProjectClassLoader(getClass().getClassLoader(), proj, aguiajClassMap);
+						IPackageFragmentRoot[] packageFragmentRoot = javaProj.getAllPackageFragmentRoots();
+						for (int i = 0; i < packageFragmentRoot.length; i++){
+							if (packageFragmentRoot[i].getElementType() == IJavaElement.PACKAGE_FRAGMENT_ROOT 
+									&& !packageFragmentRoot[i].isArchive()) {
+								IPath src = packageFragmentRoot[i].getCorrespondingResource().getProjectRelativePath();
+								IPath path = ((FileEditorInput) input).getFile().getProjectRelativePath();
+								int match = path.matchingFirstSegments(src);
+								String name = path.removeFirstSegments(match).removeFileExtension().toString().replace('/', '.');
+								// TODO several src folders
+								return loader.loadClass(name);
+							}
+						}
+					}
 				}
-			}
-			catch(ClassNotFoundException e) {
+				catch(ClassNotFoundException e) {
 
-			} catch (CoreException e) {
-				e.printStackTrace();
+				} catch (CoreException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		return null;
