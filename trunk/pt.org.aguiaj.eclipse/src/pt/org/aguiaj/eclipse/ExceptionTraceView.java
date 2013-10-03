@@ -10,17 +10,8 @@
  ******************************************************************************/
 package pt.org.aguiaj.eclipse;
 
-import java.util.HashMap;
 import java.util.List;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -28,10 +19,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.WorkbenchException;
-import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
 
 import pt.org.aguiaj.extensibility.ExceptionTrace;
@@ -45,6 +34,13 @@ public class ExceptionTraceView extends ViewPart {
 	private Tree tree;
 
 	public static ExceptionTraceView getInstance() {
+		if(instance == null) {
+			try {
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(ExceptionTraceView.ID);
+			} catch (PartInitException e) {
+				e.printStackTrace();
+			}
+		}
 		return instance;
 	}
 
@@ -57,7 +53,9 @@ public class ExceptionTraceView extends ViewPart {
 			public void handleEvent(Event e) {
 				TreeItem[] selection = tree.getSelection();
 				if(selection.length == 1 && selection[0].getData() != null) {
-					gotoLine((TraceLocation) selection[0].getData());
+//					gotoLine((TraceLocation) selection[0].getData());
+					TraceLocation loc = (TraceLocation) selection[0].getData();
+					EclipseUtil.gotoLine(loc.fileName, loc.line);
 				}
 			}
 		});
@@ -88,13 +86,11 @@ public class ExceptionTraceView extends ViewPart {
 					item.setText(" " + traceLocs.get(i).line + ": " + trace.getMessage());
 					item.setData(traceLocs.get(i));
 				}
-				
-				
 			}
 			
 			tree.showItem(item);
 			tree.select(item);
-			gotoLine((TraceLocation) item.getData());
+//			gotoLine((TraceLocation) item.getData());
 		}
 		
 	}
@@ -104,42 +100,6 @@ public class ExceptionTraceView extends ViewPart {
 	}
 	
 	
-	private void gotoLine(TraceLocation loc) {
-		IJavaElement element = null;
-		try {
-			element = Activator.getProject().findElement(new Path(loc.fileName));
-		} catch (JavaModelException e1) {
-			e1.printStackTrace();
-		}
-		
-		if(element == null)
-			return;
-		
-		IFile file = (IFile) element.getResource();
-		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(); 
-
-		String pers = Activator.getPerspective();
-		if(pers == null)
-			pers = JavaUI.ID_PERSPECTIVE;
-
-		try {			
-			PlatformUI.getWorkbench().showPerspective(pers, PlatformUI.getWorkbench().getActiveWorkbenchWindow());
-		} catch (WorkbenchException e) {
-			e.printStackTrace();
-		}
-		
-		try {
-			IMarker marker = file.createMarker(IMarker.TEXT);
-			HashMap<String, Object> map = new HashMap<String, Object>();
-			map.put(IMarker.LINE_NUMBER, new Integer(loc.line));
-			marker.setAttributes(map);
-			IDE.openEditor(page, marker); 
-			marker.delete();
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
-	}
-
 	@Override
 	public void setFocus() {
 		tree.setFocus();

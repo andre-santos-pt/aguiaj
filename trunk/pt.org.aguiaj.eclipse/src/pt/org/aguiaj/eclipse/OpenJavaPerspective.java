@@ -16,10 +16,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.WorkbenchException;
-
-import pt.org.aguiaj.extensibility.AguiaJContribution;
 
 public class OpenJavaPerspective implements IViewActionDelegate {
 	private IWorkbench workbench;
