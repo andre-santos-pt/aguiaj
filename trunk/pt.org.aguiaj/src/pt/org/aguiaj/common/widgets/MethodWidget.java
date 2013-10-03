@@ -110,11 +110,6 @@ public class MethodWidget implements Highlightable {
 		
 		Fonts.set(invokeButton, AguiaJParam.MEDIUM_FONT, style);
 		
-//		FontData data = new FontData(AguiaJParam.FONT.getString(), 
-//				AguiaJParam.MEDIUM_FONT.getInt(), inherited ? SWT.ITALIC : overriding ? SWT.BOLD : SWT.NONE);
-//		Font font = new Font(Display.getDefault(), data);
-//		invokeButton.setFont(font);
-
 		DocumentationLinking.add(invokeButton, method);
 	}
 

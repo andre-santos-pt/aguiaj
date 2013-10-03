@@ -24,6 +24,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -52,8 +53,8 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 
 	private MethodInvocationCommand canvasWidthCommand;
 	private MethodInvocationCommand canvasHeightCommand;
-
 	private MethodInvocationCommand drawItemsCommand;
+	private MethodInvocationCommand initializeCommand;
 
 	private RowLayout layout;
 
@@ -61,11 +62,10 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 		super(parent, SWT.NONE, type, false);	
 		assert extension != null;
 		this.extension = extension;
-		//		toRedrawCommand = MethodInvocationCommand.instanceInvocation(extension, "toRedraw");
 		canvasWidthCommand = MethodInvocationCommand.instanceInvocation(extension, "canvasWidth");
 		canvasHeightCommand = MethodInvocationCommand.instanceInvocation(extension, "canvasHeight");
 		drawItemsCommand = MethodInvocationCommand.instanceInvocation(extension, "drawItems");
-
+		initializeCommand = MethodInvocationCommand.instanceInvocation(extension, "initialize", new Class[] {Canvas.class}, new Object[] {canvas});
 		update(getObject());
 	}
 
@@ -85,13 +85,10 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 	}
 
 	public void initialize() {
-		initialize(canvas);
+//		initialize(canvas);
 	}
 
-	public void initialize(Canvas canvas) {
-		extension.initialize(canvas);
-	}
-
+	
 	public final void createSection(Composite parent, Object object, String reference) {		
 		update(object);
 
@@ -112,11 +109,6 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 		}
 		else {
 			if(updateObject(object)) {
-
-				//			List<Rectangle> redraw = toRedraw();
-				//			for(Rectangle r : redraw)		
-				//				canvas.redraw(r.x, r.y, r.width, r.height, false);
-
 				canvas.redraw();
 				canvas.setLayoutData(new RowData(canvasWidth(), canvasHeight()));
 				canvas.update();
@@ -202,9 +194,31 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 	//		ExceptionHandler.INSTANCE.execute(initializeCommand);
 	//	}
 
+	private void initialize(Canvas canvas) {
+		if(initializeCommand != null) {
+			
+			Display.getDefault().syncExec(new Runnable() {
+				
+				@Override
+				public void run() {
+					if(!ExceptionHandler.INSTANCE.execute(initializeCommand, object))
+						stack.topControl = nullWidget;
+				}
+			});
+		}
+	}
+
 	private int canvasWidth() {
-		if(ExceptionHandler.INSTANCE.execute(canvasWidthCommand)) {	
-			return (Integer) canvasWidthCommand.getResultingObject();
+		return getValueDim(canvasWidthCommand);
+	}
+
+	private int canvasHeight() {
+		return getValueDim(canvasHeightCommand);
+	}
+	
+	private int getValueDim(MethodInvocationCommand cmd) {
+		if(cmd != null && ExceptionHandler.INSTANCE.execute(cmd, object)) {	
+			return (Integer) cmd.getResultingObject();
 		}
 		else {
 			stack.topControl = nullWidget;
@@ -212,20 +226,14 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 		}
 	}
 
-	private int canvasHeight() {
-		if(ExceptionHandler.INSTANCE.execute(canvasHeightCommand)) {
-			return (Integer) canvasHeightCommand.getResultingObject();
-		}
-		else {
-			stack.topControl = nullWidget;
-			return 1;
-		}
-	}
+	
+	
+	
 
 	private boolean ok = true;
 	private List<DrawItem> drawItems() {
 		ok = false;
-		ok = ExceptionHandler.INSTANCE.execute(drawItemsCommand);
+		ok = ExceptionHandler.INSTANCE.execute(drawItemsCommand, object);
 		if(ok) {	
 			stack.topControl = extensionWidget;
 			return (List<DrawItem>) drawItemsCommand.getResultingObject();
@@ -244,7 +252,7 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 			e.printStackTrace();
 		}
 		MethodInvocationCommand updateCommand = new MethodInvocationCommand(extension, null, method, new Object[] { object },  null);
-		return ExceptionHandler.INSTANCE.execute(updateCommand);
+		return ExceptionHandler.INSTANCE.execute(updateCommand, object);
 	}
 
 }

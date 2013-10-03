@@ -10,6 +10,7 @@
  ******************************************************************************/
 package pt.org.aguiaj.extensibility;
 
+import java.util.Collection;
 import java.util.Set;
 
 import org.eclipse.swt.graphics.Image;
@@ -60,6 +61,10 @@ public class AguiaJHelper {
 	
 	public static Set<String> getPluginPackages() {
 		return AguiaJActivator.getInstance().getPluginPackages();
+	}
+	
+	public static Collection<Class<?>> getAllPluginClasses() {
+		return AguiaJActivator.getInstance().getAllPluginClasses();
 	}
 	
 	public static void showInDocumentation(String url) {

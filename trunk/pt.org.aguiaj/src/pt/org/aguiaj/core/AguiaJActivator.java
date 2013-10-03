@@ -35,7 +35,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -100,7 +99,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 
 	private Multimap<String, Class<?>> plugins; // id -> class[]
 
-	private Map<String, File> pluginClassFiles = new HashMap<String, File>();
+	private Map<String, File> pluginClassFiles;
 
 	private Map<Class<?>, Image> pluginTypeImages;
 
@@ -119,6 +118,8 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		ActiveExceptionHandler.loadExceptionHandlers();
 
 		plugins = ArrayListMultimap.create();
+
+		pluginClassFiles = Maps.newHashMap();
 		pluginTypeImages = Maps.newHashMap();
 
 		accessorPolicies = Maps.newHashMap();
@@ -324,7 +325,13 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		return false;
 	}
 
-
+	public String getPluginId(Class<?> clazz) {
+		for(String id : plugins.keySet())
+			if(plugins.get(id).contains(clazz))
+				return id;
+		
+		return null;
+	}
 
 	public Collection<Class<?>> getPackageClasses(String packageName) {
 		Set<Class<?>> classes = Sets.newHashSet();
@@ -335,6 +342,10 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		return classes;
 	}
 
+	public Collection<Class<?>> getAllPluginClasses() {
+		return Collections.unmodifiableCollection(plugins.values());
+	}
+	
 	public Collection<Class<?>> getPluginClasses(String pluginId) {
 		return Collections.unmodifiableCollection(plugins.get(pluginId));		
 	}
@@ -620,4 +631,5 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		return ret;
 	}
 
+	
 }

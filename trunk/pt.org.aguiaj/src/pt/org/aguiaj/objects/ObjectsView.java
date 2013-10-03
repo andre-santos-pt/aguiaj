@@ -17,10 +17,6 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
@@ -29,7 +25,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ViewPart;
 
 import pt.org.aguiaj.common.AguiaJColor;
@@ -37,7 +32,6 @@ import pt.org.aguiaj.common.AguiaJImage;
 import pt.org.aguiaj.common.DragNDrop;
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.common.widgets.NullReferenceWidget;
-import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.commands.ReloadClassesCommand;
 import pt.org.aguiaj.core.commands.RemoveAllObjectsCommand;
 import pt.org.aguiaj.core.commands.RemoveDeadObjectsCommand;
@@ -372,35 +366,35 @@ public class ObjectsView extends ViewPart {
 	}
 
 
-	public void highlight(Object object) {
-		assert object != null;
+//	public void highlight(Object object) {
+//		assert object != null;
+//
+//		ObjectWidget widget = getObjectWidget(object);
+//
+//		if(widget != null) {
+//			if(highlighted != null)
+//				highlighted.unhighlight();
+//
+//			widget.highlight();
+//			highlighted = widget;
+//			launchObjectUnhilight();
+//		}
+//	}
 
-		ObjectWidget widget = getObjectWidget(object);
-
-		if(widget != null) {
-			if(highlighted != null)
-				highlighted.unhighlight();
-
-			widget.highlight();
-			highlighted = widget;
-			launchObjectUnhilight();
-		}
-	}
-
-	public void unhighlight() {
-		if(objectUnhilightjob != null) {
-			synchronized (objectUnhilightjob) {													
-				objectUnhilightjob = null;
-			}
-			objectUnhilightjob = null;
-		}
-
-		if(highlighted != null) {
-			highlighted.unhighlight();
-			highlighted.layout();
-		}
-		highlighted = null;
-	}
+//	public void unhighlight() {
+//		if(objectUnhilightjob != null) {
+//			synchronized (objectUnhilightjob) {													
+//				objectUnhilightjob = null;
+//			}
+//			objectUnhilightjob = null;
+//		}
+//
+//		if(highlighted != null) {
+//			highlighted.unhighlight();
+//			highlighted.layout();
+//		}
+//		highlighted = null;
+//	}
 
 	public void hide(String objectReference) {
 		assert objectReference != null;
@@ -442,27 +436,27 @@ public class ObjectsView extends ViewPart {
 	}
 
 
-	private Job objectUnhilightjob;
-
-	private void launchObjectUnhilight() {
-		if(objectUnhilightjob != null)
-			synchronized (objectUnhilightjob) {
-				objectUnhilightjob.cancel();
-			}
-
-		objectUnhilightjob = new Job("object highlight") {
-
-			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-				Display.getDefault().syncExec(new Runnable() {
-					@Override
-					public void run() {
-						ObjectsView.getInstance().unhighlight();						
-					}
-				});
-				return Status.OK_STATUS;
-			}
-		};
-		objectUnhilightjob.schedule(AguiaJParam.HIGHLIGHT_TIMEOUT.getInt() * 1000);
-	}
+//	private Job objectUnhilightjob;
+//
+//	private void launchObjectUnhilight() {
+//		if(objectUnhilightjob != null)
+//			synchronized (objectUnhilightjob) {
+//				objectUnhilightjob.cancel();
+//			}
+//
+//		objectUnhilightjob = new Job("object highlight") {
+//
+//			@Override
+//			protected IStatus run(IProgressMonitor monitor) {
+//				Display.getDefault().syncExec(new Runnable() {
+//					@Override
+//					public void run() {
+//						ObjectsView.getInstance().unhighlight();						
+//					}
+//				});
+//				return Status.OK_STATUS;
+//			}
+//		};
+//		objectUnhilightjob.schedule(AguiaJParam.HIGHLIGHT_TIMEOUT.getInt() * 1000);
+//	}
 }

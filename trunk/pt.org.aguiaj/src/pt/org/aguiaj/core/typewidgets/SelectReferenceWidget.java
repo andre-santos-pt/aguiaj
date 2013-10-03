@@ -201,7 +201,7 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 		GC gc = new GC(combo);
 		Point size = gc.textExtent(max);
 		gc.dispose ();
-		combo.setLayoutData(new RowData(size.x + 20, 22));
+		combo.setLayoutData(new RowData(size.x + 25, 22));
 		getParent().pack();
 		getParent().layout();
 		

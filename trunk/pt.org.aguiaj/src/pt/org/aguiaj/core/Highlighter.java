@@ -3,10 +3,10 @@ package pt.org.aguiaj.core;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Control;
 
-import pt.org.aguiaj.common.AguiaJColor;
-
 public class Highlighter implements Highlightable {
-
+	private static final int FACTOR = 50;
+	
+	
 	private Control control;
 	private Color prevColor;
 
@@ -17,9 +17,18 @@ public class Highlighter implements Highlightable {
 	@Override
 	public void highlight() {
 		if(!control.isDisposed()) {
-			prevColor = control.getBackground();
-			control.setBackground(AguiaJColor.HIGHLIGHT.getColor());
+			if(prevColor == null)
+				prevColor = control.getBackground();
+			
+			control.setBackground(darken(control.getBackground()));
 		}
+	}
+	
+	private static Color darken(Color c) {
+		int r = Math.max(0, c.getRed() - FACTOR);
+		int g = Math.max(0,c.getGreen() - FACTOR);
+		int b =  Math.max(0,c.getBlue() - FACTOR);
+		return new Color(c.getDevice(), r,g,b);
 	}
 
 	@Override

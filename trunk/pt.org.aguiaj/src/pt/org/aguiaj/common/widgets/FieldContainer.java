@@ -120,9 +120,9 @@ public class FieldContainer extends Composite {
 			Object newVal = null;
 			MethodInvocationCommand command = new MethodInvocationCommand(object, method);
 			
-			ExceptionHandler.INSTANCE.execute(command);
+			if(!ExceptionHandler.INSTANCE.execute(command))
+				return;
 			
-//			command.execute();		
 			newVal = command.getResultingObject();
 			updateTypeWidget(propWidget, method.getReturnType(), newVal);
 		}

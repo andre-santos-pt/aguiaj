@@ -23,14 +23,14 @@ public class ObjectContract extends Object implements ContractDecorator<Object> 
 		boolean equals = object.equals(arg);
 		
 		if(equals && arg == null)
-			throw new PostConditionException("The return value of equals(..) should be false if argument is null.");
+			throw new PostConditionException(object.getClass(), "equals", "The return value of should be false if argument is null.");
 		
 		if(arg != null) {
 			int hash = object.hashCode();
 			int argHash = arg.hashCode();
 			
 			if(equals && hash != argHash)
-				throw new PostConditionException("When equals(..) returs true for a given argument, hashCode() of both objects should return the same value.");
+				throw new PostConditionException(object.getClass(), "equals", "When true is returned for a given object, hashCode() of both objects should return the same value.");
 		}
 
 		// reflexive

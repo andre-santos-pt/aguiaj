@@ -1,10 +1,11 @@
 package pt.org.aguiaj.extensibility.contracts;
 
-public class PostConditionException extends RuntimeException implements ContractException{
+public class PostConditionException extends AbstractContractException implements ContractException {
 
 	private static final long serialVersionUID = 1L;
 
-	public PostConditionException(String message) {
-		super(message);
+	public PostConditionException(Class<?> clazz, String method, String message) {
+		super(clazz, method, message);
 	}
+	
 }
