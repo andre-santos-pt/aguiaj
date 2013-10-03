@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: AguiaJ - ISCTE-IUL
 Bundle-SymbolicName: pt.iscte.dcti.editor;singleton:=true
-Bundle-Version: 0.9.0
+Bundle-Version: 1.1
 Bundle-Activator: pt.iscte.dcti.aguiaj.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui;bundle-version="0.0.0",

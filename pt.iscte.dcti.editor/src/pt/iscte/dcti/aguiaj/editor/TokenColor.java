@@ -23,7 +23,8 @@ public enum TokenColor {
 	COMMENT(128, 128, 128),
 	ID(255, 0, 0),
 	TRUE(0, 128, 0),
-	FALSE(255, 0, 0);
+	FALSE(255, 0, 0),
+	NULL(255, 0, 239);
 	
 	public final Color color;
 	

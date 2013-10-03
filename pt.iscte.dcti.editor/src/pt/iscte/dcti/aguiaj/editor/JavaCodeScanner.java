@@ -30,6 +30,7 @@ public class JavaCodeScanner extends RuleBasedScanner {
 	private static IToken id =  Common.createToken(TokenColor.ID, true);
 	private static IToken trueLit =  Common.createToken(TokenColor.TRUE, true);
 	private static IToken falseLit =  Common.createToken(TokenColor.FALSE, true);
+	private static IToken nullLit =  Common.createToken(TokenColor.NULL, true);
 	private static IToken defaultToken = Common.createToken(TokenColor.BLACK, false);
 
 	public JavaCodeScanner() {
@@ -42,6 +43,7 @@ public class JavaCodeScanner extends RuleBasedScanner {
 				new SingleLineRule("'", "'", character, '\\'),
 				new SingleLineRule("tr", "ue", trueLit, '\\'),
 				new SingleLineRule("fal", "se", falseLit, '\\'),
+				new SingleLineRule("nu", "ll", nullLit, '\\'),
 				new KeyWordRule(),
 				//				new MultiLineRule("/**", "*/", javadoc),
 				//				new MultiLineRule("/*", "*/", comment),
