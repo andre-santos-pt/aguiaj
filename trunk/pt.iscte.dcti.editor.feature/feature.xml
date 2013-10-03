@@ -2,7 +2,7 @@
 <feature
       id="pt.iscte.dcti.editor.feature"
       label="ISCTE-IUL Java Environment"
-      version="1.0.1.2"
+      version="1.1"
       provider-name="pt.org.aguiaj">
 
    <description url="http://dcti.iscte.pt">
