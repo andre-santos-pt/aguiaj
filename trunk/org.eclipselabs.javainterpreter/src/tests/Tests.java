@@ -1,14 +1,10 @@
 package tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
-import org.eclipselabs.javainterpreter.Context;
 import org.eclipselabs.javainterpreter.JavaInterpreter;
 import org.eclipselabs.javainterpreter.Output;
 import org.eclipselabs.javainterpreter.SimpleContext;

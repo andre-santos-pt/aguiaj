@@ -14,11 +14,14 @@ public class SimpleContext implements Context {
 	private Set<Class<?>> mainClassSet;
 
 	public SimpleContext(Class<?> mainClass, Class<?> ... classes) {
-		mainClassSet = new HashSet<Class<?>>(1);
-		if(mainClass != null)
-			mainClassSet.add(mainClass);
-		
 		this.classes = new HashMap<String, Class<?>>();
+		
+		mainClassSet = new HashSet<Class<?>>(1);
+		if(mainClass != null) {
+			mainClassSet.add(mainClass);
+			this.classes.put(mainClass.getSimpleName(), mainClass);
+		}		
+		
 		for(Class<?> c : classes)
 			this.classes.put(c.getSimpleName(), c);
 		

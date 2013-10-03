@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Java Interpreter
 Bundle-SymbolicName: org.eclipselabs.javainterpreter
-Bundle-Version: 0.1
+Bundle-Version: 0.2
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jdt;bundle-version="0.0.0",
  org.eclipse.jdt.core;bundle-version="0.0.0",
