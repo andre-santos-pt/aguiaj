@@ -11,11 +11,6 @@
 package pt.org.aguiaj.eclipse;
 
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.ui.JavaUI;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.WorkbenchException;
-import org.eclipse.ui.internal.Workbench;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -51,38 +46,40 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
+		
+		
 		AguiaJHelper.addExceptionListener(new ExceptionListener() {
 			@Override
 			public void newException(ExceptionTrace trace, boolean goToError) {
 				
-				
-				if(goToError) {
-					try {
-						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(ExceptionTraceView.ID);
-					} catch (PartInitException e) {
-						e.printStackTrace();
-					}
-					
-					String pers = Activator.getPerspective();
-					if(pers == null)
-						pers = JavaUI.ID_PERSPECTIVE;
-
-					try {			
-						PlatformUI.getWorkbench().showPerspective(pers, PlatformUI.getWorkbench().getActiveWorkbenchWindow());				
-					} catch (WorkbenchException e) {
-						e.printStackTrace();
-					}
-					
+				if(!trace.getTrace().isEmpty()) {
+					TraceLocation loc = trace.getTrace().get(0);
+					if(goToError)
+						EclipseUtil.gotoLine(loc.fileName, loc.line);
 					ExceptionTraceView.getInstance().setInput(trace);
 				}
+				
+//				if(goToError) {
+//					try {
+//						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(ExceptionTraceView.ID);
+//					} catch (PartInitException e) {
+//						e.printStackTrace();
+//					}
+					
+//					String pers = Activator.getPerspective();
+//					if(pers == null)
+//						pers = JavaUI.ID_PERSPECTIVE;
+//
+//					try {			
+//						PlatformUI.getWorkbench().showPerspective(pers, PlatformUI.getWorkbench().getActiveWorkbenchWindow());				
+//					} catch (WorkbenchException e) {
+//						e.printStackTrace();
+//					}
+//				}
 			}
 		});
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
-	 */
 	public void stop(BundleContext bundleContext) throws Exception {
 		Activator.context = null;
 	}
