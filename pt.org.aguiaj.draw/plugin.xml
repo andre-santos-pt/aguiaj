@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         name="Draw"
+         point="pt.org.aguiaj.objectWidgets">         
+      <group
+            id="Draw">
+         <class
+               allowImport="true"
+               contractValidator="aguiaj.draw.contracts.GridContract"
+               icon="images/grid.png"
+               id="aguiaj.draw.IGrid"
+               viewClass="aguiaj.draw.view.GridWidget">
+         </class>
+         <class
+               allowImport="true"
+               contractValidator="aguiaj.draw.contracts.ImageContract"
+               icon="images/image.png"
+               id="aguiaj.draw.IImage"
+               viewClass="aguiaj.draw.view.ImageWidget">
+         </class>
+         <class
+               allowImport="true"
+               contractValidator="aguiaj.draw.contracts.ColorContract"
+               icon="images/color.png"
+               id="aguiaj.draw.IColor"
+               viewClass="aguiaj.draw.view.RGBColorWidget">
+         </class>
+         <class
+               allowImport="true"
+               contractValidator="aguiaj.draw.contracts.TransparentImageContract"
+               icon="images/image_t.png"
+               id="aguiaj.draw.ITransparentImage">
+         </class>
+         <class
+               allowImport="true"
+               contractValidator="aguiaj.draw.contracts.DimensionContract"
+               icon="images/dim.png"
+               id="aguiaj.draw.IDimension">
+         </class>
+      </group>
+   </extension>
+
+</plugin>
