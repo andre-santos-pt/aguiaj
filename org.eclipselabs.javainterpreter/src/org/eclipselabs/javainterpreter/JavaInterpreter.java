@@ -1,24 +1,19 @@
 package org.eclipselabs.javainterpreter;
 
 
-import java.util.List;
-
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.Assignment;
-import org.eclipse.jdt.core.dom.Block;
-import org.eclipse.jdt.core.dom.Expression;
-import org.eclipse.jdt.core.dom.SimpleName;
 
 public class JavaInterpreter {
 
 	private ExpressionVisitor visitor;
 	
+	
 	public JavaInterpreter(Context context) {
 		visitor = new ExpressionVisitor(context);
 	}
+	
 	
 //	public void setMainClass(Class<?> c) {
 //		visitor.setMainClass(c);
@@ -36,26 +31,26 @@ public class JavaInterpreter {
 //		visitor.clear();
 //	}
 	
-	public void evaluateStatement(String statement) {
-		ASTParser parser = ASTParser.newParser(AST.JLS4); 
-		parser.setKind(ASTParser.K_STATEMENTS);
-		parser.setResolveBindings(true);
-		parser.setStatementsRecovery(false);
-		parser.setSource(statement.toCharArray());
-		ASTNode node = parser.createAST(null);
-
-		if(node.getNodeType() == ASTNode.BLOCK) {
-			Block block = (Block) node;
-			List statements = (List) block.getStructuralProperty(Block.STATEMENTS_PROPERTY);
-			for(Object stat : statements) {
-				System.out.println( ": " + stat.getClass());
-				if(stat instanceof ASTNode)
-					((ASTNode) stat).accept(new AssignmentVisitor());
-				
-			}
-			
-		}
-	}
+//	public void evaluateStatement(String statement) {
+//		ASTParser parser = ASTParser.newParser(AST.JLS4); 
+//		parser.setKind(ASTParser.K_STATEMENTS);
+//		parser.setResolveBindings(true);
+//		parser.setStatementsRecovery(false);
+//		parser.setSource(statement.toCharArray());
+//		ASTNode node = parser.createAST(null);
+//
+//		if(node.getNodeType() == ASTNode.BLOCK) {
+//			Block block = (Block) node;
+//			List statements = (List) block.getStructuralProperty(Block.STATEMENTS_PROPERTY);
+//			for(Object stat : statements) {
+//				System.out.println( ": " + stat.getClass());
+//				if(stat instanceof ASTNode)
+//					((ASTNode) stat).accept(new AssignmentVisitor());
+//				
+//			}
+//			
+//		}
+//	}
 	
 	
 	public Object evaluateMethodInvocation(String expression) {
@@ -82,7 +77,7 @@ public class JavaInterpreter {
 				if(ex.getCause() != null)
 					ex.printStackTrace();
 				
-				throw  new IllegalArgumentException("Parse error");
+				throw new IllegalArgumentException(ex.getMessage());
 			}
 			
 			return visitor.resolve();
@@ -101,29 +96,29 @@ public class JavaInterpreter {
 		throw new IllegalArgumentException("Parse error");
 	}
 
-	class AssignmentVisitor extends ASTVisitor {
-		String variable;
-		Object result;
-		
-		@Override
-		public boolean visit(Assignment ass) {
-			Expression left = ass.getLeftHandSide();
-			Expression right = ass.getRightHandSide();
-			
-			if(left instanceof SimpleName) {
-				try {
-					right.accept(visitor);
-				}
-				catch(RuntimeException ex) {
-					ex.printStackTrace();
-					throw ex;
-				}
-				
-				variable = ((SimpleName) left).getIdentifier();
-				result = visitor.resolve();
-			}
-			return true;
-		}
+//	class AssignmentVisitor extends ASTVisitor {
+//		String variable;
+//		Object result;
+//		
+//		@Override
+//		public boolean visit(Assignment ass) {
+//			Expression left = ass.getLeftHandSide();
+//			Expression right = ass.getRightHandSide();
+//			
+//			if(left instanceof SimpleName) {
+//				try {
+//					right.accept(visitor);
+//				}
+//				catch(RuntimeException ex) {
+//					ex.printStackTrace();
+//					throw ex;
+//				}
+//				
+//				variable = ((SimpleName) left).getIdentifier();
+//				result = visitor.resolve();
+//			}
+//			return true;
+//		}
 		
 //		@Override
 //		public boolean visit(ExpressionStatement node) {
@@ -146,7 +141,7 @@ public class JavaInterpreter {
 //			}
 //			return true;
 //		}
-	}
+//	}
 
 	
 }

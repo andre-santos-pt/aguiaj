@@ -1,6 +1,5 @@
 package org.eclipselabs.javainterpreter;
 
-import java.util.List;
 import java.util.Set;
 
 public interface Context {

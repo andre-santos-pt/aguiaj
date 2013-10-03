@@ -332,12 +332,12 @@ class ExpressionVisitor extends ASTVisitor {
 		Object[] args = argsTable.get(node).toArray();
 
 		Object target = methodTarget.get(node);
-
+		
 		if(methodTarget.containsKey(node) && target == null)
 			throw new RuntimeException("Null pointer exception");
 
 		Expression exp = node.getExpression();
-
+		
 		String className = methodTarget.containsKey(node) ? 
 				target.getClass().getSimpleName() : exp == null ? null : exp.toString();
 
@@ -359,15 +359,16 @@ class ExpressionVisitor extends ASTVisitor {
 
 					MethodInvocationThread thread = new MethodInvocationThread(method, target, args);
 					thread.execute(1000);
-
+					
 					if(thread.hasFailed()) {
 						Throwable exc = thread.getException();
 						String loc = exc.getStackTrace()[0].getFileName() + ": " + exc.getStackTrace()[0].getLineNumber();
 
 						throw new ExecutionException(exc.getClass().getSimpleName() + " at " + loc, exc.getStackTrace()[0].getLineNumber());
 					}
-					else if(thread.timeoutReached())
+					else if(thread.timeoutReached()) {
 						throw new RuntimeException("Infinite cycle?");
+					}
 					else
 						return thread.getResultingObject();
 
@@ -412,6 +413,7 @@ class ExpressionVisitor extends ASTVisitor {
 
 	private static Method matchMethod(Class<?> clazz, String methodName, Object[] args) {
 		Method compatible = null;
+		
 		for(Method m : clazz.getDeclaredMethods()) {
 			Class<?>[] types = m.getParameterTypes();
 
@@ -422,6 +424,21 @@ class ExpressionVisitor extends ASTVisitor {
 					compatible = compatible == null ? m : bestMatch(compatible, m, args);
 			}
 		}
+		
+		if(compatible != null)
+			return compatible;
+		
+		for(Method m : clazz.getMethods()) {
+			Class<?>[] types = m.getParameterTypes();
+
+			if(m.getName().equals(methodName)) {
+				if(exactMatch(types, args))
+					return m;
+				else if(compatible(types, args))
+					compatible = compatible == null ? m : bestMatch(compatible, m, args);
+			}
+		}
+		
 		return compatible;
 	}
 
