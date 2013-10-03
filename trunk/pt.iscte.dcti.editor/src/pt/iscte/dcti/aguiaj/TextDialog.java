@@ -15,8 +15,6 @@ import java.util.Set;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Dialog;
@@ -26,22 +24,15 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.swt.widgets.TreeItem;
 
 public class TextDialog extends Dialog {		
 	private String name;
 	private final Set<String> existing;
 	private final Shell shell;
-	private final boolean dots;
-	private final boolean spaces;
 	
-	public TextDialog(Shell parent, String title, String path, Set<String> existingNames, boolean allowDots, boolean allowSpaces) {
+	public TextDialog(Shell parent, String title, String path, Set<String> existingNames, final char ... specialCharacters) {
 		super(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		this.existing = existingNames;
-		this.dots = allowDots;
-		this.spaces = allowSpaces;
 			
 		shell = new Shell(parent, getStyle());
 		RowLayout layout = new RowLayout(SWT.HORIZONTAL);
@@ -61,8 +52,7 @@ public class TextDialog extends Dialog {
 		text.addListener(SWT.Verify, new Listener() {				
 			@Override
 			public void handleEvent(Event event) {
-				if(dots && event.character == '.') return;
-				if(spaces && event.character == ' ') return;		
+				if(contains(specialCharacters, event.character)) return;
 				if(directionChar(event.character)) return;
 				if(Character.isLetterOrDigit(event.character)) return;
 
@@ -96,6 +86,14 @@ public class TextDialog extends Dialog {
 		shell.setText(getText());
 		shell.setLocation(getParent().getBounds().width / 2, getParent().getBounds().height  / 2);
 //		shell.setLocation(getParent().getBounds().x + 170, getParent().getBounds().y + 220);
+	}
+	
+	private static boolean contains(char[] chars, char c) {
+		for(char i : chars)
+			if(i == c)
+				return true;
+		
+		return false;
 	}
 
 	private boolean directionChar(char character) {

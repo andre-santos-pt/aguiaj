@@ -34,9 +34,6 @@ import org.eclipse.ui.IViewPart;
 public class CreateNewFolder implements IViewActionDelegate {
 	private IContainer container;
 	
-//	private IJavaProject project;
-//	private IPackageFragment parentFolder;
-
 	@Override
 	public void run(IAction action) {
 		Set<String> existingNames = new HashSet<String>();
@@ -47,7 +44,7 @@ public class CreateNewFolder implements IViewActionDelegate {
 		} catch (CoreException e1) {
 			e1.printStackTrace();
 		}
-		TextDialog dialog = new TextDialog(Display.getDefault().getActiveShell(), "Name", "folder", existingNames, false, false);
+		TextDialog dialog = new TextDialog(Display.getDefault().getActiveShell(), "Name", "folder", existingNames);
 		dialog.open();
 		String name = dialog.getName();
 		IFolder newFolder = null;

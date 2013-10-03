@@ -37,12 +37,13 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
-import org.eclipse.jdt.ui.actions.FindAction;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
+
+import pt.org.aguiaj.extensibility.AguiaJHelper;
 
 public class CreateNewJavaProject implements IViewActionDelegate {
 
@@ -54,7 +55,7 @@ public class CreateNewJavaProject implements IViewActionDelegate {
 		for(IProject proj : root.getProjects())
 			existing.add(proj.getName());
 
-		TextDialog dialog = new TextDialog(Display.getDefault().getActiveShell(), "Name", "Project", existing, false, false);
+		TextDialog dialog = new TextDialog(Display.getDefault().getActiveShell(), "Name", "Project", existing, '-', '_', '.');
 		dialog.open();
 		String name = dialog.getName();
 		if(name == null)
@@ -97,10 +98,11 @@ public class CreateNewJavaProject implements IViewActionDelegate {
 			entries.add(JavaCore.newContainerEntry(new Path("org.eclipse.pde.core.requiredPlugins")));
 			javaProject.setRawClasspath(entries.toArray(new IClasspathEntry[entries.size()]), monitor);
 			
-			Set<String> bundles = new HashSet<String>();
-			bundles.add("pt.org.aguiaj");
-			bundles.add("pt.org.aguiaj.draw");
-			bundles.add("pt.org.aguiaj.draw.examples");
+			Set<String> bundles = new HashSet<String>(AguiaJHelper.getPluginIds());
+			
+//			bundles.add("pt.org.aguiaj");
+//			bundles.add("pt.org.aguiaj.draw");
+//			bundles.add("pt.org.aguiaj.draw.examples");
 
 			List<String> list = new ArrayList<String>();
 			createManifest(name, bundles, list, null, project);

@@ -26,7 +26,6 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.packageview.PackageExplorerPart;
-import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -50,7 +49,7 @@ public class CreateNewFile implements IViewActionDelegate {
 		} catch (CoreException e1) {
 			e1.printStackTrace();
 		}
-		TextDialog dialog = new TextDialog(Display.getDefault().getActiveShell(), "Name", "JavaFile.java", existingNames, true, false);
+		TextDialog dialog = new TextDialog(Display.getDefault().getActiveShell(), "Name", "JavaFile.java", existingNames, '_', '.');
 		dialog.open();
 		String name = dialog.getName();
 		IFile newFile = null;
