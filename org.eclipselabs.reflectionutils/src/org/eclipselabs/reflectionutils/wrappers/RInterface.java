@@ -1,6 +1,5 @@
 package org.eclipselabs.reflectionutils.wrappers;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
 
 public class RInterface extends TypeR {
