@@ -23,7 +23,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import pt.org.aguiaj.classes.ClassModel;
-import pt.org.aguiaj.common.widgets.LabelWidget.ObjectToHighlightProvider;
 import pt.org.aguiaj.core.InspectionPolicy;
 import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.TypeWidget;
@@ -152,18 +151,18 @@ public class AttributeWidget {
 			}
 		});
 
-		label.addObjectHighlightCapability(new ObjectToHighlightProvider() {
-
-			@Override
-			public Object getObjectToHighlight() {
-				try {
-					return field.get(object);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				return null;
-			}
-		});
+//		label.addObjectHighlightCapability(new ObjectToHighlightProvider() {
+//
+//			@Override
+//			public Object getObjectToHighlight() {
+//				try {
+//					return field.get(object);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//				return null;
+//			}
+//		});
 	}
 	
 	

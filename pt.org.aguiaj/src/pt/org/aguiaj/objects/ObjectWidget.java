@@ -19,10 +19,8 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 
 import org.eclipse.swt.SWT;
@@ -64,7 +62,7 @@ import pt.org.aguiaj.core.typewidgets.WidgetProperty;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 
-public final class ObjectWidget extends FieldContainer implements Highlightable {
+public final class ObjectWidget extends FieldContainer {
 
 	public enum Section {
 		VISUAL, INTERNALS, ATTRIBUTES, PROPERTIES, OPERATIONS;
@@ -79,11 +77,18 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 	private Stack<Composite> sections;
 	private EnumMap<Section, Composite> sectionMap;
 	private Map<Method, Highlightable> methodToWidget;
+	
 	private Menu menu;
 
+	private Map<Composite,MenuItem> showItemsTable;
+	private Map<Composite,MenuItem> hideItemsTable;
+
+	
+	
 	private static final int PADDING = 0;
 	private static final int PADDING_FORM = 5;
 
+	
 
 	public ObjectWidget(final Composite parent, final Object object) {		
 		super(parent, SWT.BORDER);
@@ -95,9 +100,11 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		this.objectClass = object.getClass();
 
 		methodToWidget = new HashMap<Method, Highlightable>();
-
+		
 		setLayout(new FormLayout());
 
+		showItemsTable = newHashMap();
+		hideItemsTable = newHashMap();	
 		menu = createMenu(object);
 		setMenu(menu);
 
@@ -124,16 +131,9 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		createFieldsGroup();
 		createPropertiesGroup();
 		createOperationsGroup();
-//		new Label(createSection(null, false), SWT.NONE);
 		
 		for(Composite section : sections)
 			section.setMenu(menu);
-
-//		setBackground(AguiaJColor.OBJECT.getColor());
-//		for(Composite section : sections) {
-//			if(!section.equals(section(Section.INTERNALS)))
-//				SWTUtils.setColorRecursively(section, AguiaJColor.OBJECT.getColor());
-//		}
 
 		show(Section.INTERNALS, false);
 		show(Section.ATTRIBUTES, true);		
@@ -165,21 +165,6 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		setEnabled(false);
 	}
 
-	public void highlight() {
-//		if(!isDisposed()) {
-//			setBackground(AguiaJColor.HIGHLIGHT.getColor());
-//			for(Composite section : sections) {
-//				if(!section.equals(section(Section.INTERNALS)))
-//					SWTUtils.setColorRecursively(section, AguiaJColor.HIGHLIGHT.getColor());
-//			}	
-//		}
-	}
-
-	public void highlight(Method method) {
-		Method m = matchMethod(method);
-		if(m != null)
-			methodToWidget.get(m).highlight();
-	}
 
 	private Method matchMethod(Method method) {
 		for(Method m : methodToWidget.keySet())
@@ -189,16 +174,12 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		return null;
 	}
 	
-	public void unhighlight() {
-//		if(!isDisposed()) {
-//			setBackground(AguiaJColor.OBJECT.getColor());
-//			for(Composite section : sections) {
-//				if(!section.equals(section(Section.INTERNALS)))
-//					SWTUtils.setColorRecursively(section, AguiaJColor.OBJECT.getColor());
-//			}		
-//		}
+	public void highlight(Method method) {
+		Method m = matchMethod(method);
+		if(m != null) 
+			methodToWidget.get(m).highlight();
 	}
-
+	
 	public void unhighlight(Method method) {
 		Method m = matchMethod(method);
 		if(m != null)
@@ -416,8 +397,7 @@ public final class ObjectWidget extends FieldContainer implements Highlightable 
 		return item;
 	}
 
-	private Map<Composite,MenuItem> showItemsTable = newHashMap();
-	private Map<Composite,MenuItem> hideItemsTable = newHashMap();
+
 
 	private void createShowHide(UIText showText, UIText hideText, final Composite section, final Section sec) {
 		addMenuSeparator();

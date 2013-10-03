@@ -363,7 +363,7 @@ public class ClassModel {
 	private List<ClassMemberFilter> findFilters(Class<?> clazz) {
 		List<ClassMemberFilter> filters = new ArrayList<ClassMemberFilter>();
 		for(Class<?> key : filterMap.keySet()) {
-			if(key.isAssignableFrom(clazz))
+			if(key.equals(clazz))
 				filters.addAll(filterMap.get(key));
 		}
 		return filters;

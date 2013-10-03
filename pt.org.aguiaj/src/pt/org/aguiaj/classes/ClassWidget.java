@@ -34,7 +34,6 @@ import pt.org.aguiaj.common.widgets.AttributeWidget;
 import pt.org.aguiaj.common.widgets.FieldContainer;
 import pt.org.aguiaj.common.widgets.IconWidget;
 import pt.org.aguiaj.common.widgets.LabelWidget;
-import pt.org.aguiaj.common.widgets.LabelWidget.ObjectToHighlightProvider;
 import pt.org.aguiaj.common.widgets.MethodWidget;
 import pt.org.aguiaj.core.UIText;
 import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
@@ -161,18 +160,18 @@ public class ClassWidget extends FieldContainer {
 					}
 				});
 
-				label.addObjectHighlightCapability(new ObjectToHighlightProvider() {
-
-					@Override
-					public Object getObjectToHighlight() {
-						try {
-							return field.get(null);
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-						return null;
-					}
-				});
+//				label.addObjectHighlightCapability(new ObjectToHighlightProvider() {
+//
+//					@Override
+//					public Object getObjectToHighlight() {
+//						try {
+//							return field.get(null);
+//						} catch (Exception e) {
+//							e.printStackTrace();
+//						}
+//						return null;
+//					}
+//				});
 			}
 		}
 

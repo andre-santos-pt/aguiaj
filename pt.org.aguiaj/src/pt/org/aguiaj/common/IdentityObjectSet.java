@@ -8,11 +8,11 @@
  * Contributors:
  *     Andre L. Santos - initial API and implementation
  ******************************************************************************/
-package pt.org.aguiaj.objects;
+package pt.org.aguiaj.common;
 
 import java.util.Arrays;
 
-class IdentityObjectSet {
+public class IdentityObjectSet {
 		private Object[] objects;
 		private int next;
 		

@@ -24,7 +24,6 @@ import org.eclipse.swt.widgets.Listener;
 import pt.org.aguiaj.common.AguiaJColor;
 import pt.org.aguiaj.common.widgets.FieldContainer;
 import pt.org.aguiaj.common.widgets.LabelWidget;
-import pt.org.aguiaj.common.widgets.LabelWidget.ObjectToHighlightProvider;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
 import pt.org.aguiaj.core.typewidgets.AbstractTypeWidget;
@@ -110,12 +109,12 @@ class ArrayRowWidget extends Composite {
 						ObjectModel.getInstance().execute(cmd);
 					}
 				});
-				label.addObjectHighlightCapability(new ObjectToHighlightProvider() {						
-					@Override
-					public Object getObjectToHighlight() {
-						return Array.get(ArrayRowWidget.this.array, iTmp);
-					}
-				});
+//				label.addObjectHighlightCapability(new ObjectToHighlightProvider() {						
+//					@Override
+//					public Object getObjectToHighlight() {
+//						return Array.get(ArrayRowWidget.this.array, iTmp);
+//					}
+//				});
 			}
 		}
 

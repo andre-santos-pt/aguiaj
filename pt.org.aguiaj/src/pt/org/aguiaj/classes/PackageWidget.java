@@ -10,14 +10,20 @@
  ******************************************************************************/
 package pt.org.aguiaj.classes;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
+import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileInfo;
+import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -35,6 +41,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
+import org.osgi.framework.Bundle;
 
 import pt.org.aguiaj.common.AguiaJColor;
 import pt.org.aguiaj.common.AguiaJImage;
@@ -80,10 +91,10 @@ class PackageWidget extends Composite {
 		areaLayout.marginTop = MARGIN;
 		areaLayout.marginLeft = MARGIN;
 		areaLayout.marginRight = MARGIN;
-		
-//		areaLayout.spacing = SPACING;
-//		areaLayout.marginTop = MARGIN;
-//		areaLayout.marginLeft = MARGIN;
+
+		//		areaLayout.spacing = SPACING;
+		//		areaLayout.marginTop = MARGIN;
+		//		areaLayout.marginLeft = MARGIN;
 		area.setLayout(areaLayout);
 		area.setToolTipText("Class Area (create objects and invoke static operations by pressing the buttons)");
 
@@ -115,7 +126,7 @@ class PackageWidget extends Composite {
 			else {
 				new ErrorWidget(area, clazz);
 			}
-			
+
 			if(it.hasNext())
 				new Label(area, SWT.SEPARATOR | SWT.HORIZONTAL).setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		}
@@ -131,7 +142,7 @@ class PackageWidget extends Composite {
 		layout();
 	}
 
-	
+
 	public void refreshSize() {
 		if(!scrl.isDisposed() && !area.isDisposed()) {
 			scrl.setMinSize(area.computeSize(SWT.DEFAULT, SWT.DEFAULT));
@@ -139,10 +150,10 @@ class PackageWidget extends Composite {
 		}
 	}
 
-//	public void updateClassWidgets() {
-//		for(ClassWidget widget : classWidgets)
-//			widget.updateFields();
-//	}
+	//	public void updateClassWidgets() {
+	//		for(ClassWidget widget : classWidgets)
+	//			widget.updateFields();
+	//	}
 
 	public boolean isPluginPackage() {
 		return pluginId != null;
@@ -229,19 +240,62 @@ class PackageWidget extends Composite {
 			.create(parent);
 		}
 	}
-	
+
 	private static class AbstractClassWidget extends Composite  {
 
-		public AbstractClassWidget(Composite parent, Class<?> clazz) {
+		public AbstractClassWidget(Composite parent, final Class<?> clazz) {
 			super(parent, SWT.NONE);
 			setLayout(new RowLayout(SWT.HORIZONTAL));
 			IconWidget.createForRowLayout(this, clazz).setToolTipText("Polymorphic type");
-			LabelWidget classNameLabel =  new LabelWidget.Builder()
-				.text(StandardNamePolicy.prettyClassName(clazz))
-				.big()
-				.create(this);
+			boolean link = ClassModel.getInstance().isPluginClass(clazz) &&
+					(clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()) && !Modifier.isFinal(clazz.getModifiers()));
 			
+			LabelWidget classNameLabel =  new LabelWidget.Builder()
+			.text(StandardNamePolicy.prettyClassName(clazz))
+			.big()
+			.linkIf(link)
+			.create(this);
+
+			if(link && ClassModel.getInstance().isPluginClass(clazz)) {
+				classNameLabel.addHyperlinkAction(new Listener () {
+					public void handleEvent(Event event) {
+						Bundle bundle = Platform.getBundle(AguiaJActivator.getInstance().getPluginId(clazz));
+						Path path = new Path("src/" + clazz.getName().replace('.', '/') + ".java");
+						URL fileURL = bundle.getEntry(path.toOSString());
+						
+						File fileToOpen = null;
+						try {
+							URL fileURL2 = FileLocator.resolve(fileURL);
+							String encode = fileURL2.toString().replaceAll("\\s", "%20");
+							URI uri = new URI(encode);
+							fileToOpen = new File(uri);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+
+						if (fileToOpen != null && fileToOpen.exists() && fileToOpen.isFile()) {
+							IFileStore fileStore = EFS.getLocalFileSystem().getStore(fileToOpen.toURI());
+							IFileInfo info = fileStore.fetchInfo();
+							info.setAttribute(EFS.ATTRIBUTE_READ_ONLY, true);
+							try {
+								fileStore.putInfo(info, EFS.SET_ATTRIBUTES, null);
+							} catch (CoreException e1) {
+								e1.printStackTrace();
+							} 
+							IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+							try {
+								IDE.openEditorOnFileStore( page, fileStore );
+							} catch ( PartInitException e ) {
+								e.printStackTrace();
+							}
+						}
+					}
+				});
+			}
 			DocumentationLinking.add(classNameLabel.getControl(), clazz);
 		}
 	}
+	
+
+	
 }

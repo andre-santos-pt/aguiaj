@@ -118,8 +118,10 @@ public class ExtensionTypeWidget extends AbstractTypeWidget {
 				extensionWidget.layout();
 				extensionWidget.pack();
 				updateNullWidget();
-				extensionWidget.getParent().layout();
-				extensionWidget.getParent().pack();
+				getParent().pack();
+				getParent().layout();
+//				extensionWidget.getParent().layout();
+//				extensionWidget.getParent().pack();
 			}
 			if(stack.topControl != extensionWidget) {
 				stack.topControl = extensionWidget;

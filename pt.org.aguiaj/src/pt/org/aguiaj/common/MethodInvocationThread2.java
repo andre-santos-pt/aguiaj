@@ -13,6 +13,7 @@ package pt.org.aguiaj.common;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.UIText;
@@ -60,6 +61,7 @@ public class MethodInvocationThread2 {
 					exception = userCodeException;
 				}
 				catch (Exception e) {
+					System.out.println(method + " - " + Arrays.toString(args));
 					e.printStackTrace();
 				}
 			}

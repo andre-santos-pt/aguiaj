@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: AGUIA/J
 Bundle-SymbolicName: pt.org.aguiaj;singleton:=true
-Bundle-Version: 0.9.8.6
+Bundle-Version: 1.1
 Bundle-Activator: pt.org.aguiaj.core.AguiaJActivator
 Require-Bundle: org.eclipse.core.runtime;bundle-version="0.0.0",
  org.eclipse.core.resources;bundle-version="0.0.0",
@@ -12,7 +12,10 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="0.0.0",
  org.eclipse.ui;bundle-version="0.0.0",
  com.google.guava;bundle-version="11.0.0",
  org.eclipse.ui.console;bundle-version="3.5.100",
- org.eclipse.core.expressions;bundle-version="3.4.500"
+ org.eclipse.core.expressions;bundle-version="3.4.500",
+ org.eclipse.ui.workbench,
+ org.eclipse.ui.ide;bundle-version="3.9.0",
+ org.eclipse.core.filesystem;bundle-version="1.4.0"
 Bundle-ActivationPolicy: lazy
 Export-Package: pt.org.aguiaj.core.commands,
  pt.org.aguiaj.core.commands.java,

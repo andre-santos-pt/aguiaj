@@ -65,8 +65,7 @@ public class ReferenceWidget extends Composite {
 		setMenu(menu);
 		refBox.setMenu(menu);
 
-		LabelWidget label = 
-				new LabelWidget.Builder()
+		LabelWidget label = new LabelWidget.Builder()
 		.text(id)
 		.small()
 		.toolTip(toolTip)
@@ -76,35 +75,8 @@ public class ReferenceWidget extends Composite {
 		label.getControl().setMenu(menu);
 
 		if(object != null) {
-			//			label.addObjectHighlightCapability(new ObjectToHighlightProvider() {
-			//				
-			//				@Override
-			//				public Object getObjectToHighlight() {
-			//					return object;
-			//				}
-			//			});
 			ObjectWidget widget = ObjectsView.getInstance().getObjectWidget(object);
 			label.getControl().addMouseTrackListener(new TypeMemberMouseTrackAdapter(widget, type));
-			
-//			label.getControl().addMouseTrackListener(new MouseTrackAdapter() {
-//				@Override
-//				public void mouseEnter(MouseEvent e) {
-//					if(object != null) {
-//						ObjectWidget widget = ObjectsView.getInstance().getObjectWidget(object);
-//						for(Method m : ClassModel.getInspector().methodsOfSupertype(object.getClass(), type))
-//							widget.highlight(m);
-//					}
-//				}
-//
-//				@Override
-//				public void mouseExit(MouseEvent e) {
-//					if(object != null) {
-//						ObjectWidget widget = ObjectsView.getInstance().getObjectWidget(object);
-//						for(Method m : ClassModel.getInspector().methodsOfSupertype(object.getClass(), type))
-//							widget.unhighlight(m);
-//					}
-//				}
-//			});
 		}
 
 		setToolTipText(toolTip);
@@ -118,21 +90,8 @@ public class ReferenceWidget extends Composite {
 		arrow.setMenu(menu);
 
 		typeLabel.getControl().setMenu(menu);
-
-//		SWTUtils.setColorRecursively(refBox, AguiaJColor.OBJECT.getColor());
 	}
 
-	//	public void highlight() {
-	//		if(!isDisposed()) {
-	//			SWTUtils.setColorRecursively(refBox, AguiaJColor.HIGHLIGHT.getColor());
-	//			launchReferenceUnhilight();
-	//		}
-	//	}
-
-//	public void unhighlight() {
-//		if(!isDisposed())
-//			SWTUtils.setColorRecursively(refBox, AguiaJColor.OBJECT.getColor());
-//	}
 
 	private Menu createMenu() {
 		Menu menu = new Menu(getShell(), SWT.POP_UP);
@@ -156,20 +115,4 @@ public class ReferenceWidget extends Composite {
 		}
 	}
 
-	//	private void launchReferenceUnhilight() {
-	//		Job refUnhilightjob = new Job("reference highlight") {
-	//
-	//			@Override
-	//			protected IStatus run(IProgressMonitor monitor) {
-	//				Display.getDefault().syncExec(new Runnable() {
-	//					@Override
-	//					public void run() {
-	//						ReferenceWidget.this.unhighlight();						
-	//					}
-	//				});
-	//				return Status.OK_STATUS;
-	//			}
-	//		};
-	//		refUnhilightjob.schedule(AguiaJParam.HIGHLIGHT_TIMEOUT.getInt() * 1000);
-	//	}
 }

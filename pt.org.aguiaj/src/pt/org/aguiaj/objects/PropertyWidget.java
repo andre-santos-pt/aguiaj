@@ -22,13 +22,11 @@ import org.eclipse.swt.widgets.Listener;
 
 import pt.org.aguiaj.common.widgets.FieldContainer;
 import pt.org.aguiaj.common.widgets.LabelWidget;
-import pt.org.aguiaj.common.widgets.LabelWidget.ObjectToHighlightProvider;
 import pt.org.aguiaj.core.Highlightable;
 import pt.org.aguiaj.core.Inspector;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
 import pt.org.aguiaj.core.documentation.DocumentationLinking;
-import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
 import pt.org.aguiaj.extensibility.Reference;
@@ -76,21 +74,21 @@ public class PropertyWidget implements Highlightable {
 				}
 			});
 
-			label.addObjectHighlightCapability(new ObjectToHighlightProvider() {
-				@Override
-				public Object getObjectToHighlight() {
-					Reference ref = ObjectModel.getFirstReference(target);
-					Object obj = null;
-					if(ref != null) {
-						MethodInvocationCommand cmd = new MethodInvocationCommand(target, ref.name, targetMethod);
-						ExceptionHandler.INSTANCE.execute(cmd);
-
-						//						cmd.execute();
-						obj = cmd.getResultingObject();
-					}
-					return obj;	
-				}
-			});
+//			label.addObjectHighlightCapability(new ObjectToHighlightProvider() {
+//				@Override
+//				public Object getObjectToHighlight() {
+//					Reference ref = ObjectModel.getFirstReference(target);
+//					Object obj = null;
+//					if(ref != null) {
+//						MethodInvocationCommand cmd = new MethodInvocationCommand(target, ref.name, targetMethod);
+//						ExceptionHandler.INSTANCE.execute(cmd);
+//
+//						//						cmd.execute();
+//						obj = cmd.getResultingObject();
+//					}
+//					return obj;	
+//				}
+//			});
 		}
 
 		Composite row = new Composite(parent, SWT.NONE);

@@ -19,11 +19,15 @@ import java.util.Set;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
+import pt.org.aguiaj.common.IdentityObjectSet;
 import pt.org.aguiaj.common.PluggableExceptionHandler;
 import pt.org.aguiaj.core.UIText;
 import pt.org.aguiaj.core.commands.java.JavaCommandWithArgs;
+import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
 import pt.org.aguiaj.extensibility.ExceptionListener;
 import pt.org.aguiaj.extensibility.ExceptionTrace;
+import pt.org.aguiaj.extensibility.TraceLocation;
+import pt.org.aguiaj.extensibility.contracts.ContractException;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 public enum ExceptionHandler {
@@ -31,58 +35,80 @@ public enum ExceptionHandler {
 
 	private List<SpecificExceptionHandler> handlers;
 	private Set<Member> previousMethodErrors;
+	private IdentityObjectSet objectsWithProblems;
 	private List<ExceptionListener> listeners;
-
-	private ExceptionTrace trace;
-
-	private String[] lastArgs;
+	
 
 	private ExceptionHandler() {
 		handlers = new ArrayList<SpecificExceptionHandler>();
 		previousMethodErrors = new HashSet<Member>();
 		listeners = new ArrayList<ExceptionListener>();
+		objectsWithProblems = new IdentityObjectSet();
 	}
 
 	public void addHandler(SpecificExceptionHandler handler) {
 		handlers.add(handler);		
 	}
 
-	public String[] getLastArgs() {
-		return lastArgs;
-	}
 
 	public void clearErrors() {
 		previousMethodErrors.clear();
+		objectsWithProblems.clear();
 	}
 
 	public void addListener(ExceptionListener l) {
 		listeners.add(l);
 	}
 
-	public boolean execute(JavaCommandWithArgs cmd) {
+	public boolean execute(JavaCommandWithArgs cmd, Object targetObject) {
 		cmd.execute();
 		
 		if(cmd.failed()) {
-			handleException(cmd.getMember(), cmd.getArgsText(), cmd.getException());
+			handleException(targetObject, cmd.getMember(), cmd.getArgsText(), cmd.getException());
 			return false;
 		}
 		return true;
 	}
 	
-	public void handleException(Member member, String[] args, Throwable exception) {
+	public boolean execute(JavaCommandWithArgs cmd) {
+		if(cmd instanceof MethodInvocationCommand)
+			return execute(cmd, ((MethodInvocationCommand) cmd).getTarget());
+		else
+			return execute(cmd, null);
+		
+	}
+//	public boolean execute(JavaCommandWithArgs cmd) {
+//		cmd.execute();
+//		
+//		if(cmd.failed()) {
+//			handleException(null, cmd.getMember(), cmd.getArgsText(), cmd.getException());
+//			return false;
+//		}
+//		return true;
+//	}
+	
+	public void handleException(Object target, Member member, String[] args, Throwable exception) {
 		if(exception.getCause() != null)
 			exception = exception.getCause();
 		
 		String message = exception.getMessage();
 		if(message == null)
 			message = "";
+		
+		if(target != null) {
+			if(objectsWithProblems.contains(target))
+				return;
+			else
+				objectsWithProblems.add(target);
+		}
 
 		String title = StandardNamePolicy.prettyClassName(exception.getClass());
 		int icon = MessageDialog.ERROR;
 
 		if(exception instanceof IllegalArgumentException || 
 				exception instanceof IllegalStateException ||
-				exception instanceof NullPointerException && exception.getMessage() != null) {
+				exception instanceof NullPointerException && exception.getMessage() != null ||
+				exception instanceof ContractException) {
 			icon = MessageDialog.WARNING;	
 		}
 		else if(exception instanceof StackOverflowError) {
@@ -113,23 +139,20 @@ public enum ExceptionHandler {
 					message = handler.getMessage(exception);
 		}
 
-		trace = new ExceptionTrace(exception, message, args);
+		ExceptionTrace exceptionTrace = new ExceptionTrace(exception, message, args);
+		List<TraceLocation> trace = exceptionTrace.getTrace();
+		boolean goToError = !trace.isEmpty() && trace.get(0).line != 1;
 
-		if(trace.getTrace().isEmpty()) {
-			MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), title, null,
-					message, icon, new String[] {"OK"}, 0);
+		String[] buttons = goToError ? new String[] {"OK", "Go to error"} : new String[] {"OK"};
+		MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), title, null,
+				message, icon, buttons, 0);
 
-			dialog.open();
-		}
-		else {
-			MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), title, null,
-					message, icon, new String[] {"Go to error", "OK"}, 1);
-
-			int result = dialog.open();
-
+		int result = dialog.open();
+		
+		if(!trace.isEmpty()) {
 			for(ExceptionListener l : listeners)
-				l.newException(trace, result == 0);
-		}
+				l.newException(exceptionTrace, result != 0);
+		}			
 	}
 
 }

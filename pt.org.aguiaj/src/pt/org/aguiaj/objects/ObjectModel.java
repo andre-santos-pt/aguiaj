@@ -30,6 +30,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import pt.org.aguiaj.classes.ClassModel;
+import pt.org.aguiaj.common.IdentityObjectSet;
 import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.commands.java.ContractAware;
 import pt.org.aguiaj.core.commands.java.JavaCommandWithArgs;
@@ -124,7 +125,10 @@ public class ObjectModel {
 			Entry<String, Object> entry = it.next();
 			if(entry.getValue() == object) {
 				it.remove();
+				Class<?> refType = referenceTypeTable.get(entry.getKey());
 				referenceTypeTable.remove(entry.getKey());
+				for(ObjectEventListener l : listeners())
+					l.removeReferenceEvent(new Reference(entry.getKey(), refType, object));
 			}
 		}
 
@@ -230,25 +234,29 @@ public class ObjectModel {
 		else
 			command.execute();
 			
+		Object target = null;
+		if(command instanceof MethodInvocationCommand)
+			target = ((MethodInvocationCommand) command).getTarget();
+		
 		if(!command.failed()) {
 			addToStack(command);
 			
 			if(command instanceof JavaCommandWithReturn) {
 				JavaCommandWithReturn cmd = (JavaCommandWithReturn) command;
 
-				Class<?> retType = cmd.getReferenceType();
+				Class<?> refType = cmd.getReferenceType();
 				
-				if(!retType.isPrimitive() && !retType.equals(void.class)) {
+				if(!refType.isPrimitive() && !refType.equals(void.class)) {
 					Object object = cmd.getResultingObject();
 					if(object != null && cmd instanceof JavaCommandWithArgs) {
 						JavaCommandWithArgs cmdArgs = (JavaCommandWithArgs) cmd;
 						RuntimeException ex = verifyInvariantOnCreation(object);
 						if(ex != null) {
-							ExceptionHandler.INSTANCE.handleException(cmdArgs.getMember(), cmdArgs.getArgsText(), ex);
+							ExceptionHandler.INSTANCE.handleException(target, cmdArgs.getMember(), cmdArgs.getArgsText(), ex);
 							return;
 						}
 					}
-					addReference(retType, object , cmd.getReference(), true);
+					addReference(refType, object , cmd.getReference(), true);
 				}
 			}
 			else if(command instanceof NewReferenceCommand) {
@@ -272,7 +280,6 @@ public class ObjectModel {
 
 		if(object != null)
 			addObject(object, false);
-		//			objectSet.add(object);
 
 		if(notify) {
 			for(ObjectEventListener l : listeners())
@@ -587,7 +594,7 @@ public class ObjectModel {
 			Method invariantMethod = getInvariantMethod(proxy); 
 			MethodInvocationCommand cmd = new MethodInvocationCommand(proxy, invariantMethod);
 			if(ok)
-				ok = ExceptionHandler.INSTANCE.execute(cmd);
+				ok = ExceptionHandler.INSTANCE.execute(cmd, object);
 		}
 		return ok;
 	}

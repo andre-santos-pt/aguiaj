@@ -11,8 +11,6 @@
 package pt.org.aguiaj.common.widgets;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -24,7 +22,6 @@ import pt.org.aguiaj.common.Fonts;
 import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.Highlightable;
 import pt.org.aguiaj.core.Highlighter;
-import pt.org.aguiaj.objects.ObjectsView;
 
 
 public class LabelWidget implements Highlightable {
@@ -61,26 +58,26 @@ public class LabelWidget implements Highlightable {
 	}
 	
 	
-	public void addObjectHighlightCapability(final ObjectToHighlightProvider provider) {
-		control.addMouseTrackListener(new MouseTrackListener() {
-			
-			@Override
-			public void mouseHover(MouseEvent e) {
-			}
-			
-			@Override
-			public void mouseExit(MouseEvent e) {
-				ObjectsView.getInstance().unhighlight();
-			}
-			
-			@Override
-			public void mouseEnter(MouseEvent e) {
-				Object obj = provider.getObjectToHighlight();
-				if(obj != null)
-					ObjectsView.getInstance().highlight(obj);
-			}
-		});
-	}
+//	public void addObjectHighlightCapability(final ObjectToHighlightProvider provider) {
+//		control.addMouseTrackListener(new MouseTrackListener() {
+//			
+//			@Override
+//			public void mouseHover(MouseEvent e) {
+//			}
+//			
+//			@Override
+//			public void mouseExit(MouseEvent e) {
+//				ObjectsView.getInstance().unhighlight();
+//			}
+//			
+//			@Override
+//			public void mouseEnter(MouseEvent e) {
+//				Object obj = provider.getObjectToHighlight();
+//				if(obj != null)
+//					ObjectsView.getInstance().highlight(obj);
+//			}
+//		});
+//	}
 
 	public interface ObjectToHighlightProvider {
 		Object getObjectToHighlight();

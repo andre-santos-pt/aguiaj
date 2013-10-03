@@ -59,17 +59,26 @@ public class MethodInvocationCommand extends JavaCommandWithArgs implements Cont
 	}
 
 	public static MethodInvocationCommand instanceInvocation(Object object, String methodName) {
+		return instanceInvocation(object, methodName, new Class[0], new Object[0]);
+	}
+	
+	public static MethodInvocationCommand instanceInvocation(Object object, String methodName, Class<?>[] argTypes, Object[] args) {
 		if(object == null)
 			throw new NullPointerException("object cannot be null");
 		
 		Method method;
 		try {
-			method = object.getClass().getDeclaredMethod(methodName);
+			method = object.getClass().getDeclaredMethod(methodName, argTypes);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			try {
+				method = object.getClass().getMethod(methodName, argTypes);
+			}
+			catch(Exception e2) {
+				throw new RuntimeException(e2.getMessage());
+			}
 		}
 		
-		return new MethodInvocationCommand(object, null, method);
+		return new MethodInvocationCommand(object, null, method, args, ZERO_LENGTH_STRING_ARRAY);
 	}
 
 	public Method getMethod() {
@@ -112,6 +121,9 @@ public class MethodInvocationCommand extends JavaCommandWithArgs implements Cont
 		return reference;
 	}
 
+	public Object getTarget() {
+		return object;
+	}
 
 	public Object getResultingObject() {
 		return thread.getResultingObject();

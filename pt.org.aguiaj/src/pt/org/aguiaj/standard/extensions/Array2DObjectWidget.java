@@ -23,7 +23,6 @@ import org.eclipse.swt.widgets.Listener;
 
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.common.widgets.LabelWidget;
-import pt.org.aguiaj.common.widgets.LabelWidget.ObjectToHighlightProvider;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.NewReferenceCommand;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
@@ -80,13 +79,13 @@ public class Array2DObjectWidget extends VisualizationWidget.Adapter<Object> {
 				}
 			});
 
-			link.addObjectHighlightCapability(new ObjectToHighlightProvider() {
-
-				@Override
-				public Object getObjectToHighlight() {
-					return Array2DObjectWidget.this.getIndex(iFinal);
-				}
-			});
+//			link.addObjectHighlightCapability(new ObjectToHighlightProvider() {
+//
+//				@Override
+//				public Object getObjectToHighlight() {
+//					return Array2DObjectWidget.this.getIndex(iFinal);
+//				}
+//			});
 
 			rows.add(WidgetFactory.INSTANCE.createWidget(
 					row, 

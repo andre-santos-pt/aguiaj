@@ -3,12 +3,10 @@ package pt.org.aguiaj.common.widgets;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseTrackAdapter;
 
-import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.objects.ObjectWidget;
 
 public class TypeMemberMouseTrackAdapter extends MouseTrackAdapter {

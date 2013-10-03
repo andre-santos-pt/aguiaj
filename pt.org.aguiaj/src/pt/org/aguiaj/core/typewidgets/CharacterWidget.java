@@ -22,6 +22,16 @@ class CharacterWidget extends TextTypeWidget {
 
 	private static Character defaultValue = new Character(' ');
 
+	private static char[] punctuation = {'.',',',':',';','_','-','!','?','|','#','$','%','&','/','\\','(',')','{','}','[',']'};
+	
+	private static boolean validPunctuation(int code) {
+		for(char c : punctuation)
+			if(c == code)
+				return true;
+		
+		return false;
+	}
+	
 	public CharacterWidget(Composite parent, final WidgetProperty type, boolean modifiable) {
 		super(parent, type, modifiable);
 	}
@@ -37,9 +47,7 @@ class CharacterWidget extends TextTypeWidget {
 		}
 
 		private boolean isValidChar(int code) {
-			return 
-					Character.isLetterOrDigit(code) ||
-					code == ' ';
+			return Character.isLetterOrDigit(code) || validPunctuation(code);
 		}
 	}
 
