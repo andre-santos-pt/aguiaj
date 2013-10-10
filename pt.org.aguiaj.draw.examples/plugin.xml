@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         name="Images"
+         point="pt.org.aguiaj.objectWidgets">
+      <group
+            id="Image examples">
+         <class
+               allowImport="true"
+               id="aguiaj.iscte.Color">
+         </class>
+         <class
+               allowImport="true"
+               id="aguiaj.iscte.BinaryImage">
+         </class>
+         <class
+               allowImport="true"
+               id="aguiaj.iscte.GrayscaleImage">
+         </class>
+         <class
+               allowImport="true"
+               id="aguiaj.iscte.Dimension">
+         </class>
+         <class
+               allowImport="true"
+               id="aguiaj.iscte.ColorImage">
+         </class>
+         <class
+               allowImport="false"
+               id="aguiaj.iscte.ImageUtils">
+         </class>
+      </group>
+   </extension>
+   <extension
+         point="pt.org.aguiaj.importItem">
+      <provider
+            class="aguiaj.iscte.contribution.BinaryImageProvider"
+            name="Binary Image">
+         <fileExtension
+               extension="jpg">
+         </fileExtension>
+         <fileExtension
+               extension="jpeg">
+         </fileExtension>
+         <fileExtension
+               extension="png">
+         </fileExtension>
+         <fileExtension
+               extension="gif">
+         </fileExtension>
+         <fileExtension
+               extension="bmp">
+         </fileExtension>
+      </provider>
+      <provider
+            class="aguiaj.iscte.contribution.GrayscaleImageProvider"
+            name="Grayscale Image">
+         <fileExtension
+               extension="jpg">
+         </fileExtension>
+         <fileExtension
+               extension="jpeg">
+         </fileExtension>
+         <fileExtension
+               extension="png">
+         </fileExtension>
+         <fileExtension
+               extension="gif">
+         </fileExtension>
+         <fileExtension
+               extension="bmp">
+         </fileExtension>
+      </provider>
+      <provider
+            class="aguiaj.iscte.contribution.ColorImageProvider"
+            name="Color Image">
+         <fileExtension
+               extension="jpg">
+         </fileExtension>
+         <fileExtension
+               extension="jpeg">
+         </fileExtension>
+         <fileExtension
+               extension="png">
+         </fileExtension>
+         <fileExtension
+               extension="gif">
+         </fileExtension>
+         <fileExtension
+               extension="bmp">
+         </fileExtension>
+      </provider>
+   </extension>
+
+</plugin>
