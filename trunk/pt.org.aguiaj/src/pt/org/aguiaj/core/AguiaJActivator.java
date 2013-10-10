@@ -166,6 +166,9 @@ public class AguiaJActivator extends AbstractUIPlugin {
 		loadAccessorPolicyPlugins();
 
 		ClassModel.getInstance().addDefaultClasses();
+		
+		for(String pluginID : plugins.keySet())
+			registerPluginImages(pluginID);
 	}
 
 
@@ -209,33 +212,30 @@ public class AguiaJActivator extends AbstractUIPlugin {
 					ImageDescriptor.createFromURL(FileLocator.find(bundle, image.getPath(), null));	
 			registry.put(image.getId(), imageDesc);
 		}			
+	}
 
+	private void registerPluginImages(String id) {
+		ImageRegistry registry = getImageRegistry();
+		Bundle bundle = Platform.getBundle(id);
 		IPath imagesPath = new Path("images");
-		for(String id : getPluginIds()) {
+		URL imagesFolder = FileLocator.find(bundle, imagesPath, null);
+		if(imagesFolder != null) {
+			try {
+				imagesFolder = FileLocator.toFileURL(imagesFolder);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 
-			if(!id.equals(AguiaJContribution.AGUIAJ_PLUGIN)) {
-				bundle = Platform.getBundle(id);
-				URL imagesFolder = FileLocator.find(bundle, imagesPath, null);
-				if(imagesFolder != null) {
-					try {
-						imagesFolder = FileLocator.toFileURL(imagesFolder);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
+			File dir = new File(imagesFolder.getPath());
 
-					File dir = new File(imagesFolder.getPath());
-
-					if(dir != null && dir.isDirectory()) {
-						for(String file : dir.list()) {
-							URL fileURL = FileLocator.find(bundle, imagesPath.append(file), null);
-							ImageDescriptor imageDesc = ImageDescriptor.createFromURL(fileURL);
-							registry.put(file.substring(0, file.indexOf('.')), imageDesc);
-						}
-					}
+			if(dir != null && dir.isDirectory()) {
+				for(String file : dir.list()) {
+					URL fileURL = FileLocator.find(bundle, imagesPath.append(file), null);
+					ImageDescriptor imageDesc = ImageDescriptor.createFromURL(fileURL);
+					registry.put(file.substring(0, file.indexOf('.')), imageDesc);
 				}
 			}
 		}
-
 	}
 
 	public void reloadClasses() {
@@ -454,6 +454,7 @@ public class AguiaJActivator extends AbstractUIPlugin {
 					AguiaJActivator.handlePluginError(ex2.getMessage());
 					continue;
 				}
+				
 				plugins.put(pluginID, clazz);
 
 				for(Class<?> inner : clazz.getClasses())						
