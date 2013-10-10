@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: AGUIA/J Draw Examples
+Bundle-SymbolicName: pt.org.aguiaj.draw.examples;singleton:=true
+Bundle-Version: 1.1
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: pt.org.aguiaj.draw;bundle-version="0.9.6",
+ pt.org.aguiaj;bundle-version="0.9.8",
+ org.eclipse.swt;bundle-version="3.7.2",
+ org.eclipse.ui;bundle-version="3.7.0"
+Export-Package: aguiaj.iscte
