@@ -10,6 +10,7 @@
  ******************************************************************************/
 package pt.org.aguiaj.extensibility;
 
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -21,6 +22,8 @@ import org.eclipse.swt.widgets.Composite;
 
 import pt.org.aguiaj.common.AguiaJColor;
 import pt.org.aguiaj.core.AguiaJActivator;
+import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
+import pt.org.aguiaj.core.exceptions.ExceptionHandler;
 
 /**
  * Helper class to implement a visualization that is only based on images, depending on the state of the object.
@@ -29,6 +32,7 @@ import pt.org.aguiaj.core.AguiaJActivator;
  */
 public abstract class ImageVisualizationWidget<T> extends VisualizationWidget.Adapter<T> {
 
+	
 	/**
 	 * Returns the file name of the image associated with the given <code>object</code>
 	 * 
@@ -36,13 +40,13 @@ public abstract class ImageVisualizationWidget<T> extends VisualizationWidget.Ad
 	 * @return a string with the filename (without extension) located under a folder named "images" on the plugin root.
 	 */
 	protected abstract String getImageFile(T object);
-	
+
 	
 	private Canvas imageCanvas;
 	private String previousImage;
 	private Image image;
 	private boolean relayout;
-	
+
 	@Override
 	public final void createSection(Composite section) {			
 		section.setLayout(new RowLayout());
@@ -61,7 +65,7 @@ public abstract class ImageVisualizationWidget<T> extends VisualizationWidget.Ad
 		relayout = true;
 	}
 
-	
+
 	@Override
 	public void update(T object) {				
 		imageCanvas.setVisible(object != null);
@@ -70,18 +74,24 @@ public abstract class ImageVisualizationWidget<T> extends VisualizationWidget.Ad
 			previousImage = null;
 		}
 		else {
-			String file = getImageFile(object);
+			MethodInvocationCommand cmd = MethodInvocationCommand.instanceInvocation(this, "getImageFile", new Class[] { Object.class }, new Object[] { object } );
+			if(!ExceptionHandler.INSTANCE.execute(cmd, this))
+				return;
+			
+			String file = (String) cmd.getResultingObject();
 			if(file != null && file.equals(previousImage)) {
 				relayout = false;
 			}
 			else if(file != null)  {
 				image = AguiaJActivator.getInstance().getImageRegistry().get(file);	
-				imageCanvas.setLayoutData(new RowData(image.getBounds().width, image.getBounds().height));	
-				imageCanvas.update();
-				imageCanvas.redraw();
-				imageCanvas.layout();
-				previousImage = file;
-				relayout = true;
+				if(image != null) {
+					imageCanvas.setLayoutData(new RowData(image.getBounds().width, image.getBounds().height));	
+					imageCanvas.update();
+					imageCanvas.redraw();
+					imageCanvas.layout();
+					previousImage = file;
+					relayout = true;
+				}
 			}
 		}
 	}

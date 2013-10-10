@@ -602,7 +602,7 @@ public class ObjectModel {
 	private Method getInvariantMethod(ContractDecorator<?> proxy) {
 		Method invariantMethod = null;
 		try {
-			invariantMethod = proxy.getClass().getDeclaredMethod(ContractDecorator.CHECK_INVARIANT);
+			invariantMethod = proxy.getClass().getMethod(ContractDecorator.CHECK_INVARIANT);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -194,19 +194,19 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 	//		ExceptionHandler.INSTANCE.execute(initializeCommand);
 	//	}
 
-	private void initialize(Canvas canvas) {
-		if(initializeCommand != null) {
-			
-			Display.getDefault().syncExec(new Runnable() {
-				
-				@Override
-				public void run() {
-					if(!ExceptionHandler.INSTANCE.execute(initializeCommand, object))
-						stack.topControl = nullWidget;
-				}
-			});
-		}
-	}
+//	private void initialize(Canvas canvas) {
+//		if(initializeCommand != null) {
+//			
+//			Display.getDefault().syncExec(new Runnable() {
+//				
+//				@Override
+//				public void run() {
+//					if(!ExceptionHandler.INSTANCE.execute(initializeCommand, object))
+//						stack.topControl = nullWidget;
+//				}
+//			});
+//		}
+//	}
 
 	private int canvasWidth() {
 		return getValueDim(canvasWidthCommand);
