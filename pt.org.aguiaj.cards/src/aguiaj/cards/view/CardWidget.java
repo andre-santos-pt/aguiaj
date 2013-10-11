@@ -11,8 +11,8 @@
 package aguiaj.cards.view;
 
 import pt.org.aguiaj.extensibility.ImageVisualizationWidget;
-import aguiaj.cards.CardContract;
 import aguiaj.cards.ICard;
+import aguiaj.cards.contracts.CardContract;
 
 public class CardWidget extends ImageVisualizationWidget<ICard> {
 	static final int WIDTH = 80;

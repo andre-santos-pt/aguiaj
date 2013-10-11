@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Label;
 import pt.org.aguiaj.extensibility.AguiaJHelper;
 import pt.org.aguiaj.extensibility.VisualizationWidget;
 import aguiaj.cards.ICard;
-import aguiaj.cards.CardHand;
+import aguiaj.cards.util.CardHand;
 
 public class CardHandWidget extends VisualizationWidget.Adapter<CardHand> {
 

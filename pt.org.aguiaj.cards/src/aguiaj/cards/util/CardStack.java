@@ -8,10 +8,12 @@
  * Contributors:
  *     Andre L. Santos - initial API and implementation
  ******************************************************************************/
-package aguiaj.cards;
+package aguiaj.cards.util;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import aguiaj.cards.ICard;
 
 
 /**

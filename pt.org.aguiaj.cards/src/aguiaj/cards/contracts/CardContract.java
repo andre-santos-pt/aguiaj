@@ -1,5 +1,8 @@
-package aguiaj.cards;
+package aguiaj.cards.contracts;
 
+import aguiaj.cards.ICard;
+import aguiaj.cards.Rank;
+import aguiaj.cards.Suit;
 import pt.org.aguiaj.extensibility.contracts.AbstractContractDecoractor;
 import pt.org.aguiaj.extensibility.contracts.PostConditionException;
 

@@ -19,8 +19,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 import aguiaj.cards.ICard;
-import aguiaj.cards.CardStack;
-
+import aguiaj.cards.util.CardStack;
 import pt.org.aguiaj.extensibility.AguiaJHelper;
 import pt.org.aguiaj.extensibility.VisualizationWidget;
 
