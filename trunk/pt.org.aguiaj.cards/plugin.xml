@@ -17,19 +17,19 @@
          </class>
          <class
                allowImport="true"
-               contractValidator="aguiaj.cards.CardContract"
+               contractValidator="aguiaj.cards.contracts.CardContract"
                icon="images/card.png"
                id="aguiaj.cards.ICard"
                viewClass="aguiaj.cards.view.CardWidget">
          </class>
          <class
                allowImport="true"
-               id="aguiaj.cards.CardStack"
+               id="aguiaj.cards.util.CardStack"
                viewClass="aguiaj.cards.view.CardStackWidget">
          </class>
          <class
                allowImport="true"
-               id="aguiaj.cards.CardHand"
+               id="aguiaj.cards.util.CardHand"
                viewClass="aguiaj.cards.view.CardHandWidget"/>
       </group>
    </extension>

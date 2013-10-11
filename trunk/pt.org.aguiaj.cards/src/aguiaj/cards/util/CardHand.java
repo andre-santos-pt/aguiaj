@@ -8,7 +8,7 @@
  * Contributors:
  *     Andre L. Santos - initial API and implementation
  ******************************************************************************/
-package aguiaj.cards;
+package aguiaj.cards.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +16,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import aguiaj.cards.ICard;
+import aguiaj.cards.Rank;
+import aguiaj.cards.Suit;
 
 //TODO equals/hashcode
 
