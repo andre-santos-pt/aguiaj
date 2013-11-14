@@ -24,7 +24,7 @@ import aguiaj.draw.ITransparentImage;
  */
 public class ColorImage implements ITransparentImage {
 	
-	private final IColor[][] pixels;
+	private final Color[][] pixels;
 	private final Dimension dimension;
 	
 	private int[][] alphaData;
@@ -39,7 +39,7 @@ public class ColorImage implements ITransparentImage {
 		if(!Dimension.isValidDimension(width, height))
 			throw new IllegalArgumentException("Invalid dimensions - " + width + "x" + height);
 
-		pixels = new IColor[height][width];
+		pixels = new Color[height][width];
 		dimension = new Dimension(width, height);
 	}
 	
@@ -114,7 +114,7 @@ public class ColorImage implements ITransparentImage {
 	 * Color of pixel (x, y).
 	 */
 	@Override
-	public IColor getColor(int x, int y) {
+	public Color getColor(int x, int y) {
 		dimension.validatePointArguments(x, y);
 		return pixels[y][x] == null ? Color.WHITE : pixels[y][x];
 	}
@@ -139,7 +139,7 @@ public class ColorImage implements ITransparentImage {
 		if(color == null)
 			throw new NullPointerException("Color cannot be null");
 		
-		pixels[y][x] = color;
+		pixels[y][x] = new Color(color.getR(), color.getG(), color.getB());
 	}
 	
 	/**

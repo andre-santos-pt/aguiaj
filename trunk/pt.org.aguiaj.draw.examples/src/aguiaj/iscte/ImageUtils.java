@@ -10,6 +10,9 @@
  ******************************************************************************/
 package aguiaj.iscte;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
@@ -32,6 +35,9 @@ public class ImageUtils {
 	private static final int B = 2;
 
 	public static ColorImage loadColorImage(String filePath) {
+		if(!new File(filePath).exists())
+			throw new RuntimeException("file not found: " + filePath);
+		
 		Image image = new Image(Display.getDefault(), filePath);
 
 		int[][][] data = fetchData(image);
