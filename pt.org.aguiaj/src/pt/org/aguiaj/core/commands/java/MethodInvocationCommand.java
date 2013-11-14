@@ -74,7 +74,7 @@ public class MethodInvocationCommand extends JavaCommandWithArgs implements Cont
 				method = object.getClass().getMethod(methodName, argTypes);
 			}
 			catch(Exception e2) {
-				throw new RuntimeException(e2.getMessage());
+				return null;
 			}
 		}
 		
@@ -146,7 +146,7 @@ public class MethodInvocationCommand extends JavaCommandWithArgs implements Cont
 			return null;
 		
 		Throwable t = thread.getException().getCause();
-		return t != null && t instanceof RuntimeException ? (RuntimeException) t : (RuntimeException) thread.getException();
+		return t != null && t instanceof RuntimeException ? (RuntimeException) t : new RuntimeException(thread.getException());
 	}
 	
 	@Override

@@ -80,7 +80,7 @@ class ArrayRowWidget extends Composite {
 					arrayType, 
 					EnumSet.of(
 							WidgetProperty.ARRAYPOSITION, 
-							WidgetProperty.MODIFIABLE, 
+							WidgetProperty.MODIFIABLE,
 							WidgetProperty.NO_EXTENSION));
 
 			if(widget instanceof AbstractTypeWidget) {					

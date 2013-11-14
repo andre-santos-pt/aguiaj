@@ -162,9 +162,6 @@ public class MethodWidget implements Highlightable {
 			argsText[i] = paramWidgets.get(i).getTextualRepresentation();
 		}
 
-
-//		Reference ref = ObjectModel.getFirstReference(object);
-
 		Reference ref = ObjectModel.getInstance().getCompatibleReference(object, method);
 		if(object != null && ref == null) {
 			SWTUtils.showMessage("Error", "No compatible reference available", SWT.ICON_ERROR);

@@ -54,7 +54,7 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 	private MethodInvocationCommand canvasWidthCommand;
 	private MethodInvocationCommand canvasHeightCommand;
 	private MethodInvocationCommand drawItemsCommand;
-	private MethodInvocationCommand initializeCommand;
+//	private MethodInvocationCommand initializeCommand;
 
 	private RowLayout layout;
 
@@ -65,7 +65,7 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 		canvasWidthCommand = MethodInvocationCommand.instanceInvocation(extension, "canvasWidth");
 		canvasHeightCommand = MethodInvocationCommand.instanceInvocation(extension, "canvasHeight");
 		drawItemsCommand = MethodInvocationCommand.instanceInvocation(extension, "drawItems");
-		initializeCommand = MethodInvocationCommand.instanceInvocation(extension, "initialize", new Class[] {Canvas.class}, new Object[] {canvas});
+//		initializeCommand = MethodInvocationCommand.instanceInvocation(extension, "initialize", new Class[] {Canvas.class}, new Object[] {canvas});
 		update(getObject());
 	}
 
@@ -85,7 +85,7 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 	}
 
 	public void initialize() {
-//		initialize(canvas);
+		extension.initialize(canvas);
 	}
 
 	
@@ -196,7 +196,6 @@ class CanvasObjectWidgetExtension extends AbstractTypeWidget implements PaintLis
 
 //	private void initialize(Canvas canvas) {
 //		if(initializeCommand != null) {
-//			
 //			Display.getDefault().syncExec(new Runnable() {
 //				
 //				@Override

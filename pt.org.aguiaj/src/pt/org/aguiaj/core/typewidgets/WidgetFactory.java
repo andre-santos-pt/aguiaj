@@ -15,6 +15,7 @@ import static com.google.common.collect.Maps.newHashMap;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -111,7 +112,6 @@ public enum WidgetFactory {
 						list.add(c);
 				}
 		}
-
 		return list;
 	}
 	
@@ -217,8 +217,8 @@ public enum WidgetFactory {
 				CanvasObjectWidgetExtension widget = new CanvasObjectWidgetExtension(parent, extension, ownerType);
 				widget.initialize();
 				widgets.add(widget);
-				if(single)
-					return;
+				//if(single)
+				//	return;
 			}
 			else if(VisualizationWidget.class.isAssignableFrom(constructor.getDeclaringClass())) {
 				VisualizationWidget<?> extension = null;
@@ -230,8 +230,8 @@ public enum WidgetFactory {
 				if(extension.include(type))
 					widgets.add(new ExtensionTypeWidget(parent, type, ownerType, extension));
 				
-				if(single)
-					return;
+				//if(single)
+				//	return;
 			}
 		}
 	}
