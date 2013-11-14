@@ -62,4 +62,9 @@ public class Reference {
 	public int hashCode() {
 		return name.hashCode();
 	}
+	
+	@Override
+	public String toString() {
+		return name + " : " + type.getSimpleName() + " -> " + object;
+	}
 }

@@ -202,6 +202,7 @@ public final class ObjectWidget extends FieldContainer {
 
 				if(!field.getDeclaringClass().equals(owner)) {
 					new Label(privateAttributesGroup, SWT.SEPARATOR | SWT.HORIZONTAL);
+					new Label(privateAttributesGroup, SWT.SEPARATOR | SWT.HORIZONTAL);
 					owner = field.getDeclaringClass();
 				}
 				new AttributeWidget(privateAttributesGroup, field, object, this, false, true);

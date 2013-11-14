@@ -85,7 +85,7 @@ public class ConstructorInvocationCommand extends JavaCommandWithArgs implements
 			return invariantException;
 		
 		Throwable t = thread.getException().getCause();
-		return t != null && t instanceof RuntimeException ? (RuntimeException) t : (RuntimeException) thread.getException();
+		return t != null && t instanceof RuntimeException ? (RuntimeException) t : new RuntimeException("Problems in constructor");
 	}
 	
 	public Constructor<?> getConstructor() {

@@ -136,23 +136,26 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 		listener = new ObjectEventListenerAdapter() {
 			@Override
 			public void newReferenceEvent(Reference ref) {
-				if(getType().isAssignableFrom(ref.type)) {
+				if(getType().isAssignableFrom(ref.type))
 					setObjects(ObjectModel.getInstance().getCompatibleReferences(getType()));
-				}
 			}
 
 			@Override
 			public void removeReferenceEvent(Reference ref) {
-				if(getType().isAssignableFrom(ref.type)) {
+				if(getType().isAssignableFrom(ref.type))
 					setObjects(ObjectModel.getInstance().getCompatibleReferences(getType()));
-				}
+			}
+
+			@Override
+			public void changeReferenceEvent(Reference ref) {
+				if(getType().isAssignableFrom(ref.type))
+					setObjects(ObjectModel.getInstance().getCompatibleReferences(getType()));
 			}
 
 			@Override
 			public void clearAll() {
 				List<Reference> empty = Collections.emptyList();
-				if(!combo.isDisposed())
-					setObjects(empty);
+				setObjects(empty);
 			}
 		};
 
@@ -170,6 +173,9 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 
 
 	private void setObjects(List<Reference> newReferences) {
+		if(combo.isDisposed())
+			return;
+		
 		int selectedIndex = combo.getSelectionIndex();
 		String selected = null;
 		Object object = getObject();
