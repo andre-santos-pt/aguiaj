@@ -92,9 +92,6 @@ class PackageWidget extends Composite {
 		areaLayout.marginLeft = MARGIN;
 		areaLayout.marginRight = MARGIN;
 
-		//		areaLayout.spacing = SPACING;
-		//		areaLayout.marginTop = MARGIN;
-		//		areaLayout.marginLeft = MARGIN;
 		area.setLayout(areaLayout);
 		area.setToolTipText("Class Area (create objects and invoke static operations by pressing the buttons)");
 
@@ -231,13 +228,13 @@ class PackageWidget extends Composite {
 		public ErrorWidget(Composite parent, Class<?> clazz) {
 			super(parent, SWT.NONE);
 			setLayout(new RowLayout(SWT.HORIZONTAL));		
-			IconWidget.createForRowLayout(parent, AguiaJImage.ERROR.getImage());									
+			IconWidget.createForRowLayout(this, AguiaJImage.ERROR.getImage());									
 			new LabelWidget.Builder()
 			.text(clazz.getSimpleName())
-			.big()
+			.huge()
 			.toolTip("Class could not be loaded, either due to compilation errors or missing dependencies.")
 			.color(AguiaJColor.ALERT)
-			.create(parent);
+			.create(this);
 		}
 	}
 

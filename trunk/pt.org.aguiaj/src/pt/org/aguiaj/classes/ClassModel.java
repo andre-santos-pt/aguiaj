@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.internal.codeassist.RelevanceConstants;
 import org.eclipse.swt.graphics.Image;
 
 import pt.org.aguiaj.common.AguiaJImage;
@@ -264,6 +265,9 @@ public class ClassModel {
 
 
 	public void addClass(Class<?> clazz) {
+		if(!ReflectionUtils.tryClass(clazz))
+			return;
+		
 		classSet.add(clazz);
 
 		visibleConstructors.put(clazz, ImmutableList.copyOf(inspector.getVisibleConstructors(clazz)));
