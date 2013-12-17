@@ -59,6 +59,7 @@ public class AguiaClassLoader extends ClassLoader{
 	}
 
 
+	
 	public Class<?> loadClass(String name) throws ClassNotFoundException {	
 		Class<?> clazz = ClassModel.getInstance().getPluginClass(name);
 

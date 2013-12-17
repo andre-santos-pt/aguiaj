@@ -168,7 +168,7 @@ public class FieldContainer extends Composite {
 		else if(type.isArray()) {
 			String prev = widget.getTextualRepresentation();
 			String neww = ReflectionUtils.getTextualRepresentation(newVal, true);
-			update = !prev.equals(neww);
+			update = !neww.equals(prev);
 			
 //			update = !ReflectionUtils.arrayEquals(previous, newVal);
 		}
