@@ -28,17 +28,18 @@ import pt.org.aguiaj.extensibility.VisualizationWidget;
 	Object[].class
 })
 public class ArrayObjectWidget extends VisualizationWidget.Adapter<Object> {
+	private ArrayLengthWidget length;
 	private ArrayRowWidget row;
 	private FieldContainer fieldContainer;
 	private Composite section;
-	
+
 	@Override
 	public void createSection(Composite section) {
 		this.fieldContainer = findFieldContainer(section);
 		section.setLayout(new RowLayout(SWT.VERTICAL));
 		this.section = section;
 	}
-	
+
 	private FieldContainer findFieldContainer(Composite c) {
 		if(c instanceof FieldContainer)
 			return (FieldContainer) c;
@@ -46,18 +47,21 @@ public class ArrayObjectWidget extends VisualizationWidget.Adapter<Object> {
 			return findFieldContainer(c.getParent());
 	}
 
+	private void clear() {
+		if(length != null) {
+			length.dispose();
+			row.dispose();
+		}
+	}
 
 	public void update(Object object) {
-		if(row == null && object != null) {
-			new ArrayLengthWidget(section).update(Array.getLength(object));
-			Class<?> arrayType = object.getClass().getComponentType();
-			row = new ArrayRowWidget(section, arrayType, object, fieldContainer);
-			SWTUtils.setColorRecursively(section, section.getBackground());
-		}
-
-		// update is only about the fields (which are handled in ObjectWidget)
-		if(object != null)
-			row.updateFields(object);
+		clear();
+		length = new ArrayLengthWidget(section);
+		length.update(Array.getLength(object));
+		Class<?> arrayType = object.getClass().getComponentType();
+		row = new ArrayRowWidget(section, arrayType, object, fieldContainer);
+		row.updateFields(object);
+		SWTUtils.setColorRecursively(section, section.getBackground());
 	}
-	
+
 }

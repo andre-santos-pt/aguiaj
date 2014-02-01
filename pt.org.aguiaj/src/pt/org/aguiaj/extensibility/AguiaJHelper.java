@@ -112,10 +112,6 @@ public class AguiaJHelper {
 		
 		ObjectModel.getInstance().removeReference(name);
 	}
-	
-	public static void addObjectModelListener(ObjectEventListener listener) {
-		ObjectModel.getInstance().addEventListener(listener);
-	}
 
 	public static void show(String objectReference) {
 		ObjectsView.getInstance().show(objectReference);

@@ -129,7 +129,7 @@ public class ClassWidget extends FieldContainer {
 		SWTUtils.setColorRecursively(this, AguiaJColor.WHITE.getColor());
 
 		updateFields(null);
-		ObjectModel.getInstance().addEventListener(new CommandListener());
+		ObjectModel.getInstance().addEventListener(this, new CommandListener());
 	}
 
 	private Composite createConstantsGroup(Composite parent, final Class<?> clazz) {

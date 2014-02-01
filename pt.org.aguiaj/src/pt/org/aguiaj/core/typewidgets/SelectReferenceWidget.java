@@ -52,8 +52,6 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 
 	private Composite border;
 
-	private ObjectEventListener listener;
-
 	public SelectReferenceWidget(final Composite parent, Class<?> clazz, final WidgetProperty type) {
 		super(parent, SWT.NONE, clazz, type, true);
 		this.type = type;
@@ -133,7 +131,7 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 
 		setObjects(ObjectModel.getInstance().getCompatibleReferences(getType()));
 
-		listener = new ObjectEventListenerAdapter() {
+		ObjectModel.getInstance().addEventListener(this, new ObjectEventListenerAdapter() {
 			@Override
 			public void newReferenceEvent(Reference ref) {
 				if(getType().isAssignableFrom(ref.type))
@@ -156,15 +154,6 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 			public void clearAll() {
 				List<Reference> empty = Collections.emptyList();
 				setObjects(empty);
-			}
-		};
-
-		ObjectModel.getInstance().addEventListener(listener);
-
-		combo.addDisposeListener(new DisposeListener() {
-			@Override
-			public void widgetDisposed(DisposeEvent e) {
-				ObjectModel.getInstance().removeEventListener(listener);
 			}
 		});
 
@@ -208,10 +197,11 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 		Point size = gc.textExtent(max);
 		gc.dispose ();
 		combo.setLayoutData(new RowData(size.x + 25, 22));
-		getParent().pack();
+		
+		getParent().redraw();
+		getParent().update();
 		getParent().layout();
 		
-
 		for(int i = 0; i < combo.getItemCount(); i++) {
 			if(containsSelected && combo.getItem(i).equals(selected) ||
 					!containsSelected && combo.getData(combo.getItem(i)) == object) {

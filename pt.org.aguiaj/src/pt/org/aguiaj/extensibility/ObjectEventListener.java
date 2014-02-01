@@ -1,6 +1,5 @@
 package pt.org.aguiaj.extensibility;
 public interface ObjectEventListener {
-	void init();
 	void newObjectEvent(Object obj);
 	void removeObjectEvent(Object obj);
 	void newReferenceEvent(Reference ref);
