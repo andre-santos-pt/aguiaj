@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/pt.iscte.dcti.aguiaj_0.5.0.jar" id="pt.iscte.dcti.aguiaj" version="0.5">
+      <category name="aguiaj"/>
+   </feature>
+   <category-def name="aguiaj" label="AGUIA/J ISCTE"/>
+</site>
