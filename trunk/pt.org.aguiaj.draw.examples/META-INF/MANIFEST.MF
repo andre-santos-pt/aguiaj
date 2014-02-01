@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: AGUIA/J Draw Examples
 Bundle-SymbolicName: pt.org.aguiaj.draw.examples;singleton:=true
-Bundle-Version: 1.1.1
+Bundle-Version: 1.1.2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: pt.org.aguiaj.draw;bundle-version="0.9.6",
  pt.org.aguiaj;bundle-version="0.9.8",
