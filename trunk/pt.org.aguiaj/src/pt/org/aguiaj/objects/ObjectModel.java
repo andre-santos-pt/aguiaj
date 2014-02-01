@@ -29,6 +29,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.widgets.Control;
+
 import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.IdentityObjectSet;
 import pt.org.aguiaj.core.ReflectionUtils;
@@ -75,11 +79,7 @@ public class ObjectModel {
 		objectSet = new IdentityObjectSet();
 		activeCommands = newLinkedList();
 		listeners = newHashSet();
-
 		contracts = HashBasedTable.create();
-
-		for(ObjectEventListener l : listeners)
-			l.init();
 	}
 
 	public static ObjectModel getInstance() {
@@ -90,13 +90,20 @@ public class ObjectModel {
 	}	
 
 
-	public void addEventListener(ObjectEventListener listener) {
+	public void addEventListener(final Control control, final ObjectEventListener listener) {
 		listeners.add(listener);
+		control.addDisposeListener(new DisposeListener() {
+			@Override
+			public void widgetDisposed(DisposeEvent e) {
+//				removeEventListener(listener);
+				listeners.remove(listener);
+			}
+		});
 	}
 
-	public void removeEventListener(ObjectEventListener listener) {
-		listeners.remove(listener);
-	}
+//	public void removeEventListener(ObjectEventListener listener) {
+//		listeners.remove(listener);
+//	}
 
 	private ObjectEventListener[] listeners() {
 		return listeners.toArray(new ObjectEventListener[listeners.size()]);
@@ -217,9 +224,6 @@ public class ObjectModel {
 		ObjectEventListener[] listenersArray = listeners();
 		for(ObjectEventListener l : listenersArray)
 			l.clearAll();
-
-		for(ObjectEventListener l : listenersArray)
-			l.init();
 	}
 
 
@@ -479,7 +483,7 @@ public class ObjectModel {
 
 	private void addToStack(JavaCommand command) {
 		activeCommands.add(command);
-		for(ObjectEventListener l : listeners)
+		for(ObjectEventListener l : listeners())
 			l.commandExecuted(command);
 	}
 

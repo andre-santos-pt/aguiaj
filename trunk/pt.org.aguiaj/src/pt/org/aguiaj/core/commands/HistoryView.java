@@ -85,15 +85,15 @@ public class HistoryView extends ViewPart {
 						list.remove(item);
 			}
 		};
-		ObjectModel.getInstance().addEventListener(listener);
+		ObjectModel.getInstance().addEventListener(parent, listener);
 		
-		list.addDisposeListener(new DisposeListener() {
-			
-			@Override
-			public void widgetDisposed(DisposeEvent e) {
-				ObjectModel.getInstance().removeEventListener(listener);
-			}
-		});
+//		list.addDisposeListener(new DisposeListener() {
+//			
+//			@Override
+//			public void widgetDisposed(DisposeEvent e) {
+//				ObjectModel.getInstance().removeEventListener(listener);
+//			}
+//		});
 	}
 
 	private Menu buildMenu(Composite parent) {

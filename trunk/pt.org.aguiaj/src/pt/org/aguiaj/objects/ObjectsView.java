@@ -106,7 +106,6 @@ public class ObjectsView extends ViewPart {
 
 	public ObjectsView() {
 		instance = this;
-		ObjectModel.getInstance().addEventListener(new ObjectListener());
 	}
 
 	public static ObjectsView getInstance() {
@@ -149,6 +148,7 @@ public class ObjectsView extends ViewPart {
 		addActions();
 
 		DragNDrop.addFileDragNDropSupportObjectArea(area);
+		ObjectModel.getInstance().addEventListener(parent, new ObjectListener());
 	}
 
 	private void clearAllWidgets() {

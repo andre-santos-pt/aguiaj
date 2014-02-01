@@ -30,6 +30,7 @@ import pt.org.aguiaj.core.typewidgets.AbstractTypeWidget;
 import pt.org.aguiaj.core.typewidgets.WidgetFactory;
 import pt.org.aguiaj.core.typewidgets.WidgetProperty;
 import pt.org.aguiaj.extensibility.JavaCommand;
+import pt.org.aguiaj.extensibility.Reference;
 import pt.org.aguiaj.objects.ObjectModel;
 
 class ArrayRowWidget extends Composite {
@@ -38,7 +39,7 @@ class ArrayRowWidget extends Composite {
 	private List<TypeWidget> widgets;
 	private boolean hasExtension;
 	private List<TypeWidget> extensionWidgets;
-	
+
 	public ArrayRowWidget(
 			Composite parent, 
 			Class<?> arrayType, 
@@ -74,54 +75,49 @@ class ArrayRowWidget extends Composite {
 		}
 
 		// NORMAL WIDGET
-		for(int i = 0; i < length; i++) {
-			TypeWidget widget = WidgetFactory.INSTANCE.createWidget(
-					this, 
-					arrayType, 
-					EnumSet.of(
-							WidgetProperty.ARRAYPOSITION, 
-							WidgetProperty.MODIFIABLE,
-							WidgetProperty.NO_EXTENSION));
+		if(arrayType.isPrimitive()) {
+			for(int i = 0; i < length; i++) {
+				TypeWidget widget = WidgetFactory.INSTANCE.createWidget(
+						this, 
+						arrayType, 
+						EnumSet.of(
+								WidgetProperty.ARRAYPOSITION, 
+								WidgetProperty.MODIFIABLE,
+								WidgetProperty.NO_EXTENSION));
 
-			if(widget instanceof AbstractTypeWidget) {					
-				((AbstractTypeWidget) widget).setArrayPosition(arrayObject, i);
-				widgets.add(widget);
-				if(!hasExtension)
-					fieldContainer.mapArrayFieldToWidget(arrayObject, arrayType, i, widget);
+				if(widget instanceof AbstractTypeWidget) {					
+					((AbstractTypeWidget) widget).setArrayPosition(arrayObject, i);
+					widgets.add(widget);
+					if(!hasExtension)
+						fieldContainer.mapArrayFieldToWidget(arrayObject, arrayType, i, widget);
+				}
 			}
 		}
 
 		// INDEX
 		for(int i = 0; i < length; i++) {
-			final int iTmp = i;
+			//			final int iTmp = i;
 
 			LabelWidget label = new LabelWidget.Builder()
 			.text(new Integer(i).toString())
-			.tiny()
+			.small()
 			.color(AguiaJColor.GRAY)
-			.linkIf(!arrayType.isPrimitive())
+			//			.linkIf(!arrayType.isPrimitive())
 			.create(this);
 
-			if(!arrayType.isPrimitive()) {
-				label.addHyperlinkAction(new Listener() {
-					public void handleEvent(Event e) {
-						JavaCommand cmd = createAccessCommand(iTmp);
-						ObjectModel.getInstance().execute(cmd);
-					}
-				});
-//				label.addObjectHighlightCapability(new ObjectToHighlightProvider() {						
-//					@Override
-//					public Object getObjectToHighlight() {
-//						return Array.get(ArrayRowWidget.this.array, iTmp);
-//					}
-//				});
-			}
+			//			if(!arrayType.isPrimitive()) {
+			//				label.addHyperlinkAction(new Listener() {
+			//					public void handleEvent(Event e) {
+			//						JavaCommand cmd = createAccessCommand(iTmp);
+			//						ObjectModel.getInstance().execute(cmd);
+			//					}
+			//				});
+			//			}
 		}
 
 		fieldContainer.updateFields(arrayObject);
 	}
 
-//	
 
 	public void updateFields(Object object) {
 		if(hasExtension) {
@@ -134,35 +130,14 @@ class ArrayRowWidget extends Composite {
 		layout();
 	}
 
-	private JavaCommand createAccessCommand(final int iTmp) {
-		Object obj = Array.get(ArrayRowWidget.this.array, iTmp);
-		Class<?> type = ArrayRowWidget.this.array.getClass().getComponentType();
-		String ref = ObjectModel.getFirstReference(ArrayRowWidget.this.array).name;
-		String source = ref + "[" + iTmp + "]";					
-		JavaCommand cmd = new NewReferenceCommand(type, obj, source);
-		return cmd;
-	}
-	
-//	private void addDragSupport(Control control, final Class<?> arrayType, final int index) {
-//		assert control != null;
-//
-//		int operations = DND.DROP_MOVE | DND.DROP_COPY;
-//		DragSource source = new DragSource(control, operations);
-//		Transfer[] types = new Transfer[] {TextTransfer.getInstance()};
-//		source.setTransfer(types);
-//		source.addDragListener(new DragSourceListener() {
-//			public void dragStart(DragSourceEvent event) {
-//			}
-//			public void dragSetData(DragSourceEvent event) {
-//				if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
-//					event.data = createAccessCommand(index).getJavaInstruction();
-//				}
-//			}
-//
-//			public void dragFinished(DragSourceEvent event) {
-//				// If a move operation has been performed, remove the data
-//				// from the source
-//			}
-//		});
-//	}
+	//	private JavaCommand createAccessCommand(final int iTmp) {
+	//		Object obj = Array.get(ArrayRowWidget.this.array, iTmp);
+	//		Class<?> type = ArrayRowWidget.this.array.getClass().getComponentType();
+	//		Reference ref = ObjectModel.getFirstReference(ArrayRowWidget.this.array);
+	//		String refName = ref.name;
+	//		String source = ref + "[" + iTmp + "]";					
+	//		JavaCommand cmd = new NewReferenceCommand(type, obj, source);
+	//		return cmd;
+	//	}
+
 }

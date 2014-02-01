@@ -67,13 +67,12 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 	private Job clearJob;
 
 	public void createPartControl(Composite parent) {
-		model = ObjectModel.getInstance();
 		bar = new Composite(parent, SWT.BORDER);
 		bar.setLayout(new FillLayout());		
 		createInstructionBar();
+		model = ObjectModel.getInstance();
 
-
-		final ObjectEventListener listener = new ObjectEventListenerAdapter() {
+		model.addEventListener(parent, new ObjectEventListenerAdapter() {
 			@Override
 			public void commandExecuted(JavaCommand cmd) {
 				setLine(cmd.getJavaInstruction());
@@ -96,9 +95,7 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 					}
 				}
 			}
-		};
-		model.addEventListener(listener);
-
+		});
 
 		final IPropertyChangeListener propertyListener = new IPropertyChangeListener() {
 			@Override
@@ -109,10 +106,8 @@ public class JavaBarView extends ViewPart implements ISizeProvider {
 		AguiaJActivator.getInstance().getPreferenceStore().addPropertyChangeListener(propertyListener);
 
 		bar.addDisposeListener(new DisposeListener() {
-
 			@Override
 			public void widgetDisposed(DisposeEvent e) {
-				model.removeEventListener(listener);
 				AguiaJActivator.getInstance().getPreferenceStore().removePropertyChangeListener(propertyListener);	
 			}
 		});

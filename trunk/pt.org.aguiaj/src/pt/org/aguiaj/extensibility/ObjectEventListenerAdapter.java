@@ -1,6 +1,5 @@
 package pt.org.aguiaj.extensibility;
 public abstract class ObjectEventListenerAdapter implements ObjectEventListener {
-	public void init() { }
 	public void newObjectEvent(Object obj) { }
 	public void removeObjectEvent(Object obj) { }
 	public void newReferenceEvent(Reference ref) { }

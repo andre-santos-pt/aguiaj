@@ -44,6 +44,10 @@ import pt.org.aguiaj.core.AguiaJActivator;
 import pt.org.aguiaj.core.commands.ChangeWorkingDirCommand;
 import pt.org.aguiaj.core.commands.ReloadClassesCommand;
 import pt.org.aguiaj.extensibility.AguiaJContribution;
+import pt.org.aguiaj.extensibility.ObjectEventListener;
+import pt.org.aguiaj.extensibility.ObjectEventListenerAdapter;
+import pt.org.aguiaj.extensibility.Reference;
+import pt.org.aguiaj.objects.ObjectModel;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.BiMap;
@@ -187,7 +191,26 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 		}	
 		
 		createTabs();
+		
+		ObjectEventListener listener = new ObjectEventListenerAdapter() {
+			@Override
+			public void newReferenceEvent(Reference ref) {
+				refreshLayout();
+			}
+
+			@Override
+			public void removeReferenceEvent(Reference ref) {
+				refreshLayout();
+			}
+
+			@Override
+			public void changeReferenceEvent(Reference ref) {
+				refreshLayout();
+			}
+		};
+		ObjectModel.getInstance().addEventListener(parent, listener);
 	}
+	
 
 	private void createTabs() {
 		packagesClasses = ArrayListMultimap.create(AguiaJActivator.getInstance().getPackagesClasses());
