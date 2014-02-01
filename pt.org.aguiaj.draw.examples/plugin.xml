@@ -28,7 +28,7 @@
          </class>
          <class
                allowImport="false"
-               id="aguiaj.iscte.ImageUtils">
+               id="aguiaj.iscte.ImageUtilsIscte">
          </class>
       </group>
    </extension>

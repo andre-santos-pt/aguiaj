@@ -2,14 +2,14 @@ package aguiaj.iscte.contribution;
 
 import pt.org.aguiaj.extensibility.ImportItemProvider;
 import aguiaj.iscte.BinaryImage;
-import aguiaj.iscte.ImageUtils;
+import aguiaj.iscte.ImageUtilsIscte;
 
 public class BinaryImageProvider implements ImportItemProvider {
 
 	
 	@Override
 	public String getInstruction(String filePath) {
-		return ImageUtils.class.getSimpleName().concat(".loadBinaryImage(\"").concat(filePath).concat("\")");
+		return ImageUtilsIscte.class.getSimpleName().concat(".loadBinaryImage(\"").concat(filePath).concat("\")");
 	}
 
 
