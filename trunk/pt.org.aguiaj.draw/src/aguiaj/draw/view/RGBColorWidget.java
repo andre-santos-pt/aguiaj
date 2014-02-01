@@ -43,7 +43,7 @@ public class RGBColorWidget implements CanvasVisualizationWidget<IColor>{
 
 	@Override
 	public int canvasWidth() {
-		return 100;
+		return 150;
 	}
 
 	@Override
