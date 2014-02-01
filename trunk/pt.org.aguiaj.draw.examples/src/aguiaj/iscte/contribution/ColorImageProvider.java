@@ -2,13 +2,13 @@ package aguiaj.iscte.contribution;
 
 import pt.org.aguiaj.extensibility.ImportItemProvider;
 import aguiaj.iscte.ColorImage;
-import aguiaj.iscte.ImageUtils;
+import aguiaj.iscte.ImageUtilsIscte;
 
 public class ColorImageProvider implements ImportItemProvider {
 
 	@Override
 	public String getInstruction(String filePath) {
-		return ImageUtils.class.getSimpleName().concat(".loadColorImage(\"").concat(filePath).concat("\")");
+		return ImageUtilsIscte.class.getSimpleName().concat(".loadColorImage(\"").concat(filePath).concat("\")");
 	}
 
 	@Override

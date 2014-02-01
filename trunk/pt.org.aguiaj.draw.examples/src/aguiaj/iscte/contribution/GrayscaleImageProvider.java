@@ -2,7 +2,7 @@ package aguiaj.iscte.contribution;
 
 import pt.org.aguiaj.extensibility.ImportItemProvider;
 import aguiaj.iscte.GrayscaleImage;
-import aguiaj.iscte.ImageUtils;
+import aguiaj.iscte.ImageUtilsIscte;
 
 public class GrayscaleImageProvider implements ImportItemProvider {
 
@@ -12,7 +12,7 @@ public class GrayscaleImageProvider implements ImportItemProvider {
 	@Override
 	public String getInstruction(String filePath) {
 		
-		return ImageUtils.class.getSimpleName().concat(".loadGrayscaleImage(\"").concat(filePath).concat("\")");
+		return ImageUtilsIscte.class.getSimpleName().concat(".loadGrayscaleImage(\"").concat(filePath).concat("\")");
 	}
 
 	

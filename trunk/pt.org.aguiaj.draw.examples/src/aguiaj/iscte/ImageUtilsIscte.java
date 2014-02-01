@@ -29,7 +29,7 @@ import aguiaj.draw.IImage;
  *
  * @author Andre L. Santos
  */
-public class ImageUtils {
+public class ImageUtilsIscte {
 	private static final int R = 0;
 	private static final int G = 1;
 	private static final int B = 2;
