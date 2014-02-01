@@ -95,15 +95,15 @@ public class ObjectModel {
 		control.addDisposeListener(new DisposeListener() {
 			@Override
 			public void widgetDisposed(DisposeEvent e) {
-//				removeEventListener(listener);
+				//				removeEventListener(listener);
 				listeners.remove(listener);
 			}
 		});
 	}
 
-//	public void removeEventListener(ObjectEventListener listener) {
-//		listeners.remove(listener);
-//	}
+	//	public void removeEventListener(ObjectEventListener listener) {
+	//		listeners.remove(listener);
+	//	}
 
 	private ObjectEventListener[] listeners() {
 		return listeners.toArray(new ObjectEventListener[listeners.size()]);
@@ -167,18 +167,20 @@ public class ObjectModel {
 	public void addStaticReferences(Collection<Class<?>> classes) {
 
 		for(Class<?> type : classes) {
-			List<Field> fields = ClassModel.getInspector().getVisibleStaticAttributes(type);
-			fields.addAll(ClassModel.getInspector().getEnumFields(type));
+			if(ReflectionUtils.tryClass(type)) {
+				List<Field> fields = ClassModel.getInspector().getVisibleStaticAttributes(type);
+				fields.addAll(ClassModel.getInspector().getEnumFields(type));
 
-			for(Field f : fields)  {
-				Object obj = null;
-				try {
-					obj = f.get(null);
+				for(Field f : fields)  {
+					Object obj = null;
+					try {
+						obj = f.get(null);
+						addReference(f.getType(), obj, Reference.staticReference(type, f), false);
+					}
+					catch(Throwable e) {
+						e.printStackTrace();
+					}	
 				}
-				catch(Exception e) {
-					e.printStackTrace();
-				}
-				addReference(f.getType(), obj, Reference.staticReference(type, f), false);
 			}
 		}
 	}
@@ -237,19 +239,19 @@ public class ObjectModel {
 			ExceptionHandler.INSTANCE.execute((JavaCommandWithArgs) command);
 		else
 			command.execute();
-			
+
 		Object target = null;
 		if(command instanceof MethodInvocationCommand)
 			target = ((MethodInvocationCommand) command).getTarget();
-		
+
 		if(!command.failed()) {
 			addToStack(command);
-			
+
 			if(command instanceof JavaCommandWithReturn) {
 				JavaCommandWithReturn cmd = (JavaCommandWithReturn) command;
 
 				Class<?> refType = cmd.getReferenceType();
-				
+
 				if(!refType.isPrimitive() && !refType.equals(void.class)) {
 					Object object = cmd.getResultingObject();
 					if(object != null && cmd instanceof JavaCommandWithArgs) {
@@ -267,10 +269,10 @@ public class ObjectModel {
 				NewReferenceCommand cmd = (NewReferenceCommand) command;
 				addReference(cmd.getReferenceType(), cmd.getResultingObject(), cmd.getReference(), true);
 			}
-			
+
 			if(command instanceof ContractAware) {
 				Object o = ((ContractAware) command).getObjectUnderContract();
-				
+
 				if(o != null)
 					verifyInvariant(o);
 			}
@@ -522,8 +524,8 @@ public class ObjectModel {
 		return null;
 	}
 
-	
-	
+
+
 
 
 	// ------ CONTRACTS -----------------
@@ -564,7 +566,7 @@ public class ObjectModel {
 		ClassModel.getInstance().createContractProxies(contracts, object, methods);
 	}
 
-	
+
 	public RuntimeException verifyInvariantOnCreation(Object object) {
 		Set<Class<? extends ContractDecorator<?>>> contracts = ClassModel.getInstance().getContractTypes(object.getClass());
 		for(Class<? extends ContractDecorator<?>> clazz : contracts) {
@@ -581,9 +583,9 @@ public class ObjectModel {
 			}
 			Method invariantMethod = getInvariantMethod(contract);
 			MethodInvocationCommand cmd = new MethodInvocationCommand(contract, invariantMethod);
-			
+
 			cmd.execute();
-			
+
 			if(cmd.failed()) {
 				return cmd.getException();
 			}
@@ -591,7 +593,7 @@ public class ObjectModel {
 		return null;
 
 	}
-	
+
 	private boolean verifyInvariant(Object object) {
 		boolean ok = true;
 		for(ContractDecorator<?> proxy : new HashSet<ContractDecorator<?>>(contracts.row(object).values())) {

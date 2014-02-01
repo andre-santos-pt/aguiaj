@@ -251,44 +251,7 @@ public class Inspector {
 		!method.getDeclaringClass().equals(clazz);  //&& !method.isBridge();
 	}
 	
-	interface I {
-		Object m();
-		String t();
-	}
-	static class A implements I {
-		
-		public Object m() {
-			return "?";
-		}
-
-		public String t() {
-			return null;
-		}
-		
-		public Object z() {
-			return null;
-		}
-	}
-	static class B extends A {
-		public CharSequence m() {
-			return "";
-		}
-		
-		public List z() {
-			return null;
-		}
-	}
 	
-	static class C extends A {
-		public String m() {
-			return "!";
-		}
-		
-		@Override
-		public int hashCode() {
-			return super.hashCode();
-		}
-	}
 
 
 	public static boolean isOverriding(Class<?> clazz, Method method) {

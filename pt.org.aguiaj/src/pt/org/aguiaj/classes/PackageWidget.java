@@ -112,14 +112,22 @@ class PackageWidget extends Composite {
 		Iterator<Class<?>> it = classes.iterator();
 		while(it.hasNext()) {
 			Class<?> clazz = it.next();
-			if(clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()) && !clazz.isEnum()) {
-				new AbstractClassWidget(area, clazz);
+			Composite w = null;
+			if(ReflectionUtils.tryClass(clazz)) {
+				if(clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()) && !clazz.isEnum()) {
+					w = new AbstractClassWidget(area, clazz);
+				}
+				else {
+					w = new ClassWidget(area, clazz);
+					w.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+					classWidgets.add((ClassWidget) w);
+				}
 			}
-			else if(ReflectionUtils.tryClass(clazz)) {
-				ClassWidget w = new ClassWidget(area, clazz);
-				w.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-				classWidgets.add(w);
-			}
+//			catch(Throwable e) {
+//				if(w != null)
+//					w.dispose();
+//				new ErrorWidget(area, clazz);
+//			}
 			else {
 				new ErrorWidget(area, clazz);
 			}
@@ -232,7 +240,7 @@ class PackageWidget extends Composite {
 			new LabelWidget.Builder()
 			.text(clazz.getSimpleName())
 			.huge()
-			.toolTip("Class could not be loaded, either due to compilation errors or missing dependencies.")
+			.toolTip("Class could not be loaded, due to compilation errors, static initialization errors, or missing dependencies.")
 			.color(AguiaJColor.ALERT)
 			.create(this);
 		}
@@ -246,7 +254,7 @@ class PackageWidget extends Composite {
 			IconWidget.createForRowLayout(this, clazz).setToolTipText("Polymorphic type");
 			boolean link = ClassModel.getInstance().isPluginClass(clazz) &&
 					(clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()) && !Modifier.isFinal(clazz.getModifiers()));
-			
+
 			LabelWidget classNameLabel =  new LabelWidget.Builder()
 			.text(StandardNamePolicy.prettyClassName(clazz))
 			.big()
@@ -259,7 +267,7 @@ class PackageWidget extends Composite {
 						Bundle bundle = Platform.getBundle(AguiaJActivator.getInstance().getPluginId(clazz));
 						Path path = new Path("src/" + clazz.getName().replace('.', '/') + ".java");
 						URL fileURL = bundle.getEntry(path.toOSString());
-						
+
 						File fileToOpen = null;
 						try {
 							URL fileURL2 = FileLocator.resolve(fileURL);
@@ -292,7 +300,7 @@ class PackageWidget extends Composite {
 			DocumentationLinking.add(classNameLabel.getControl(), clazz);
 		}
 	}
-	
 
-	
+
+
 }
