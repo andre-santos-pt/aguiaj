@@ -16,7 +16,10 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IBundleGroup;
+import org.eclipse.core.runtime.IBundleGroupProvider;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.action.IAction;
@@ -73,8 +76,10 @@ public class OpenAguiaJ extends AbstractHandler implements IViewActionDelegate {
 			if(pers != null)
 				Activator.setPerspective(pers.getId());
 
+			String version = Platform.getBundle(AguiaJContribution.AGUIAJ_PLUGIN).getVersion().toString();
+			
 			workbench.showPerspective(AguiaJContribution.PERSPECTIVE, workbench.getActiveWorkbenchWindow());
-			workbench.getActiveWorkbenchWindow().getShell().setText("AGUIA/J - Inspecting project " + project.getElementName());
+			workbench.getActiveWorkbenchWindow().getShell().setText("AGUIA/J " + version + " - Inspecting project " + project.getElementName());
 			
 			if(Activator.getProject() == project) {
 				ReloadClassesCommand reloadCommand = new ReloadClassesCommand();
