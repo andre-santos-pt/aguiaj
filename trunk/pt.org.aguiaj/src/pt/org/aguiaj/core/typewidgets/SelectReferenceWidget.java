@@ -198,8 +198,8 @@ public class SelectReferenceWidget extends ReferenceTypeWidget {
 		gc.dispose ();
 		combo.setLayoutData(new RowData(size.x + 25, 22));
 		
-		getParent().redraw();
-		getParent().update();
+		combo.redraw();
+		combo.update();
 		getParent().layout();
 		
 		for(int i = 0; i < combo.getItemCount(); i++) {

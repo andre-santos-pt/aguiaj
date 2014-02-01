@@ -432,7 +432,11 @@ public class ReflectionUtils {
 	public static boolean tryClass(Class<?> clazz) {
 		try {
 			for(Field f : clazz.getDeclaredFields())
-				;
+				if(Modifier.isStatic(f.getModifiers())) {
+					f.setAccessible(true);
+					f.get(null);
+				}
+
 			for(Field f : clazz.getFields())
 				;
 			for(Constructor<?> c : clazz.getDeclaredConstructors())

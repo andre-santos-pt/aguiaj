@@ -57,14 +57,14 @@ public class MethodCall extends Expression implements Instruction {
 			target = ExpressionMatcher.match(left, referenceTable, classSet);
 			if(target == null)
 				throw new ParseException("Type/reference not found", text);
-			
+
 			targetClass = target.type();
 		}
 		String methodName = right.substring(0, right.indexOf('(')).trim();
 
-		List<Method> allMethods = ClassModel.getInstance().getAllAvailableMethods(targetClass);
+		//		List<Method> allMethods = ClassModel.getInstance().getAllAvailableMethods(targetClass);
 		boolean nameOk = false;
-		for(Method m : allMethods) {
+		for(Method m : targetClass.getMethods()) {
 			boolean staticMethod = Modifier.isStatic(m.getModifiers());
 			if(m.getName().equals(methodName) && (staticInvocation && staticMethod || !staticInvocation && !staticMethod))
 				nameOk = true;
@@ -89,7 +89,8 @@ public class MethodCall extends Expression implements Instruction {
 	}
 
 	private Method findMethod(String methodName, Class<?>[] argTypes) {
-		for(Method m : ClassModel.getInstance().getAllAvailableMethods(targetClass)) {
+		//		for(Method m : ClassModel.getInstance().getAllAvailableMethods(targetClass)) {
+		for(Method m : targetClass.getMethods()) {
 			if(m.getName().equals(methodName) && m.getParameterTypes().length == argTypes.length) {
 				boolean ok = true;
 				for(int i = 0; i < argTypes.length && ok; i++) {
@@ -145,7 +146,7 @@ public class MethodCall extends Expression implements Instruction {
 		MethodInvocationCommand cmd = getCommand();
 		ExceptionHandler.INSTANCE.execute(cmd);
 
-//		cmd.execute();
+		//		cmd.execute();
 		return cmd.getResultingObject();
 	}
 
@@ -162,8 +163,8 @@ public class MethodCall extends Expression implements Instruction {
 		return new MethodInvocationCommand(
 				targetObject, 
 				target != null ? target.getText() : targetClass.getSimpleName(), 
-				method, 
-				args, 
-				argsText);
+						method, 
+						args, 
+						argsText);
 	}
 }
