@@ -186,7 +186,19 @@ public final class ObjectWidget extends FieldContainer {
 			methodToWidget.get(m).unhighlight();
 	}
 
+	public void enable(Method method) {
+		Method m = matchMethod(method);
+		if(m != null)
+			methodToWidget.get(m).enable();
+	}
+	
+	public void disable(Method method) {
+		Method m = matchMethod(method);
+		if(m != null)
+			methodToWidget.get(m).disable();
+	}
 
+	
 	private void createPrivateFieldsGroup() {
 		List<Field> invisibleAttributes = ClassModel.getInstance().getInvisibleAttributes(objectClass);
 

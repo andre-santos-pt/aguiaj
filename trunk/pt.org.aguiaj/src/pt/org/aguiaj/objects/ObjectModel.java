@@ -46,6 +46,7 @@ import pt.org.aguiaj.extensibility.JavaCommand;
 import pt.org.aguiaj.extensibility.ObjectEventListener;
 import pt.org.aguiaj.extensibility.Reference;
 import pt.org.aguiaj.extensibility.contracts.ContractDecorator;
+import pt.org.aguiaj.extensibility.contracts.ContractUtil;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 import com.google.common.collect.HashBasedTable;
@@ -402,26 +403,29 @@ public class ObjectModel {
 	}
 
 	public Reference getCompatibleReference(Object object, Method method) {
-		if(object instanceof ContractDecorator)
-			object = ((ContractDecorator<?>) object).getWrappedObject();
-
-		Reference reference = null;
+//		if(object instanceof ContractDecorator)
+//			object = ((ContractDecorator<?>) object).getWrappedObject();
+		
+		object = ContractUtil.unwrap(object);
 		for(String ref : referenceTable.keySet()) {
 			if(referenceTable.get(ref) == object) {
+				if(ReflectionUtils.isMethodOfObject(method))
+					return new Reference(ref, referenceTypeTable.get(ref), object);
+							
 				for(Method m : ClassModel.getInstance().getAllAvailableMethods(referenceTypeTable.get(ref)))
 					if(ReflectionUtils.isSame(m, method))
-						reference = new Reference(ref, referenceTypeTable.get(ref), object);
+						return new Reference(ref, referenceTypeTable.get(ref), object);
 			}
 		}
-		return reference;
+		return null;
 	}
 
 
 	public static Reference getFirstReference(Object object) {
-		if(object instanceof ContractDecorator)
-			object = ((ContractDecorator<?>) object).getWrappedObject();
+//		if(object instanceof ContractDecorator)
+//			object = ((ContractDecorator<?>) object).getWrappedObject();
 
-		return instance.getFirstReferenceAux(object);
+		return instance.getFirstReferenceAux(ContractUtil.unwrap(object));
 	}
 
 	private Reference getFirstReferenceAux(Object object) {

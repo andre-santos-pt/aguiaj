@@ -75,7 +75,7 @@ public class AguiaClassLoader extends ClassLoader{
 					File classFile = classFiles.get(name);
 					// TODO: error handling (class not found)
 					if(classFile == null) {
-						System.err.println("ERROR : " + name);
+						System.err.println("ERROR Class Loader: " + name);
 						throw new ClassNotFoundException(name);
 					}
 					byte[] classData = null;

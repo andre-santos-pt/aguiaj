@@ -18,6 +18,7 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
@@ -54,6 +55,11 @@ public class Array2DObjectWidget extends VisualizationWidget.Adapter<Object> {
 
 	private void buildLines() {
 		numberOfRows = Array.getLength(object);
+		rows.clear();
+		
+		for(Control child : section.getChildren())
+			child.dispose();
+		
 		new ArrayLengthWidget(section).update(numberOfRows);
 
 		for(int i = 0; i < numberOfRows; i++) {
@@ -79,14 +85,6 @@ public class Array2DObjectWidget extends VisualizationWidget.Adapter<Object> {
 				}
 			});
 
-//			link.addObjectHighlightCapability(new ObjectToHighlightProvider() {
-//
-//				@Override
-//				public Object getObjectToHighlight() {
-//					return Array2DObjectWidget.this.getIndex(iFinal);
-//				}
-//			});
-
 			rows.add(WidgetFactory.INSTANCE.createWidget(
 					row, 
 					object.getClass().getComponentType(),
@@ -102,15 +100,13 @@ public class Array2DObjectWidget extends VisualizationWidget.Adapter<Object> {
 	public void update(Object object) {
 		this.object = object;
 
-		if(object != null) {
-			if(numberOfRows == -1)
-				buildLines();
+		if(numberOfRows != Array.getLength(object))
+			buildLines();
 
-			int i = 0;
-			for(TypeWidget widget : rows) {
-				widget.update(getIndex(i));
-				i++;
-			}
+		int i = 0;
+		for(TypeWidget widget : rows) {
+			widget.update(getIndex(i));
+			i++;
 		}
 	}
 }

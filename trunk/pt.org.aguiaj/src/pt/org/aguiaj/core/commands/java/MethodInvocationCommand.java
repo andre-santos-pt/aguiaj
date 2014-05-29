@@ -17,6 +17,7 @@ import java.lang.reflect.Modifier;
 import pt.org.aguiaj.common.MethodInvocationThread2;
 import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.extensibility.contracts.ContractDecorator;
+import pt.org.aguiaj.extensibility.contracts.ContractUtil;
 import pt.org.aguiaj.objects.ObjectModel;
 
 
@@ -52,7 +53,7 @@ public class MethodInvocationCommand extends JavaCommandWithArgs implements Cont
 
 		this.object = object;
 		this.method = method;
-		this.reference = ObjectModel.getInstance().nextReference(method.getReturnType()); // TODO: rever ref compativel
+		this.reference = ObjectModel.getInstance().nextReference(getReturnType());
 		this.objectReference = objectReference;
 
 		thread = new MethodInvocationThread2(this.method, object, args, invocationInstruction());
@@ -84,9 +85,23 @@ public class MethodInvocationCommand extends JavaCommandWithArgs implements Cont
 	public Method getMethod() {
 		return method;
 	}
+	
+	private Class<?> getReturnType() {
+		if(object instanceof ContractDecorator) {
+			//Object obj = ((ContractDecorator<?>) object).getWrappedObject();
+			Object obj = ContractUtil.unwrap(object);
+			Class<?> cla = obj.getClass();
+			try {
+				return cla.getMethod(method.getName(), method.getParameterTypes()).getReturnType();
+			} catch (Exception e) {
+				return method.getReturnType();
+			}
+		}
+		return method.getReturnType();
+	}
 
 	public String getJavaInstruction() {
-		Class<?> returnType = method.getReturnType();
+		Class<?> returnType = getReturnType();
 
 		String ref = "";
 		if(!returnType.isPrimitive())
@@ -132,7 +147,7 @@ public class MethodInvocationCommand extends JavaCommandWithArgs implements Cont
 
 	@Override
 	public Class<?> getReferenceType() { 
-		return method.getReturnType();
+		return getReturnType();
 	}
 
 	@Override
@@ -151,11 +166,11 @@ public class MethodInvocationCommand extends JavaCommandWithArgs implements Cont
 	
 	@Override
 	public Object getObjectUnderContract() {
-		Object o = object;
-		while(o instanceof ContractDecorator)
-			o = ((ContractDecorator) o).getWrappedObject();
+//		Object o = object;
+//		while(o instanceof ContractDecorator)
+//			o = ((ContractDecorator<?>) o).getWrappedObject();
 		
-		return o;
+		return ContractUtil.unwrap(object);
 	}
 
 	@Override

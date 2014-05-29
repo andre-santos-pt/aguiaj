@@ -66,6 +66,18 @@ public class ReflectionUtils {
 		}
 	}
 
+	public static boolean isMethodOfObject(Method m) {
+		if(Modifier.isStatic(m.getModifiers()))
+			return false;
+		
+		try {
+			Object.class.getMethod(m.getName(), m.getParameterTypes());
+			return true;
+		}
+		catch(Exception e) {
+			return false;
+		}
+	}
 
 	public static boolean isOneDimensionArray(Object array) {
 		return array.getClass().isArray() && !array.getClass().getComponentType().isArray();	

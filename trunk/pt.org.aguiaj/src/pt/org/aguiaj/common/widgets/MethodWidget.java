@@ -32,6 +32,7 @@ import pt.org.aguiaj.core.AguiaJParam;
 import pt.org.aguiaj.core.Highlightable;
 import pt.org.aguiaj.core.Highlighter;
 import pt.org.aguiaj.core.Inspector;
+import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.TypeWidget;
 import pt.org.aguiaj.core.commands.java.MethodInvocationCommand;
 import pt.org.aguiaj.core.documentation.DocumentationLinking;
@@ -53,6 +54,7 @@ public class MethodWidget implements Highlightable {
 	private boolean overriding;
 
 	private Button invokeButton;
+	private Composite argsComposite;
 	private Highlighter highlighter;
 
 	private List<TypeWidget> paramWidgets;
@@ -79,12 +81,12 @@ public class MethodWidget implements Highlightable {
 		}
 		createInvokeButton(parent, object, method);
 
-		Composite argsComposite = new Composite(parent, SWT.NONE);
+		argsComposite = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout(method.getParameterTypes().length, false);
 		layout.horizontalSpacing = 0;
 		argsComposite.setLayout(layout);
 
-		paramWidgets = createParameterWidgets(fieldContainer, method, argsComposite);
+		paramWidgets = createParameterWidgets(method, argsComposite);
 	}
 
 	private void createInvokeButton(Composite parent, Object object, Method method) {
@@ -115,7 +117,7 @@ public class MethodWidget implements Highlightable {
 
 
 
-	private List<TypeWidget> createParameterWidgets(FieldContainer fieldContainer, final Method method, Composite argsComposite) {
+	private List<TypeWidget> createParameterWidgets(Method method, Composite argsComposite) {
 		List<TypeWidget> paramTexts = new ArrayList<TypeWidget>();
 		Class<?>[] paramTypes = method.getParameterTypes();
 
@@ -169,8 +171,6 @@ public class MethodWidget implements Highlightable {
 		}
 		
 		String objectReference = object != null && ref != null ? ref.name : null;
-
-		
 		MethodInvocationCommand cmd = new MethodInvocationCommand(object, objectReference, method, args, argsText);
 		ObjectModel.getInstance().execute(cmd);
 	}
@@ -183,6 +183,18 @@ public class MethodWidget implements Highlightable {
 	@Override
 	public void unhighlight() {
 		highlighter.unhighlight();
+	}
+
+	public void enable() {
+		argsComposite.setEnabled(true);
+		invokeButton.setEnabled(true);
+		highlighter.enable();
+	}
+	
+	public void disable() {
+		argsComposite.setEnabled(false);
+		invokeButton.setEnabled(false);
+		highlighter.disable();
 	}
 
 	public void setArgs(Object[] args) {
