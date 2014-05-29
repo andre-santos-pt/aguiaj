@@ -36,7 +36,8 @@ import pt.org.aguiaj.standard.StandardNamePolicy;
 
 public class PropertyWidget implements Highlightable {
 	private LabelWidget label;
-
+	private Composite row;
+	
 	public PropertyWidget(Composite parent, Object object, Method method, FieldContainer fieldContainer) {
 		boolean inherited = Inspector.isInherited(object.getClass(), method);
 		boolean overriding = Inspector.isOverriding(object.getClass(), method);
@@ -91,7 +92,7 @@ public class PropertyWidget implements Highlightable {
 //			});
 		}
 
-		Composite row = new Composite(parent, SWT.NONE);
+		row = new Composite(parent, SWT.NONE);
 		row.setLayout(new RowLayout(SWT.HORIZONTAL));
 
 		List<TypeWidget> widgets = WidgetFactory.INSTANCE.createWidgets(
@@ -111,6 +112,18 @@ public class PropertyWidget implements Highlightable {
 	@Override
 	public void unhighlight() {
 		label.unhighlight();		
+	}
+
+	@Override
+	public void enable() {
+		label.enable();
+		row.setEnabled(true);
+	}
+
+	@Override
+	public void disable() {
+		label.disable();
+		row.setEnabled(false);
 	}
 }
 

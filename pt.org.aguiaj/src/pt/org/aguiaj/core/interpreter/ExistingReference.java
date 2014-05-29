@@ -13,6 +13,7 @@ package pt.org.aguiaj.core.interpreter;
 import java.util.Map;
 import java.util.Set;
 
+
 import pt.org.aguiaj.extensibility.Reference;
 
 
@@ -20,6 +21,8 @@ public class ExistingReference extends Expression implements Assignable {
 	private String id;
 	private Class<?> type;
 	private Object object;
+	
+	private Class<?> cast;
 	
 	public ExistingReference() {
 		
@@ -32,7 +35,22 @@ public class ExistingReference extends Expression implements Assignable {
 	}
 
 	@Override
-	public boolean accept(String text, Map<String, Reference> referenceTable, Set<Class<?>> classSet) {
+	public boolean accept(String text, Map<String, Reference> referenceTable, Set<Class<?>> classSet) throws ParseException {
+		text = text.replaceAll("\\s+", "");
+		
+		// cast
+		if(text.matches("\\((.)+\\)(.)+")) {
+			String castType = text.substring(1, text.indexOf(')'));
+			for(Class<?> c : classSet)
+				if(c.getSimpleName().equals(castType))
+					cast = c;
+			
+			if(cast == null)
+				return false;
+			
+			text = text.substring(text.indexOf(')')+1);
+		}
+		
 		if(!Common.isValidJavaIdentifier(text))
 			return false;
 		
@@ -40,6 +58,10 @@ public class ExistingReference extends Expression implements Assignable {
 			id = text;	
 			type = referenceTable.get(text).type;
 			object = referenceTable.get(text).object;
+			
+			if(cast != null && object != null && !type.isAssignableFrom(cast))
+				throw new ParseException("Incompatible cast", type.getSimpleName() + " to " + cast.getSimpleName());
+			
 			return true;
 		}
 		
@@ -48,7 +70,7 @@ public class ExistingReference extends Expression implements Assignable {
 
 	@Override
 	public Class<?> type() {
-		return type;
+		return cast != null ? cast : type;
 	}
 
 	public String getIdentifier() {

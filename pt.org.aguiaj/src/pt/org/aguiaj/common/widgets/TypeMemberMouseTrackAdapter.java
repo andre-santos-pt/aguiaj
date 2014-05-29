@@ -17,6 +17,7 @@ import java.util.List;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseTrackAdapter;
 
+import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.objects.ObjectWidget;
 
 public class TypeMemberMouseTrackAdapter extends MouseTrackAdapter {
@@ -25,8 +26,7 @@ public class TypeMemberMouseTrackAdapter extends MouseTrackAdapter {
 
 		public TypeMemberMouseTrackAdapter(ObjectWidget widget, Class<?> type) {
 			this.widget = widget;
-			methods = Arrays.asList(type.getMethods());
-			//methods = ClassModel.getInspector().methodsOfSupertype(widget.getObject().getClass(), type);
+			methods = ClassModel.getInstance().getAllAvailableMethods(type);
 		}
 
 		@Override

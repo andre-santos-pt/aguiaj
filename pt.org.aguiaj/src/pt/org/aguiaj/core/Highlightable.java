@@ -14,4 +14,7 @@ public interface Highlightable {
 
 	void highlight();
 	void unhighlight();
+	
+	void enable();
+	void disable();
 }

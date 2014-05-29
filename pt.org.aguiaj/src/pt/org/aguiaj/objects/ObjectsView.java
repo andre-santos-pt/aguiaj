@@ -12,8 +12,11 @@ package pt.org.aguiaj.objects;
 
 import static com.google.common.collect.Maps.newHashMap;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -27,11 +30,13 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
+import pt.org.aguiaj.classes.ClassModel;
 import pt.org.aguiaj.common.AguiaJColor;
 import pt.org.aguiaj.common.AguiaJImage;
 import pt.org.aguiaj.common.DragNDrop;
 import pt.org.aguiaj.common.SWTUtils;
 import pt.org.aguiaj.common.widgets.NullReferenceWidget;
+import pt.org.aguiaj.core.ReflectionUtils;
 import pt.org.aguiaj.core.commands.ReloadClassesCommand;
 import pt.org.aguiaj.core.commands.RemoveAllObjectsCommand;
 import pt.org.aguiaj.core.commands.RemoveDeadObjectsCommand;
@@ -72,23 +77,29 @@ public class ObjectsView extends ViewPart {
 
 		@Override
 		public void newReferenceEvent(Reference ref) {
-			if(ref.object != null)
+			if(ref.object != null) {
 				addObjectWidget(ref.object, ref.name, ref.type);
+				updateOperationAvailability(ref.object);
+			}
 			else
 				nullStack.addReference(ref.name, ref.type, null);
-			
+
 			nullStack.setVisible(nullStack.hasReferences());
 		}
+
+		
 
 		@Override
 		public void changeReferenceEvent(Reference ref) {
 			addReference(ref.type, ref.name, ref.object);
+			updateOperationAvailability(ref.object);
 			nullStack.setVisible(nullStack.hasReferences());
 		}
 
 		@Override
 		public void removeReferenceEvent(Reference ref) {
 			removeReference(ref.name);
+			updateOperationAvailability(ref.object);
 			nullStack.setVisible(nullStack.hasReferences());
 		}
 
@@ -101,6 +112,36 @@ public class ObjectsView extends ViewPart {
 		public void clearAll() {
 			clearAllWidgets();
 			nullStack.setVisible(false);
+		}
+		
+		private void updateOperationAvailability(Object object) {
+
+			List<Reference> refs = ObjectModel.getInstance().getReferences(object);
+			
+			for(Method m : ClassModel.getInstance().getAllAvailableMethods(object.getClass()))
+				if(enablesOperation(refs, m))
+					getObjectWidget(object).enable(m);
+				else
+					getObjectWidget(object).disable(m);
+
+		}
+
+		private boolean enablesOperation(List<Reference> refs, Method method) {
+			if(ReflectionUtils.isMethodOfObject(method))
+				return true;
+
+			for(Reference r : refs)
+				for(Method m : ClassModel.getInstance().getAllAvailableMethods(r.type))
+					if(m.getName().equals(method.getName()) && Arrays.deepEquals(m.getParameterTypes(), method.getParameterTypes()))
+						return true;
+//				try {
+//					r.type.getMethod(m.getName(), m.getParameterTypes());
+//					return true;
+//				}
+//				catch(Exception e) {
+//					
+//				}
+			return false;
 		}
 	}
 
@@ -122,10 +163,10 @@ public class ObjectsView extends ViewPart {
 
 		scrl = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);		
 		scrl.setAlwaysShowScrollBars(true);
-		
+
 		area = new Composite(scrl, SWT.NONE);
 
-//		GridLayout layout = new org.eclipse.swt.layout.GridLayout(1, true);
+		//		GridLayout layout = new org.eclipse.swt.layout.GridLayout(1, true);
 		RowLayout layout = new RowLayout(SWT.HORIZONTAL);
 		layout.spacing = padding;
 		layout.marginTop = padding;
@@ -268,9 +309,9 @@ public class ObjectsView extends ViewPart {
 			ReferenceStackWidget<ObjectWidget> pair =  ReferenceStackWidget.newObject(area, object);
 			widgetsTable.put(object, pair.getWidget());
 			refStackTable.put(object, pair);	
-//			pair.moveAbove(null);
+			//			pair.moveAbove(null);
 		}
-		
+
 		addReference(referenceType, reference, object);
 		updateLayout(reference);
 	}
@@ -338,8 +379,8 @@ public class ObjectsView extends ViewPart {
 		}
 		return map;
 	}
-	
-	
+
+
 	private ReferenceStackWidget<ObjectWidget> getRefAndObjectPairWidget(String refId) {
 		for(ReferenceStackWidget<ObjectWidget> widget : refStackTable.values())
 			if(widget.hasReference(refId))
@@ -366,54 +407,54 @@ public class ObjectsView extends ViewPart {
 	}
 
 
-//	public void highlight(Object object) {
-//		assert object != null;
-//
-//		ObjectWidget widget = getObjectWidget(object);
-//
-//		if(widget != null) {
-//			if(highlighted != null)
-//				highlighted.unhighlight();
-//
-//			widget.highlight();
-//			highlighted = widget;
-//			launchObjectUnhilight();
-//		}
-//	}
+	//	public void highlight(Object object) {
+	//		assert object != null;
+	//
+	//		ObjectWidget widget = getObjectWidget(object);
+	//
+	//		if(widget != null) {
+	//			if(highlighted != null)
+	//				highlighted.unhighlight();
+	//
+	//			widget.highlight();
+	//			highlighted = widget;
+	//			launchObjectUnhilight();
+	//		}
+	//	}
 
-//	public void unhighlight() {
-//		if(objectUnhilightjob != null) {
-//			synchronized (objectUnhilightjob) {													
-//				objectUnhilightjob = null;
-//			}
-//			objectUnhilightjob = null;
-//		}
-//
-//		if(highlighted != null) {
-//			highlighted.unhighlight();
-//			highlighted.layout();
-//		}
-//		highlighted = null;
-//	}
+	//	public void unhighlight() {
+	//		if(objectUnhilightjob != null) {
+	//			synchronized (objectUnhilightjob) {													
+	//				objectUnhilightjob = null;
+	//			}
+	//			objectUnhilightjob = null;
+	//		}
+	//
+	//		if(highlighted != null) {
+	//			highlighted.unhighlight();
+	//			highlighted.layout();
+	//		}
+	//		highlighted = null;
+	//	}
 
 	public void hide(String objectReference) {
 		assert objectReference != null;
 
 		ReferenceStackWidget<?> widget = getRefAndObjectPairWidget(objectReference);
-		
+
 		if(widget != null)
 			widget.setVisible(false);
 	}
-	
+
 	public void show(String objectReference) {
 		assert objectReference != null;
 
 		ReferenceStackWidget<?> widget = getRefAndObjectPairWidget(objectReference);
-		
+
 		if(widget != null)
 			widget.setVisible(true);
 	}
-	
+
 	private void updateObjectWidgets() {
 		for(ObjectWidget widget : widgetsTable.values())
 			widget.updateFields();
@@ -436,27 +477,27 @@ public class ObjectsView extends ViewPart {
 	}
 
 
-//	private Job objectUnhilightjob;
-//
-//	private void launchObjectUnhilight() {
-//		if(objectUnhilightjob != null)
-//			synchronized (objectUnhilightjob) {
-//				objectUnhilightjob.cancel();
-//			}
-//
-//		objectUnhilightjob = new Job("object highlight") {
-//
-//			@Override
-//			protected IStatus run(IProgressMonitor monitor) {
-//				Display.getDefault().syncExec(new Runnable() {
-//					@Override
-//					public void run() {
-//						ObjectsView.getInstance().unhighlight();						
-//					}
-//				});
-//				return Status.OK_STATUS;
-//			}
-//		};
-//		objectUnhilightjob.schedule(AguiaJParam.HIGHLIGHT_TIMEOUT.getInt() * 1000);
-//	}
+	//	private Job objectUnhilightjob;
+	//
+	//	private void launchObjectUnhilight() {
+	//		if(objectUnhilightjob != null)
+	//			synchronized (objectUnhilightjob) {
+	//				objectUnhilightjob.cancel();
+	//			}
+	//
+	//		objectUnhilightjob = new Job("object highlight") {
+	//
+	//			@Override
+	//			protected IStatus run(IProgressMonitor monitor) {
+	//				Display.getDefault().syncExec(new Runnable() {
+	//					@Override
+	//					public void run() {
+	//						ObjectsView.getInstance().unhighlight();						
+	//					}
+	//				});
+	//				return Status.OK_STATUS;
+	//			}
+	//		};
+	//		objectUnhilightjob.schedule(AguiaJParam.HIGHLIGHT_TIMEOUT.getInt() * 1000);
+	//	}
 }

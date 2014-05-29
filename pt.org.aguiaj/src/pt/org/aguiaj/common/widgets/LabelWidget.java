@@ -192,4 +192,16 @@ public class LabelWidget implements Highlightable {
 	public void unhighlight() {
 		highlighter.unhighlight();
 	}
+
+	@Override
+	public void enable() {
+		highlighter.enable();
+//		control.setEnabled(true);
+	}
+
+	@Override
+	public void disable() {
+		highlighter.disable();
+//		control.setEnabled(false);
+	}
 }
