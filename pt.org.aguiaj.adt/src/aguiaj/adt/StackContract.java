@@ -39,16 +39,16 @@ public class StackContract implements ContractDecorator<Stack>, Stack {
 		boolean empty = isEmpty();
 		
 		if(empty)
-			throw new PreConditionException("stack is empty");
+			throw new PreConditionException(Stack.class, "pop", "stack is empty");
 		
 		int size = getSize();
 		Object o = stack.pop();
 		
 		if(getSize() != size - 1)
-			throw new PostConditionException("after a push, size must be decremented by one");
+			throw new PostConditionException(Stack.class, "pop", "after a push, size must be decremented by one");
 		
 		if(o == null)
-			throw new PostConditionException("pop() shoud never return null");
+			throw new PostConditionException(Stack.class, "pop", "pop() shoud never return null");
 		
 		return o;
 	}
@@ -59,10 +59,10 @@ public class StackContract implements ContractDecorator<Stack>, Stack {
 		stack.push(object);
 		
 		if(object == null)
-			throw new PreConditionException("the stack cannot contain nulls");
+			throw new PreConditionException(Stack.class, "push", "the stack cannot contain nulls");
 		
 		if(getSize() != size + 1)
-			throw new PostConditionException("after a push, size must be incremented by one");
+			throw new PostConditionException(Stack.class, "push", "after a push, size must be incremented by one");
 	}
 
 	
