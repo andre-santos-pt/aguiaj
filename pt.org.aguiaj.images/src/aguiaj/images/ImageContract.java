@@ -27,7 +27,7 @@ public class ImageContract implements Image, ContractDecorator<Image>{
 
 		int w = image.getWidth();
 		if(w < 1)
-			throw new PostConditionException("Width must be positive");
+			throw new PostConditionException(Image.class, "getWidth", "Width must be positive");
 		
 		if(constWidth == -1)
 			constWidth = w;
@@ -39,7 +39,7 @@ public class ImageContract implements Image, ContractDecorator<Image>{
 	public int getHeight() {
 		int h = image.getWidth();
 		if(h < 1)
-			throw new PostConditionException("Height must be positive");
+			throw new PostConditionException(Image.class, "getHeight", "Height must be positive");
 		
 		if(constHeight == -1)
 			constHeight = h;
@@ -50,15 +50,15 @@ public class ImageContract implements Image, ContractDecorator<Image>{
 	@Override
 	public Color getColor(int x, int y) {
 		if(x < 0 || x >= getWidth())
-			throw new PreConditionException("Invalid x coordinate: " + x + " (valid range [0, " + (getWidth()-1) + "])");
+			throw new PreConditionException(Image.class, "getColor", "Invalid x coordinate: " + x + " (valid range [0, " + (getWidth()-1) + "])");
 		
 		if(y < 0 || y >= getHeight())
-			throw new PreConditionException("Invalid y coordinate: " + y + " (valid range [0, " + (getHeight()-1) + "])");
+			throw new PreConditionException(Image.class, "getColor", "Invalid y coordinate: " + y + " (valid range [0, " + (getHeight()-1) + "])");
 		
 		
 		Color c = image.getColor(x, y);
 		if(c == null)
-			throw new PostConditionException("The color of a pixel cannot be null");
+			throw new PostConditionException(Image.class, "getColor", "The color of a pixel cannot be null");
 		
 		return c;
 	}
@@ -69,6 +69,6 @@ public class ImageContract implements Image, ContractDecorator<Image>{
 			throw new InvariantException("Image width must be constant");
 	
 		if(constHeight != -1 && constHeight != getHeight())
-			throw new PostConditionException("Image height must be constant");
+			throw new InvariantException("Image height must be constant");
 	}
 }
