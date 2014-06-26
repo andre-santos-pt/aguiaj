@@ -27,7 +27,7 @@ public class CollectionContract implements ContractDecorator<Collection>, Collec
 		int size = collection.getSize();
 		
 		if(size < 0)
-			throw new PostConditionException("size cannot be negative");
+			throw new PostConditionException(Collection.class, "getSize", "size cannot be negative");
 		
 		return size;
 	}
