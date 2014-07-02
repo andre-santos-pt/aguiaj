@@ -35,7 +35,7 @@ public class AddJarToBuildPath implements IViewActionDelegate {
 		if(project == null) {
 			MessageBox message = new MessageBox(Display.getDefault().getActiveShell(), SWT.ICON_WARNING);
 			message.setText("Import plugin JAR");
-			message.setMessage("No project was opened in AGUIA/J.");
+			message.setMessage("No project was opened in AguiaJ.");
 			message.open();
 			return;
 		}

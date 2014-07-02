@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: AGUIA/J Grid Plugin
+Bundle-Name: AguiaJ Draw plugin
 Bundle-SymbolicName: pt.org.aguiaj.draw;singleton:=true
 Bundle-Version: 1.1.2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

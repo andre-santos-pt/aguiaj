@@ -10,7 +10,7 @@
                class="pt.org.aguiaj.eclipse.OpenAguiaJ"
                icon="icons/eagle-icon-16.png"
                id="pt.org.aguiaj.eclipse.runInAguiaJ"
-               label="Run in AGUIA/J"
+               label="Run in AguiaJ"
                style="push"
                toolbarPath="aguia">
          </action>
@@ -52,13 +52,13 @@
             targetID="org.eclipse.jdt.ui.PackageExplorer">
          <menu
                id="AguiaJEclipse.menu1"
-               label="AGUIAJ">
+               label="AguiaJ">
          </menu>
          <action
                class="pt.org.aguiaj.eclipse.OpenAguiaJ"
                icon="icons/eagle-icon-16.png"
                id="pt.org.aguiaj.eclipse.runInAguiaJ"
-               label="Run in AGUIA/J"
+               label="Run in AguiaJ"
                style="push"
                toolbarPath="aguia">
          </action>
@@ -68,7 +68,7 @@
             targetID="org.eclipse.jdt.ui.PackageExplorer">
          <menu
                id="AguiaJEclipse.menu2"
-               label="AGUIA/J"
+               label="AguiaJ"
                path="menu:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?after=additions">
          </menu>
       </viewContribution>
@@ -81,7 +81,7 @@
          <command
                commandId="AguiaJEclipse.openAguiaJPerspective"
                icon="icons/eagle-icon-16.png"
-               label="Open AGUIA/J perspective"
+               label="Open AguiaJ perspective"
                style="push">
          </command>
       </menuContribution>
@@ -96,7 +96,7 @@
       <command
             defaultHandler="pt.org.aguiaj.eclipse.OpenAguiaJ"
             id="AguiaJEclipse.openAguiaJPerspective"
-            name="Open AGUIA/J perspective">
+            name="Open AguiaJ perspective">
       </command>
    </extension>
    <extension

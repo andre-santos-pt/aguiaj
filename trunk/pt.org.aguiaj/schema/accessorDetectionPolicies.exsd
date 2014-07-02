@@ -6,7 +6,7 @@
          <meta.schema plugin="pt.org.aguiaj" id="accessorDetectionPolicies" name="Accessor Detection Policies"/>
       </appinfo>
       <documentation>
-         This extension point enables to plug into AGUIA/J different accessor method detection policies.
+         This extension point enables to plug into AguiaJ different accessor method detection policies.
       </documentation>
    </annotation>
 

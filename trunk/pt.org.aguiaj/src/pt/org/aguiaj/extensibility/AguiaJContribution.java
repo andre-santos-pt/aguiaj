@@ -11,7 +11,7 @@
 package pt.org.aguiaj.extensibility;
 
 /**
- * Constant strings related to the constributions of AGUIA/J within the Eclipse framework.
+ * Constant strings related to the constributions of AguiaJ within the Eclipse framework.
  */
 public interface AguiaJContribution {
 
@@ -46,12 +46,12 @@ public interface AguiaJContribution {
 	public static final String DOCUMENTATION_VIEW = "pt.org.aguiaj.documentationView";
 
 	/**
-	 * AGUIA/J perspective id.
+	 * AguiaJ perspective id.
 	 */
 	public static final String PERSPECTIVE = "pt.org.aguiaj.perspective";
 	
 	/**
-	 * Id of the extension point for plugging object visualization widgets into AGUIA/J.
+	 * Id of the extension point for plugging object visualization widgets into AguiaJ.
 	 */
 	public static final String EXTENSION_OBJECT_WIDGET = "pt.org.aguiaj.objectWidgets";	
 	
@@ -72,7 +72,7 @@ public interface AguiaJContribution {
 	
 	
 	/**
-	 * Id of the extension point for plugging method accessor detection policies into AGUIA/J.
+	 * Id of the extension point for plugging method accessor detection policies into AguiaJ.
 	 */
 	public static final String EXTENSION_ACCESSOR_POLICY = "pt.org.aguiaj.accessorDetectionPolicies";
 	
@@ -82,7 +82,7 @@ public interface AguiaJContribution {
 	public static final String EXTENSION_LANGUAGES = "pt.org.aguiaj.languages";
 	
 	/**
-	 * Id of the extension point for plugging object visualization widgets into AGUIA/J.
+	 * Id of the extension point for plugging object visualization widgets into AguiaJ.
 	 */
 	public static final String EXTENSION_IMPORT_ITEM = "pt.org.aguiaj.importItem";
 	public static final String IMPORT_ITEM_NAME = "name";

@@ -40,7 +40,7 @@ public class AguiaJConsoleActivator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		instance = this;
 		AguiaJConsoleActivator.context = bundleContext;
-		console = findConsole("AGUIA/J");
+		console = findConsole("AguiaJ");
 		out = console.newMessageStream();
 	}
 
