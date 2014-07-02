@@ -12,7 +12,7 @@
             class="pt.org.aguiaj.core.AguiaJPerspective"
             icon="images/eagle-icon-16.png"
             id="pt.org.aguiaj.perspective"
-            name="AGUIA/J">
+            name="AguiaJ">
       </perspective>
    </extension>
    <extension
@@ -64,7 +64,7 @@
       </view>
       <category
             id="pt.org.aguiaj.viewCategory"
-            name="AGUIA/J">
+            name="AguiaJ">
       </category>
    </extension>
    <extension
@@ -123,7 +123,7 @@
       <page
             class="pt.org.aguiaj.core.AguiaJPreferencePage"
             id="pt.org.aguiaj.preferences"
-            name="AGUIA/J">
+            name="AguiaJ">
       </page>
    </extension>
    <extension
@@ -150,7 +150,7 @@
             locationURI="menu:org.eclipse.ui.main.menu">
          <menu
                id="AguiaJ.menu"
-               label="AGUIA/J">
+               label="AguiaJ">
             <command
                   commandId="AguiaJ.feedbackForm"
                   icon="images/mail.gif"

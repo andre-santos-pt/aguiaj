@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="pt.org.aguiaj.feature"
-      label="AGUIA/J"
+      label="AguiaJ"
       version="1.1.2"
       provider-name="aguiaj.org.pt"
       plugin="pt.org.aguiaj.branding">
 
    <description url="http://www.aguiaj.org.pt">
-      AGUIA/J is an interactive environment for experimenting object-oriented
+      AguiaJ is an interactive environment for experimenting object-oriented
 programming in Java.
    </description>
 
@@ -45,8 +45,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    </license>
 
    <url>
-      <update label="AGUIA/J Update Site" url="http://update.aguiaj.org.pt"/>
-      <discovery label="AspectJ Development Tools" url="http://download.eclipse.org/tools/ajdt/36/dev/update"/>
+      <update label="AguiaJ Update Site" url="http://update.aguiaj.org.pt"/>
       <discovery label="Guava: Google code libraries for Java" url="http://guava-osgi.googlecode.com/svn/trunk/repository/"/>
    </url>
 

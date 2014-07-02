@@ -69,7 +69,7 @@ public class ImportPluginsMenu extends ContributionItem {
 	@Override
 	public void fill(Menu menu, int index) {
 		MenuItem submenu = new MenuItem(menu, SWT.CASCADE);
-		submenu.setText("Import AGUIA/J plugin classes");
+		submenu.setText("Import AguiaJ plugin classes");
 		String path = null;
 		try {
 			path =  FileLocator.toFileURL(Activator.getContext().getBundle().getEntry("icons/eagle-icon-16.png")).getPath();

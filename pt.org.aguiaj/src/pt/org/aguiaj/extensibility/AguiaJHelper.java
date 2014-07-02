@@ -31,7 +31,7 @@ import pt.org.aguiaj.objects.ObjectWidget;
 import pt.org.aguiaj.objects.ObjectsView;
 
 /**
- * Helper class to interact with AGUIA/J.
+ * Helper class to interact with AguiaJ.
  */
 public class AguiaJHelper {
 	public static String getWorkingDirectory() {

@@ -11,7 +11,7 @@
 package pt.org.aguiaj.extensibility;
 
 /**
- * Represents a custom widget that can be plugged into the AGUIA/J framework.
+ * Represents a custom widget that can be plugged into the AguiaJ framework.
  *
  * @param <T> The type of domain object that this widget renders.
  */

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="pt.org.aguiaj.plugins.feature"
-      label="AGUIA/J Standard Plugins"
+      label="AguiaJ Standard Plugins"
       version="1.1.2"
       provider-name="aguiaj.org.pt"
       plugin="pt.org.aguiaj.branding">
 
    <description url="http://www.aguiaj.org.pt">
-      This feature includes standard AGUIA/J plugins.
+      This feature includes standard AguiaJ plugins.
    </description>
 
    <copyright url="http://www.andre-santos.name">
@@ -44,8 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    </license>
 
    <url>
-      <update label="AGUIA/J Update Site" url="http://update.aguiaj.org.pt"/>
-      <discovery label="AspectJ Development Tools" url="http://download.eclipse.org/tools/ajdt/36/dev/update"/>
+      <update label="AguiaJ Update Site" url="http://update.aguiaj.org.pt"/>
       <discovery label="Guava: Google code libraries for Java" url="http://guava-osgi.googlecode.com/svn/trunk/repository/"/>
    </url>
 
@@ -66,12 +65,5 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
          download-size="0"
          install-size="0"
          version="0.0.0"/>
-
-   <plugin
-         id="pt.org.aguiaj.cards"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
 
 </feature>

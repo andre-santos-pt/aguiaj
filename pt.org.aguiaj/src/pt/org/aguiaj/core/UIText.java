@@ -25,7 +25,7 @@ public enum UIText {
 	TRANSLATION,
 	ORIGINAL_MESSAGE, 
 	NEW_LANGUAGE_PLUGIN, 
-	NEW_LANGUAGE_FEATURE("This feature enables you to create support for a new language for AGUIA/J. " +
+	NEW_LANGUAGE_FEATURE("This feature enables you to create support for a new language for AguiaJ. " +
 			"After filling out the table and pressing the button, you generate an Eclipse plugin. " +
 			"The entries left blank will remain with the original English message."), 
 	LANGUAGE_NAME,

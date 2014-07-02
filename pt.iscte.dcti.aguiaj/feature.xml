@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="pt.iscte.dcti.aguiaj"
-      label="AGUIA/J ISCTE"
+      label="AguiaJ ISCTE"
       version="0.5">
 
    <description url="http://www.example.com/description">

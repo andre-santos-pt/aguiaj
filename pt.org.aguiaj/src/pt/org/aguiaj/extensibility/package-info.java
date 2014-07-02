@@ -9,6 +9,6 @@
  *     Andre L Santos - developer
  ******************************************************************************/
 /**
- * This package contains the interfaces and helper classes related to AGUIA/J extensibility.
+ * This package contains the interfaces and helper classes related to AguiaJ extensibility.
  */
 package pt.org.aguiaj.extensibility;

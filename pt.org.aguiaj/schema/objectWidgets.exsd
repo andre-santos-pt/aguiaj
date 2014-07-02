@@ -6,7 +6,7 @@
          <meta.schema plugin="pt.org.aguiaj" id="objectWidgets" name="Object Widgets"/>
       </appinfo>
       <documentation>
-         This extension point enables custom object visualization widgets to be plugged into AGUIA/J.
+         This extension point enables custom object visualization widgets to be plugged into AguiaJ.
       </documentation>
    </annotation>
 
@@ -171,7 +171,7 @@
          <meta.section type="examples"/>
       </appinfo>
       <documentation>
-         See Standard AGUIA/J plugins.
+         See Standard AguiaJ plugins.
       </documentation>
    </annotation>
 
