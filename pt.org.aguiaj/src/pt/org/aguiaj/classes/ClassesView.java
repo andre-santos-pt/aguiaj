@@ -121,12 +121,13 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 		};
 
 		IMenuManager dropDownMenu = getViewSite().getActionBars().getMenuManager();
-
+		
 		dropDownMenu.add(ChangeWorkingDirCommand.createAction());
 		dropDownMenu.add(createImportMenu());
 
 		refreshAction.setImageDescriptor(AguiaJImage.REFRESH.getImageDescriptor());
 		toolbarManager.add(refreshAction);
+		
 	}
 
 	private MenuManager createImportMenu() {
@@ -222,6 +223,23 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 		List<String> packageNames = new ArrayList<String>(packagesClasses.keySet());
 		Collections.sort(packageNames);
 
+//		Collections.sort(packageNames, new Comparator<String>() {
+//
+//			@Override
+//			public int compare(String a, String b) {
+//				boolean aPlugin = AguiaJActivator.getInstance().isPluginPackage(a);
+//				boolean bPlugin = AguiaJActivator.getInstance().isPluginPackage(b);
+//				
+//				if(!aPlugin && bPlugin)
+//					return -1;
+//				else if(aPlugin && !bPlugin)
+//					return 1;
+//				else
+//					return a.compareTo(b);
+//				
+//			}
+//		});
+		
 		cleanUpOldPackages(packageNames);
 		filterPluginPackages(packageNames); // no point to redo the UI
 		
@@ -272,9 +290,12 @@ public class ClassesView extends ViewPart implements ISizeProvider {
 			CTabItem tab = null;
 			
 			if(packageMapping.containsKey(packageName)) {
-				tab = packageMapping.get(packageName);
-				PackageWidget classArea = (PackageWidget) tab.getControl();
-				classArea.dispose();
+				packageMapping.get(packageName).dispose();
+//				System.out.println("DISPOSE: " + packageName);
+//				removeTab(packageName);
+//				tab = packageMapping.get(packageName);
+//				PackageWidget classArea = (PackageWidget) tab.getControl();
+//				//classArea.dispose();
 			}
 			
 			List<Class<?>> classList = new ArrayList<Class<?>>(packagesClasses.get(packageName));

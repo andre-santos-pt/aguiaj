@@ -231,6 +231,12 @@ class PackageWidget extends Composite {
 	Set<ClassWidget> getClassWidgets() {
 		return Collections.unmodifiableSet(classWidgets);
 	}
+	
+	
+	
+	
+	
+	
 
 	private static class ErrorWidget extends Composite {
 		public ErrorWidget(Composite parent, Class<?> clazz) {
