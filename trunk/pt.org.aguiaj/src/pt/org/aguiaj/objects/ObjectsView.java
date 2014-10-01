@@ -87,19 +87,19 @@ public class ObjectsView extends ViewPart {
 			nullStack.setVisible(nullStack.hasReferences());
 		}
 
-		
+
 
 		@Override
 		public void changeReferenceEvent(Reference ref) {
 			addReference(ref.type, ref.name, ref.object);
-			updateOperationAvailability(ref.object);
+			updateOperationAvailability(ref);
 			nullStack.setVisible(nullStack.hasReferences());
 		}
 
 		@Override
 		public void removeReferenceEvent(Reference ref) {
 			removeReference(ref.name);
-			updateOperationAvailability(ref.object);
+			updateOperationAvailability(ref.previousObject);
 			nullStack.setVisible(nullStack.hasReferences());
 		}
 
@@ -113,16 +113,21 @@ public class ObjectsView extends ViewPart {
 			clearAllWidgets();
 			nullStack.setVisible(false);
 		}
+
+		private void updateOperationAvailability(Reference r) {
+			updateOperationAvailability(r.object);
+			updateOperationAvailability(r.previousObject);
+		}
 		
 		private void updateOperationAvailability(Object object) {
-
-			List<Reference> refs = ObjectModel.getInstance().getReferences(object);
-			
-			for(Method m : ClassModel.getInstance().getAllAvailableMethods(object.getClass()))
-				if(enablesOperation(refs, m))
-					getObjectWidget(object).enable(m);
-				else
-					getObjectWidget(object).disable(m);
+			if(object != null) {
+				List<Reference> refs = ObjectModel.getInstance().getReferences(object);
+				for(Method m : ClassModel.getInstance().getAllAvailableMethods(object.getClass()))
+					if(enablesOperation(refs, m))
+						getObjectWidget(object).enable(m);
+					else
+						getObjectWidget(object).disable(m);
+			}
 
 		}
 
@@ -134,13 +139,13 @@ public class ObjectsView extends ViewPart {
 				for(Method m : ClassModel.getInstance().getAllAvailableMethods(r.type))
 					if(m.getName().equals(method.getName()) && Arrays.deepEquals(m.getParameterTypes(), method.getParameterTypes()))
 						return true;
-//				try {
-//					r.type.getMethod(m.getName(), m.getParameterTypes());
-//					return true;
-//				}
-//				catch(Exception e) {
-//					
-//				}
+			//				try {
+			//					r.type.getMethod(m.getName(), m.getParameterTypes());
+			//					return true;
+			//				}
+			//				catch(Exception e) {
+			//					
+			//				}
 			return false;
 		}
 	}

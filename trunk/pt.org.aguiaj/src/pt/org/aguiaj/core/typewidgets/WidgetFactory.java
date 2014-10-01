@@ -103,7 +103,20 @@ public enum WidgetFactory {
 	private List<Constructor<? extends VisualizationWidget<?>>> compatibleExtensions(Class<?> clazz, WidgetProperty ownerType) {
 		List<Constructor<? extends VisualizationWidget<?>>> list = new ArrayList<Constructor<? extends VisualizationWidget<?>>>();
 
-		for(Class<?> key : objectWidgetTypeTable.keySet()) {
+		// sort most specialized -> most general
+		List<Class<?>> sorted = new ArrayList<Class<?>>(objectWidgetTypeTable.keySet());
+		sorted.sort(new Comparator<Class<?>>() {
+			public int compare(Class<?> a, Class<?> b) {
+				if(a.isAssignableFrom(b))
+					return 1;
+				else if(b.isAssignableFrom(a))
+					return -1;
+				else
+					return 0;
+			};
+		});
+		
+		for(Class<?> key : sorted) {
 			if(compatible(key, clazz))
 				for(Constructor<? extends VisualizationWidget<?>> c : objectWidgetTypeTable.get(key)) {
 					if(c.getDeclaringClass().equals(ArrayObjectWidget.class) && ownerType == WidgetProperty.PROPERTY)
@@ -217,8 +230,6 @@ public enum WidgetFactory {
 				CanvasObjectWidgetExtension widget = new CanvasObjectWidgetExtension(parent, extension, ownerType);
 				widget.initialize();
 				widgets.add(widget);
-				//if(single)
-				//	return;
 			}
 			else if(VisualizationWidget.class.isAssignableFrom(constructor.getDeclaringClass())) {
 				VisualizationWidget<?> extension = null;
@@ -230,9 +241,10 @@ public enum WidgetFactory {
 				if(extension.include(type))
 					widgets.add(new ExtensionTypeWidget(parent, type, ownerType, extension));
 				
-				//if(single)
-				//	return;
+				
 			}
+			if(single)
+				return;
 		}
 	}
 

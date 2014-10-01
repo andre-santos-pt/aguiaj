@@ -56,7 +56,7 @@ class ArrayRowWidget extends Composite {
 
 		int length = Array.getLength(arrayObject);
 
-		GridLayout layout = new GridLayout(length, false);
+		GridLayout layout = new GridLayout(length, true);
 		setLayout(layout);		
 		widgets = new ArrayList<TypeWidget>();
 
@@ -96,9 +96,7 @@ class ArrayRowWidget extends Composite {
 
 		// INDEX
 		for(int i = 0; i < length; i++) {
-			//			final int iTmp = i;
-
-			LabelWidget label = new LabelWidget.Builder()
+			new LabelWidget.Builder()
 			.text(new Integer(i).toString())
 			.small()
 			.color(AguiaJColor.GRAY)

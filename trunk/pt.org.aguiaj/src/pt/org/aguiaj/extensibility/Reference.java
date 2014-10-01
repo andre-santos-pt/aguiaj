@@ -16,8 +16,9 @@ public class Reference {
 	public final String name;
 	public final Class<?> type;
 	public final Object object;
+	public final Object previousObject;
 	
-	public Reference(String name, Class<?> type, Object object) {
+	public Reference(String name, Class<?> type, Object object, Object previousObject) {
 		if(name == null)
 			throw new IllegalArgumentException("name cannot be null");
 		
@@ -27,6 +28,11 @@ public class Reference {
 		this.name = name;
 		this.type = type;
 		this.object = object;
+		this.previousObject = previousObject;
+	}
+	
+	public Reference(String name, Class<?> type, Object object) {
+		this(name, type, object, null);
 	}
 	
 	public boolean isNull() {

@@ -58,7 +58,7 @@ public class HistoryView extends ViewPart {
 
 		list = new List(composite, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
 		
-		Fonts.set(list, AguiaJParam.BIG_FONT);
+		Fonts.set(list, AguiaJParam.MEDIUM_FONT);
 		
 		Menu menu = buildMenu(parent);		
 		list.setMenu(menu);
@@ -86,14 +86,6 @@ public class HistoryView extends ViewPart {
 			}
 		};
 		ObjectModel.getInstance().addEventListener(parent, listener);
-		
-//		list.addDisposeListener(new DisposeListener() {
-//			
-//			@Override
-//			public void widgetDisposed(DisposeEvent e) {
-//				ObjectModel.getInstance().removeEventListener(listener);
-//			}
-//		});
 	}
 
 	private Menu buildMenu(Composite parent) {
@@ -115,14 +107,6 @@ public class HistoryView extends ViewPart {
 			}
 		});
 
-//		MenuItem clearItem = new MenuItem(menu, SWT.PUSH);
-//		clearItem.setText("Clear");
-//		clearItem.addListener(SWT.Selection, new Listener() {
-//			public void handleEvent(Event e) {
-//				clear();
-//			}
-//		});
-		
 		return menu;
 	}
 
