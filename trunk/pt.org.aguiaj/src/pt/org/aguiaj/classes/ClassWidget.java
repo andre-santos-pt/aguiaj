@@ -44,7 +44,7 @@ import pt.org.aguiaj.objects.ObjectModel;
 import pt.org.aguiaj.standard.StandardNamePolicy;
 
 
-public class ClassWidget extends FieldContainer {
+public final class ClassWidget extends FieldContainer {
 
 	private List<Field> staticFields;
 	private Map<Constructor<?>, ConstructorWidget> constructorMap;
