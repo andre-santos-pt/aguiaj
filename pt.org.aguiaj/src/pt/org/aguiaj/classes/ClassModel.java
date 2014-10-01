@@ -61,13 +61,11 @@ public class ClassModel {
 	private final Set<Class<?>> pluginClassesForImport;
 
 	private final Map<Class<?>, ImmutableList<Constructor<?>>> visibleConstructors;
-	private final Map<Class<?>, List<Field>> invisibleAttributes;
-	private final Map<Class<?>, List<Field>> visibleAttributes;
-	private final Map<Class<?>, List<Method>> queryMethods;
-	private final Map<Class<?>, List<Method>> commandMethods;
-
-	//	private final Map<Class<?>, Map<Class<?>, List<Method>>> commandMethodsByType;
-	private final Map<Class<?>, List<Method>> allAvailableMethods;	
+	private final Map<Class<?>, ImmutableList<Field>> invisibleAttributes;
+	private final Map<Class<?>, ImmutableList<Field>> visibleAttributes;
+	private final Map<Class<?>, ImmutableList<Method>> queryMethods;
+	private final Map<Class<?>, ImmutableList<Method>> commandMethods;
+	private final Map<Class<?>, ImmutableList<Method>> allAvailableMethods;	
 
 	private final Multimap<Class<?>, ClassMemberFilter> filterMap;
 
@@ -271,20 +269,20 @@ public class ClassModel {
 		classSet.add(clazz);
 
 		visibleConstructors.put(clazz, ImmutableList.copyOf(inspector.getVisibleConstructors(clazz)));
-		invisibleAttributes.put(clazz, filteredInvisibleAttributes(clazz));		
-		visibleAttributes.put(clazz, filteredAttributes(clazz));	
+		invisibleAttributes.put(clazz, ImmutableList.copyOf(filteredInvisibleAttributes(clazz)));		
+		visibleAttributes.put(clazz, ImmutableList.copyOf(filteredAttributes(clazz)));	
 
 		List<Method> filteredQueryMethods = filteredAccessorMethods(clazz);
-		queryMethods.put(clazz, filteredQueryMethods);	
+		queryMethods.put(clazz, ImmutableList.copyOf(filteredQueryMethods));	
 
 		List<Method> filteredCommandMethods = filteredCommandMethods(clazz, filteredQueryMethods);
-		commandMethods.put(clazz, filteredCommandMethods);	
+		commandMethods.put(clazz, ImmutableList.copyOf(filteredCommandMethods));	
 
 		List<Method> all = new ArrayList<Method>();
 		all.addAll(filteredQueryMethods);
 		all.addAll(inspector.getCommandMethods(clazz));
 		all.addAll(inspector.getVisibleStaticMethods(clazz));
-		allAvailableMethods.put(clazz, all);
+		allAvailableMethods.put(clazz, ImmutableList.copyOf(all));
 	}
 
 	private List<Field> filteredInvisibleAttributes(Class<?> clazz) {
@@ -474,17 +472,17 @@ public class ClassModel {
 	}
 
 
-	public List<Constructor<?>> getVisibleConstructors(Class<?> clazz) {
+	public ImmutableList<Constructor<?>> getVisibleConstructors(Class<?> clazz) {
 		if(!visibleConstructors.containsKey(clazz))
-			return Collections.emptyList();
+			return ImmutableList.of();
 		else
 			return visibleConstructors.get(clazz);
 	}
 
 	// Invisible attributes
-	public List<Field> getInvisibleAttributes(Class<?> clazz) {
+	public ImmutableList<Field> getInvisibleAttributes(Class<?> clazz) {
 		if(!invisibleAttributes.containsKey(clazz))
-			return Collections.emptyList();
+			return ImmutableList.of();
 		else
 			return invisibleAttributes.get(clazz);
 	}
@@ -492,9 +490,9 @@ public class ClassModel {
 
 
 	// visible attributes
-	public List<Field> getVisibleAttributes(Class<?> clazz) {
+	public ImmutableList<Field> getVisibleAttributes(Class<?> clazz) {
 		if(!visibleAttributes.containsKey(clazz))
-			return Collections.emptyList();
+			return ImmutableList.of();
 		else
 			return visibleAttributes.get(clazz);
 	}
@@ -505,7 +503,7 @@ public class ClassModel {
 
 
 	// query methods
-	public List<Method> getAccessorMethods(Class<?> clazz) {
+	public ImmutableList<Method> getAccessorMethods(Class<?> clazz) {
 		if(queryMethods.containsKey(clazz)) {
 			return queryMethods.get(clazz);
 		}
@@ -516,7 +514,7 @@ public class ClassModel {
 	}
 
 
-	public List<Method> getCommandMethods(Class<?> clazz) {
+	public ImmutableList<Method> getCommandMethods(Class<?> clazz) {
 		if(commandMethods.containsKey(clazz)) {
 			return commandMethods.get(clazz);
 		}
@@ -527,7 +525,7 @@ public class ClassModel {
 	}
 
 
-	public List<Method> getAllAvailableMethods(Class<?> clazz) {
+	public ImmutableList<Method> getAllAvailableMethods(Class<?> clazz) {
 		if(allAvailableMethods.containsKey(clazz)) {
 			return allAvailableMethods.get(clazz);
 		}
@@ -611,7 +609,7 @@ public class ClassModel {
 					}
 					else {
 						table.put(object, m, proxy);
-						map.put((Class<? extends ContractDecorator<?>>) proxy.getClass(), proxy);
+						map.put((Class<? extends ContractDecorator<?>>) proxy.getClass().asSubclass(ContractDecorator.class), proxy);
 					}	
 				}
 			}

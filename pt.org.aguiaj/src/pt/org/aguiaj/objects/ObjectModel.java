@@ -136,7 +136,7 @@ public class ObjectModel {
 				Class<?> refType = referenceTypeTable.get(entry.getKey());
 				referenceTypeTable.remove(entry.getKey());
 				for(ObjectEventListener l : listeners())
-					l.removeReferenceEvent(new Reference(entry.getKey(), refType, object));
+					l.removeReferenceEvent(new Reference(entry.getKey(), refType, object, object));
 			}
 		}
 
@@ -187,19 +187,19 @@ public class ObjectModel {
 	}
 
 	public void changeReference(String name, Object obj) {
+		Object prev = referenceTable.get(name);
 		referenceTable.put(name, obj);
 		addObject(obj, true);
 		for(ObjectEventListener l : listeners())
-			l.changeReferenceEvent(new Reference(name, referenceTypeTable.get(name), obj));
+			l.changeReferenceEvent(new Reference(name, referenceTypeTable.get(name), obj, prev));
 	}
 
 	public void removeReference(String name) {
 		assert referenceTable.containsKey(name);
 
-		Reference ref = new Reference(
-				name, 
-				referenceTypeTable.get(name),
-				referenceTable.get(name));
+		Object prev = referenceTable.get(name);
+		Class<?> type = referenceTypeTable.get(name);
+		Reference ref = new Reference(name, type, prev, prev);
 
 		referenceTable.remove(name);
 		referenceTypeTable.remove(name);
@@ -290,7 +290,7 @@ public class ObjectModel {
 
 		if(notify) {
 			for(ObjectEventListener l : listeners())
-				l.newReferenceEvent(new Reference(name, type, object));
+				l.newReferenceEvent(new Reference(name, type, object, null));
 		}
 	}
 
