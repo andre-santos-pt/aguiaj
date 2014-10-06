@@ -51,6 +51,6 @@ public class AguiaJPerspective implements IPerspectiveFactory {
 	
 	private void block(IPageLayout layout, String viewId) {
 		layout.getViewLayout(viewId).setCloseable (false);
-		layout.getViewLayout(viewId).setMoveable(false);
+//		layout.getViewLayout(viewId).setMoveable(false);
 	}
 }

@@ -83,23 +83,23 @@ public class Inspector {
 
 	private List<Field> getFieldsIncludingSuper(Class<?> clazz) {
 		List<Field> fields = new ArrayList<Field>();
-		if(clazz == null) {
-
-		}
-		else if(clazz.isInterface()) {
-			for(Class<?> superInterface : clazz.getInterfaces()) {
-				fields.addAll(getFieldsIncludingSuper(superInterface));
-			}
-		}
-		else {
-			if(!clazz.equals(Object.class)) {
+//		if(clazz == null) {
+//
+//		}
+//		else if(clazz.isInterface()) {
+//			for(Class<?> superInterface : clazz.getInterfaces()) {
+//				fields.addAll(getFieldsIncludingSuper(superInterface));
+//			}
+//		}
+//		else {
+			if(clazz != null &&!clazz.equals(Object.class)) {
+				fields.addAll(getFieldsIncludingSuper(clazz.getSuperclass()));
 				for(Field f : clazz.getDeclaredFields()) {
 					fields.add(f);
 					f.setAccessible(true);
 				}
-				fields.addAll(getFieldsIncludingSuper(clazz.getSuperclass()));
 			}
-		}
+//		}
 		return fields;
 	}
 

@@ -144,7 +144,7 @@ public class ReloadClassesCommand extends AbstractHandler {
 				}
 
 			} catch (Exception e) {
-//				System.err.println(e.getMessage() + " -- " + command);
+				System.err.println(e.getMessage() + " -- " + command);
 //				e.printStackTrace();
 				//StackTraceElement element = e.getStackTrace()[0];
 				//				System.err.println(e.getMessage() + " - " + element.getClassName() + " (line " + element + ")");

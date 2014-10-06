@@ -31,6 +31,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -214,7 +215,7 @@ public final class ObjectWidget extends FieldContainer {
 
 				if(!field.getDeclaringClass().equals(owner)) {
 					new Label(privateAttributesGroup, SWT.SEPARATOR | SWT.HORIZONTAL);
-					new Label(privateAttributesGroup, SWT.SEPARATOR | SWT.HORIZONTAL);
+					new Label(privateAttributesGroup, SWT.SEPARATOR | SWT.HORIZONTAL).setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 					owner = field.getDeclaringClass();
 				}
 				new AttributeWidget(privateAttributesGroup, field, object, this, false, true);
