@@ -22,11 +22,14 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.eclipse.jdt.internal.codeassist.RelevanceConstants;
 import org.eclipse.swt.graphics.Image;
@@ -81,7 +84,20 @@ public class ClassModel {
 		userClasses = newHashSet();
 		iconMapping = newHashMap();
 
-		classSet = newHashSet();
+		// user classes are before plugin classes (relevant for name conflicts)
+		classSet = new TreeSet<Class<?>>(new Comparator<Class<?>>() {
+			@Override
+			public int compare(Class<?> a, Class<?> b) {
+				
+				if(!isPluginClass(a) && isPluginClass(b))
+					return -1;
+				else if(isPluginClass(a) && !isPluginClass(b))
+					return 1;
+				else
+					return a.getName().compareTo(b.getName());
+			}
+		});
+
 		pluginClassSet = Maps.newLinkedHashMap();
 		activePluginClasses = Sets.newLinkedHashSet();
 		pluginClassesForImport = newHashSet();
@@ -163,6 +179,10 @@ public class ClassModel {
 		return classSet.contains(clazz);
 	}
 
+	public boolean isUserClass(Class<?> clazz) {
+		return classSet.contains(clazz) && !isPluginClass(clazz);
+	}
+	
 	public boolean isUserClass(String name) {
 		for(Class<?> c : classSet)
 			if(!isPluginClass(c) && c.getName().equals(name))
@@ -171,6 +191,10 @@ public class ClassModel {
 		return false;
 	}
 
+	public boolean isPluginClass(Class<?> clazz) {
+		return pluginClassSet.containsKey(clazz);
+	}
+	
 	public void addFilter(ClassMemberFilter filter) {
 		filterMap.put(filter.getTargetType(), filter);
 	}
@@ -265,7 +289,7 @@ public class ClassModel {
 	public void addClass(Class<?> clazz) {
 		if(!ReflectionUtils.tryClass(clazz))
 			return;
-		
+
 		classSet.add(clazz);
 
 		visibleConstructors.put(clazz, ImmutableList.copyOf(inspector.getVisibleConstructors(clazz)));
@@ -342,7 +366,7 @@ public class ClassModel {
 
 	private List<Method> filteredCommandMethods(Class<?> clazz, List<Method> queryMethods) {
 		List<Method> methods = inspector.getCommandMethods(clazz);
-		
+
 		for(Iterator<Method> it = methods.iterator(); it.hasNext(); ) {
 			Method method = it.next();
 			for(ClassMemberFilter f : findFilters(clazz)) {					
@@ -357,7 +381,7 @@ public class ClassModel {
 				it.remove();
 			}
 		}
-		
+
 		return methods;
 	}
 
@@ -396,14 +420,12 @@ public class ClassModel {
 
 	public void addDefaultClasses() {
 		addClass(Object.class);		
-		
+
 		for(Class<?> pluginClass : pluginClassSet.keySet())
 			addClass(pluginClass);		
 	}
 
-	public boolean isPluginClass(Class<?> clazz) {
-		return pluginClassSet.containsKey(clazz);
-	}
+	
 
 	public String getRelatedPluginClass(Class<?> clazz) {
 		for(Class<?> c : pluginClassSet.keySet())

@@ -64,7 +64,7 @@ public class MethodCall extends Expression implements Instruction {
 
 		//		List<Method> allMethods = ClassModel.getInstance().getAllAvailableMethods(targetClass);
 		boolean nameOk = false;
-		for(Method m : targetClass.getMethods()) {
+		for(Method m : targetClass.getDeclaredMethods()) {
 			boolean staticMethod = Modifier.isStatic(m.getModifiers());
 			if(m.getName().equals(methodName) && (staticInvocation && staticMethod || !staticInvocation && !staticMethod))
 				nameOk = true;
@@ -90,7 +90,7 @@ public class MethodCall extends Expression implements Instruction {
 
 	private Method findMethod(String methodName, Class<?>[] argTypes) {
 		//		for(Method m : ClassModel.getInstance().getAllAvailableMethods(targetClass)) {
-		for(Method m : targetClass.getMethods()) {
+		for(Method m : targetClass.getDeclaredMethods()) {
 			if(m.getName().equals(methodName) && m.getParameterTypes().length == argTypes.length) {
 				boolean ok = true;
 				for(int i = 0; i < argTypes.length && ok; i++) {
