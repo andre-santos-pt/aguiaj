@@ -62,6 +62,9 @@ public class ExceptionTraceView extends ViewPart {
 	}
 
 	public void setInput(ExceptionTrace trace) {
+		if(tree.isDisposed())
+			return;
+		
 		tree.removeAll();
 		List<TraceLocation> traceLocs = trace.getTrace();
 
